@@ -1,0 +1,55 @@
+name: build and release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+  
+    - name: Import required modules
+      run: |
+        Set-PSRepository PSGallery -InstallationPolicy Trusted
+        Install-Module -Name Pester, InvokeBuild, PlatyPS, PSScriptAnalyzer -Force -SkipPublisherCheck
+      shell: pwsh
+
+    - name: Get version number and run build
+      run: |
+        $Pattern = '^(refs\/tags\/|)[vV]?(?<versionNumber>[0-9\.]{1,10}).*'
+        $versionNumber = [regex]::Match("${{ github.ref }}",$Pattern).Groups['versionNumber'].Value
+
+        if ([string]::IsNullOrEmpty( $versionNumber )) {
+          # If this is manually triggered we will see if latest release is already on PSGallery.
+          # If it isn't, assume this is a retry and use this version
+          $latestReleasedTag = (Invoke-RestMethod 'https://api.github.com/repos/NetboxTools/NetboxTools/releases/latest').tag_name
+          $versionNumber = [regex]::Match("$latestReleasedTag", $Pattern).Groups['versionNumber'].Value
+
+          $PublishedVersion = Find-Module NetboxTools -MinimumVersion $versionNumber -MaximumVersion $versionNumber -ErrorAction SilentlyContinue
+          if ($PublishedVersion.Version -eq $versionNumber) {
+                throw "$VersionNumber appears to already be published. Fix this issue and retry. Or dont. I'm a workflow, not the law."
+          }
+          else {
+            Write-Host "$VersionNumber does not appear to be released. Going on."
+          }
+        }
+        Write-Host "Versionnumber: $versionNumber"
+        Invoke-Build -Version $versionNumber
+      shell: pwsh
+    
+    - name: publish to PSGallery
+      env:
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      shell: pwsh
+      run: |
+        Get-ChildItem "${{ github.workspace }}\Bin\NetboxTools" -recurse
+        Publish-Module -Path "${{ github.workspace }}\Bin\NetboxTools" -NuGetApiKey $env:NUGET_KEY -Verbose
+    - name: Archive current build
+      uses: actions/upload-artifact@v4
+      with:
+        name: builtModule
+        path: "${{ github.workspace }}/Bin/NetboxTools"

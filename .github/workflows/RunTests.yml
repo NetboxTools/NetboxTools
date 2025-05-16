@@ -1,0 +1,22 @@
+name: Run tests
+
+on: [pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Import required modules
+      run: Install-Module -Name Pester -Force -SkipPublisherCheck
+      shell: pwsh
+    - name: Run tests
+      run: .\Tests\TestRunner.ps1 -TestResults -Verbosity Normal -ModuleLoadPath ".\Source\NetboxTools.psm1" -CodeCoveragePath ".\Source\Public"
+      shell: pwsh
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v1
+      continue-on-error: true
+      with:
+        files: testResults.xml
