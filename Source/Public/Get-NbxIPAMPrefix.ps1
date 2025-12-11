@@ -1,6 +1,6 @@
 function Get-NbxIPAMPrefix {
 
-<#
+    <#
     .SYNOPSIS
         A brief description of the Get-NbxIPAMPrefix function.
 
@@ -84,7 +84,7 @@ function Get-NbxIPAMPrefix {
     param
     (
         [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
+            Position = 0)]
         [string]$Prefix,
 
         [Parameter(ParameterSetName = 'Query')]
@@ -187,7 +187,6 @@ function Get-NbxIPAMPrefix {
 
             $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
 
-            $uri.Uri
             InvokeNbxRequest -URI $uri -Raw:$Raw
 
             break
