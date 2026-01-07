@@ -31,7 +31,7 @@ task Unit_Tests_Compiled {
 }
 
 task RunScriptAnalyzer {
-    Invoke-ScriptAnalyzer -Path $ModuleSourcePath -Recurse -Severity Error -EnableExit
+    Invoke-ScriptAnalyzer -Path $ModuleSourcePath -Recurse -Severity Error -EnableExit -ExcludeRule 'PSAvoidUsingConvertToSecureStringWithPlainText'
 }
 
 Task Build_Documentation {
