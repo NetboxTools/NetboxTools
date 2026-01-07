@@ -5,6 +5,23 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    BeforeAll {
+        $script:NbxConfig = @{
+            'Connected'     = $true
+            'Choices'       = @{
+            }
+            'APIDefinition' = $null
+            'ContentTypes'  = $null
+            'NbxVersion'    = @{
+                'Netbox-version' = '3.5.4'
+            }
+            'Timeout' = 30
+        }
+
+        Mock -ModuleName NetboxTools -CommandName VerifyAPIConnectivity {
+            'Success'
+        }
+    }
 }
 
 Describe "Add-NbxDCIMFrontPort" {
@@ -23,19 +40,19 @@ Describe "Add-NbxDCIMFrontPort" {
         }
         
         It "Should have Device parameter as mandatory" {
-            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Device"].Attributes.Where({$_.TypeID.Name -eq 'ParameterAttribute'}).Mandatory | Should -Contain $true
+            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Device"].Attributes.Where({ $_.TypeID.Name -eq 'ParameterAttribute' }).Mandatory | Should -Contain $true
         }
         
         It "Should have Name parameter as mandatory" {
-            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Name"].Attributes.Where({$_.TypeID.Name -eq 'ParameterAttribute'}).Mandatory | Should -Contain $true
+            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Name"].Attributes.Where({ $_.TypeID.Name -eq 'ParameterAttribute' }).Mandatory | Should -Contain $true
         }
         
         It "Should have Type parameter as mandatory" {
-            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Type"].Attributes.Where({$_.TypeID.Name -eq 'ParameterAttribute'}).Mandatory | Should -Contain $true
+            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Type"].Attributes.Where({ $_.TypeID.Name -eq 'ParameterAttribute' }).Mandatory | Should -Contain $true
         }
         
         It "Should have Rear_Port parameter as mandatory" {
-            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Rear_Port"].Attributes.Where({$_.TypeID.Name -eq 'ParameterAttribute'}).Mandatory | Should -Contain $true
+            (Get-Command "Add-NbxDCIMFrontPort").Parameters["Rear_Port"].Attributes.Where({ $_.TypeID.Name -eq 'ParameterAttribute' }).Mandatory | Should -Contain $true
         }
         
         It "Should have optional parameters" {
@@ -58,7 +75,7 @@ Describe "Add-NbxDCIMFrontPort" {
                 param($URISegments, $ParametersDictionary, $SkipParameterByName)
                 
                 return @{
-                    Segments = $URISegments
+                    Segments   = $URISegments
                     Parameters = $ParametersDictionary
                 }
             }
@@ -75,10 +92,10 @@ Describe "Add-NbxDCIMFrontPort" {
                 param($URI, $Body, $Method)
                 
                 return [pscustomobject]@{
-                    id = 1
-                    name = $Body.name
-                    device = $Body.device
-                    type = $Body.type
+                    id        = 1
+                    name      = $Body.name
+                    device    = $Body.device
+                    type      = $Body.type
                     rear_port = $Body.rear_port
                 }
             }
