@@ -47,12 +47,17 @@ function BuildNewURI {
 
     Write-Verbose "Building URI"
 
-    if (-not $SkipConnectedCheck) {
-        # There is no point in continuing if we have not successfully connected to an API
-        $null = CheckNbxIsConnected
-    }
+    # No point to run this check for every command. The netbox rest api will respond with an error if not connected.
+    # if (-not $SkipConnectedCheck) {
+    #     # There is no point in continuing if we have not successfully connected to an API
+    #     $null = CheckNbxIsConnected
+    # }
 
     # Begin a URI builder with HTTP/HTTPS and the provided hostname
+    # if ($null -eq $script:NbxConfig) {
+    #     throw "No Netbox configuration found. Please run Connect-Nbx first."
+    # }
+
     $uriBuilder = [System.UriBuilder]::new($script:NbxConfig.HostScheme, $script:NbxConfig.Hostname, $script:NbxConfig.HostPort)
 
     # Generate the path by trimming excess slashes and whitespace from the $segments[] and joining together
