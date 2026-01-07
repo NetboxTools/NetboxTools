@@ -21,7 +21,7 @@ Set-NbxVirtualMachine [-Id] <UInt64> [[-Name] <String>] [[-Role] <UInt64>] [[-Cl
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -35,7 +35,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Cluster
-{{ Fill Cluster Description }}
+Specifies the Cluster parameter.
 
 ```yaml
 Type: UInt64
@@ -50,7 +50,7 @@ Accept wildcard characters: False
 ```
 
 ### -Comments
-{{ Fill Comments Description }}
+Specifies the Comments parameter.
 
 ```yaml
 Type: String
@@ -80,7 +80,7 @@ Accept wildcard characters: False
 ```
 
 ### -Custom_Fields
-{{ Fill Custom_Fields Description }}
+Specifies the Custom_Fields parameter.
 
 ```yaml
 Type: Hashtable
@@ -95,7 +95,7 @@ Accept wildcard characters: False
 ```
 
 ### -Disk
-{{ Fill Disk Description }}
+Specifies the Disk parameter.
 
 ```yaml
 Type: UInt64
@@ -110,7 +110,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies the Force parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64
@@ -140,7 +140,7 @@ Accept wildcard characters: False
 ```
 
 ### -Memory
-{{ Fill Memory Description }}
+Specifies the Memory parameter.
 
 ```yaml
 Type: UInt64
@@ -155,7 +155,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: String
@@ -170,7 +170,7 @@ Accept wildcard characters: False
 ```
 
 ### -Platform
-{{ Fill Platform Description }}
+Specifies the Platform parameter.
 
 ```yaml
 Type: UInt64
@@ -185,7 +185,7 @@ Accept wildcard characters: False
 ```
 
 ### -Primary_IP4
-{{ Fill Primary_IP4 Description }}
+Specifies the Primary_IP4 parameter.
 
 ```yaml
 Type: UInt64
@@ -200,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -Primary_IP6
-{{ Fill Primary_IP6 Description }}
+Specifies the Primary_IP6 parameter.
 
 ```yaml
 Type: UInt64
@@ -215,7 +215,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role parameter.
 
 ```yaml
 Type: UInt64
@@ -230,7 +230,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: Object
@@ -245,7 +245,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: UInt64
@@ -260,7 +260,7 @@ Accept wildcard characters: False
 ```
 
 ### -VCPUs
-{{ Fill VCPUs Description }}
+Specifies the VCPUs parameter.
 
 ```yaml
 Type: Byte
@@ -305,3 +305,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

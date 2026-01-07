@@ -20,7 +20,7 @@ Get-NbxDCIMInterface [[-Limit] <UInt16>] [[-Offset] <UInt16>] [[-Id] <UInt64>] [
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -34,7 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device parameter.
 
 ```yaml
 Type: String
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device_Id
-{{ Fill Device_Id Description }}
+Specifies the Device_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Enabled
-{{ Fill Enabled Description }}
+Specifies whether the interface is enabled.
 
 ```yaml
 Type: Boolean
@@ -79,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -Form_Factor
-{{ Fill Form_Factor Description }}
+Specifies the Form_Factor parameter.
 
 ```yaml
 Type: Object
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64
@@ -109,7 +109,7 @@ Accept wildcard characters: False
 ```
 
 ### -LAG_Id
-{{ Fill LAG_Id Description }}
+Specifies the LAG_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -139,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -MAC_Address
-{{ Fill MAC_Address Description }}
+Specifies the MAC_Address parameter.
 
 ```yaml
 Type: String
@@ -154,7 +154,7 @@ Accept wildcard characters: False
 ```
 
 ### -MGMT_Only
-{{ Fill MGMT_Only Description }}
+Specifies the MGMT_Only parameter.
 
 ```yaml
 Type: Boolean
@@ -169,7 +169,7 @@ Accept wildcard characters: False
 ```
 
 ### -MTU
-{{ Fill MTU Description }}
+Specifies the MTU parameter.
 
 ```yaml
 Type: UInt16
@@ -184,7 +184,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: UInt64
@@ -199,7 +199,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -214,7 +214,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+Specifies the Raw parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -229,7 +229,7 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-{{ Fill Type Description }}
+Specifies the Type parameter.
 
 ```yaml
 Type: String
@@ -260,3 +260,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

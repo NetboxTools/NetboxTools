@@ -19,7 +19,7 @@ Get-NbxDCIMInterfaceConnection [[-Limit] <UInt16>] [[-Offset] <UInt16>] [[-Id] <
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -33,7 +33,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Connection_Status
-{{ Fill Connection_Status Description }}
+Specifies the Connection_Status parameter.
 
 ```yaml
 Type: Object
@@ -48,7 +48,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device parameter.
 
 ```yaml
 Type: UInt64
@@ -63,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -93,7 +93,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -108,7 +108,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -123,7 +123,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site
-{{ Fill Site Description }}
+Specifies the Site parameter.
 
 ```yaml
 Type: UInt64
@@ -153,3 +153,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

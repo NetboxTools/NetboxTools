@@ -25,7 +25,7 @@ Get-NbxIPAMAggregate [-Id <UInt64[]>] [-Raw] [-ProgressAction <ActionPreference>
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -39,7 +39,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Date_Added
-{{ Fill Date_Added Description }}
+Specifies the Date_Added parameter.
 
 ```yaml
 Type: DateTime
@@ -54,7 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -Family
-{{ Fill Family Description }}
+Specifies the Family parameter.
 
 ```yaml
 Type: Object
@@ -69,7 +69,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -84,7 +84,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -99,7 +99,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Prefix
-{{ Fill Prefix Description }}
+Specifies the Prefix parameter.
 
 ```yaml
 Type: String
@@ -129,7 +129,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies a Query string to filter results.
 
 ```yaml
 Type: String
@@ -144,7 +144,7 @@ Accept wildcard characters: False
 ```
 
 ### -RIR
-{{ Fill RIR Description }}
+Specifies the RIR parameter.
 
 ```yaml
 Type: String
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -RIR_Id
-{{ Fill RIR_Id Description }}
+Specifies the RIR_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -174,7 +174,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -203,3 +203,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

@@ -31,7 +31,7 @@ Set-NbxContactAssignment -Id 11 -Content_Type 'dcim.location' -Object_id 10 -Con
 ## PARAMETERS
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -180,3 +180,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Valid content types: https://docs.netbox.dev/en/stable/features/contacts/#contacts_1
 
 ## RELATED LINKS
+

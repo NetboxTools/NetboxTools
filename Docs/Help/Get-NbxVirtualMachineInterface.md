@@ -61,7 +61,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies a Query string to filter results.
 
 ```yaml
 Type: String
@@ -209,3 +209,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Additional information about the function.
 
 ## RELATED LINKS
+

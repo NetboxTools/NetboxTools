@@ -19,7 +19,7 @@ Set-NbxVirtualMachineInterface [-Id] <UInt64[]> [[-Name] <String>] [[-MAC_Addres
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -48,7 +48,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -63,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -Enabled
-{{ Fill Enabled Description }}
+Specifies the Enabled parameter.
 
 ```yaml
 Type: Boolean
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies the Force parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -93,7 +93,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -108,7 +108,7 @@ Accept wildcard characters: False
 ```
 
 ### -MAC_Address
-{{ Fill MAC_Address Description }}
+Specifies the MAC_Address parameter.
 
 ```yaml
 Type: String
@@ -123,7 +123,7 @@ Accept wildcard characters: False
 ```
 
 ### -MTU
-{{ Fill MTU Description }}
+Specifies the MTU parameter.
 
 ```yaml
 Type: UInt16
@@ -138,7 +138,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: String
@@ -153,7 +153,7 @@ Accept wildcard characters: False
 ```
 
 ### -Virtual_Machine
-{{ Fill Virtual_Machine Description }}
+Specifies the Virtual_Machine parameter.
 
 ```yaml
 Type: UInt64
@@ -199,3 +199,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

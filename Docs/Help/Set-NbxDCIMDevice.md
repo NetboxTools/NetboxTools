@@ -22,7 +22,7 @@ Set-NbxDCIMDevice [-Id] <UInt64[]> [[-Name] <String>] [[-Device_Role] <Object>] 
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -36,7 +36,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Asset_Tag
-{{ Fill Asset_Tag Description }}
+Specifies the Asset_Tag parameter.
 
 ```yaml
 Type: String
@@ -51,7 +51,7 @@ Accept wildcard characters: False
 ```
 
 ### -Cluster
-{{ Fill Cluster Description }}
+Specifies the Cluster parameter.
 
 ```yaml
 Type: UInt64
@@ -66,7 +66,7 @@ Accept wildcard characters: False
 ```
 
 ### -Comments
-{{ Fill Comments Description }}
+Specifies the Comments parameter.
 
 ```yaml
 Type: String
@@ -96,7 +96,7 @@ Accept wildcard characters: False
 ```
 
 ### -Custom_Fields
-{{ Fill Custom_Fields Description }}
+Specifies the Custom_Fields parameter.
 
 ```yaml
 Type: Hashtable
@@ -111,7 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device_Role
-{{ Fill Device_Role Description }}
+Specifies the Device_Role parameter.
 
 ```yaml
 Type: Object
@@ -126,7 +126,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device_Type
-{{ Fill Device_Type Description }}
+Specifies the Device_Type parameter.
 
 ```yaml
 Type: Object
@@ -141,7 +141,7 @@ Accept wildcard characters: False
 ```
 
 ### -Face
-{{ Fill Face Description }}
+Specifies the Face parameter.
 
 ```yaml
 Type: Object
@@ -156,7 +156,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies the Force parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -171,7 +171,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -186,7 +186,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: String
@@ -201,7 +201,7 @@ Accept wildcard characters: False
 ```
 
 ### -Platform
-{{ Fill Platform Description }}
+Specifies the Platform parameter.
 
 ```yaml
 Type: UInt64
@@ -216,7 +216,7 @@ Accept wildcard characters: False
 ```
 
 ### -Position
-{{ Fill Position Description }}
+Specifies the Position parameter.
 
 ```yaml
 Type: UInt16
@@ -231,7 +231,7 @@ Accept wildcard characters: False
 ```
 
 ### -Primary_IP4
-{{ Fill Primary_IP4 Description }}
+Specifies the Primary_IP4 parameter.
 
 ```yaml
 Type: UInt64
@@ -246,7 +246,7 @@ Accept wildcard characters: False
 ```
 
 ### -Primary_IP6
-{{ Fill Primary_IP6 Description }}
+Specifies the Primary_IP6 parameter.
 
 ```yaml
 Type: UInt64
@@ -261,7 +261,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rack
-{{ Fill Rack Description }}
+Specifies the Rack parameter.
 
 ```yaml
 Type: UInt64
@@ -276,7 +276,7 @@ Accept wildcard characters: False
 ```
 
 ### -Serial
-{{ Fill Serial Description }}
+Specifies the Serial parameter.
 
 ```yaml
 Type: String
@@ -291,7 +291,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site
-{{ Fill Site Description }}
+Specifies the Site parameter.
 
 ```yaml
 Type: UInt64
@@ -306,7 +306,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: Object
@@ -321,7 +321,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: UInt64
@@ -336,7 +336,7 @@ Accept wildcard characters: False
 ```
 
 ### -VC_Position
-{{ Fill VC_Position Description }}
+Specifies the VC_Position parameter.
 
 ```yaml
 Type: UInt64
@@ -351,7 +351,7 @@ Accept wildcard characters: False
 ```
 
 ### -VC_Priority
-{{ Fill VC_Priority Description }}
+Specifies the VC_Priority parameter.
 
 ```yaml
 Type: UInt64
@@ -366,7 +366,7 @@ Accept wildcard characters: False
 ```
 
 ### -Virtual_Chassis
-{{ Fill Virtual_Chassis Description }}
+Specifies the Virtual_Chassis parameter.
 
 ```yaml
 Type: UInt64
@@ -411,3 +411,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

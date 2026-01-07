@@ -18,7 +18,7 @@ Set-NbxTimeout [[-TimeoutSeconds] <UInt16>] [-ProgressAction <ActionPreference>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -47,7 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -TimeoutSeconds
-{{ Fill TimeoutSeconds Description }}
+Specifies the TimeoutSeconds parameter.
 
 ```yaml
 Type: UInt16
@@ -93,3 +93,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

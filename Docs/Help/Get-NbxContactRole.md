@@ -82,7 +82,7 @@ Accept wildcard characters: False
 ```
 
 ### -Slug
-{{ Fill Slug Description }}
+Specifies the Slug parameter.
 
 ```yaml
 Type: String
@@ -97,7 +97,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -169,3 +169,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Additional information about the function.
 
 ## RELATED LINKS
+

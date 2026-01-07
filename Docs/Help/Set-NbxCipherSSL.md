@@ -17,7 +17,7 @@ Set-NbxCipherSSL
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -40,3 +40,4 @@ PS C:\> {{ Add example code here }}
 ## NOTES
 
 ## RELATED LINKS
+

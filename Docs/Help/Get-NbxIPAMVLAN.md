@@ -26,7 +26,7 @@ Get-NbxIPAMVLAN [-Id <UInt64[]>] [-Raw] [-ProgressAction <ActionPreference>] [<C
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -40,7 +40,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Group
-{{ Fill Group Description }}
+Specifies the Group parameter.
 
 ```yaml
 Type: String
@@ -55,7 +55,7 @@ Accept wildcard characters: False
 ```
 
 ### -Group_Id
-{{ Fill Group_Id Description }}
+Specifies the Group_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -70,7 +70,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -85,7 +85,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -100,7 +100,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: String
@@ -115,7 +115,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -130,7 +130,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies a Query string to filter results.
 
 ```yaml
 Type: String
@@ -145,7 +145,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -160,7 +160,7 @@ Accept wildcard characters: False
 ```
 
 ### -Region
-{{ Fill Region Description }}
+Specifies the Region parameter.
 
 ```yaml
 Type: String
@@ -175,7 +175,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role parameter.
 
 ```yaml
 Type: String
@@ -190,7 +190,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role_Id
-{{ Fill Role_Id Description }}
+Specifies the Role_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -205,7 +205,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site
-{{ Fill Site Description }}
+Specifies the Site parameter.
 
 ```yaml
 Type: String
@@ -220,7 +220,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site_Id
-{{ Fill Site_Id Description }}
+Specifies the Site_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -235,7 +235,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: Object
@@ -250,7 +250,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: String
@@ -265,7 +265,7 @@ Accept wildcard characters: False
 ```
 
 ### -TenantGroup
-{{ Fill TenantGroup Description }}
+Specifies the TenantGroup parameter.
 
 ```yaml
 Type: String
@@ -280,7 +280,7 @@ Accept wildcard characters: False
 ```
 
 ### -TenantGroup_Id
-{{ Fill TenantGroup_Id Description }}
+Specifies the TenantGroup_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -295,7 +295,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Id
-{{ Fill Tenant_Id Description }}
+Specifies the Tenant_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -310,7 +310,7 @@ Accept wildcard characters: False
 ```
 
 ### -VID
-{{ Fill VID Description }}
+Specifies the VID parameter.
 
 ```yaml
 Type: UInt16
@@ -339,3 +339,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

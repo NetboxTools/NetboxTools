@@ -19,7 +19,7 @@ Add-NbxVirtualMachineInterface [-Name] <String> [-Virtual_Machine] <UInt64> [[-E
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -33,7 +33,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -48,7 +48,7 @@ Accept wildcard characters: False
 ```
 
 ### -Enabled
-{{ Fill Enabled Description }}
+Specifies whether the VM interface is enabled.
 
 ```yaml
 Type: Boolean
@@ -63,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -MAC_Address
-{{ Fill MAC_Address Description }}
+Specifies the MAC_Address parameter.
 
 ```yaml
 Type: String
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ```
 
 ### -MTU
-{{ Fill MTU Description }}
+Specifies the MTU for the VM interface.
 
 ```yaml
 Type: UInt16
@@ -93,7 +93,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name of the VM interface.
 
 ```yaml
 Type: String
@@ -108,7 +108,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, provides raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -123,7 +123,7 @@ Accept wildcard characters: False
 ```
 
 ### -Virtual_Machine
-{{ Fill Virtual_Machine Description }}
+Specifies the Virtual_Machine to attach interface to.
 
 ```yaml
 Type: UInt64
@@ -152,3 +152,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

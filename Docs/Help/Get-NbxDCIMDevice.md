@@ -25,7 +25,7 @@ Get-NbxDCIMDevice [[-Limit] <UInt16>] [[-Offset] <UInt16>] [[-Id] <UInt64[]>] [[
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -39,7 +39,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Asset_Tag
-{{ Fill Asset_Tag Description }}
+Specifies the Asset_Tag parameter.
 
 ```yaml
 Type: String
@@ -54,7 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -Cluster_Id
-{{ Fill Cluster_Id Description }}
+Specifies the Cluster_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -69,7 +69,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device_Type_Id
-{{ Fill Device_Type_Id Description }}
+Specifies the Device_Type_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -84,7 +84,7 @@ Accept wildcard characters: False
 ```
 
 ### -Has_Primary_IP
-{{ Fill Has_Primary_IP Description }}
+Specifies the Has_Primary_IP parameter.
 
 ```yaml
 Type: Boolean
@@ -99,7 +99,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_Console_Server
-{{ Fill Is_Console_Server Description }}
+Specifies the Is_Console_Server parameter.
 
 ```yaml
 Type: Boolean
@@ -129,7 +129,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_Full_Depth
-{{ Fill Is_Full_Depth Description }}
+Specifies the Is_Full_Depth parameter.
 
 ```yaml
 Type: Boolean
@@ -144,7 +144,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_Network_Device
-{{ Fill Is_Network_Device Description }}
+Specifies the Is_Network_Device parameter.
 
 ```yaml
 Type: Boolean
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_PDU
-{{ Fill Is_PDU Description }}
+Specifies the Is_PDU parameter.
 
 ```yaml
 Type: Boolean
@@ -174,7 +174,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter (maximum number of results to return).
 
 ```yaml
 Type: UInt16
@@ -189,7 +189,7 @@ Accept wildcard characters: False
 ```
 
 ### -MAC_Address
-{{ Fill MAC_Address Description }}
+Specifies the MAC_Address to filter results.
 
 ```yaml
 Type: String
@@ -204,7 +204,7 @@ Accept wildcard characters: False
 ```
 
 ### -Manufacturer
-{{ Fill Manufacturer Description }}
+Specifies the Manufacturer name to filter results.
 
 ```yaml
 Type: String
@@ -219,7 +219,7 @@ Accept wildcard characters: False
 ```
 
 ### -Manufacturer_Id
-{{ Fill Manufacturer_Id Description }}
+Specifies the Manufacturer_Id to filter results.
 
 ```yaml
 Type: UInt64
@@ -234,7 +234,7 @@ Accept wildcard characters: False
 ```
 
 ### -Model
-{{ Fill Model Description }}
+Specifies the Model parameter.
 
 ```yaml
 Type: UInt64
@@ -249,7 +249,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name to filter results.
 
 ```yaml
 Type: String
@@ -264,7 +264,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter (pagination start).
 
 ```yaml
 Type: UInt16
@@ -279,7 +279,7 @@ Accept wildcard characters: False
 ```
 
 ### -Platform
-{{ Fill Platform Description }}
+Specifies the Platform to filter results.
 
 ```yaml
 Type: String
@@ -294,7 +294,7 @@ Accept wildcard characters: False
 ```
 
 ### -Platform_Id
-{{ Fill Platform_Id Description }}
+Specifies the Platform_Id to filter results.
 
 ```yaml
 Type: UInt64
@@ -309,7 +309,7 @@ Accept wildcard characters: False
 ```
 
 ### -Position
-{{ Fill Position Description }}
+Specifies the Position parameter.
 
 ```yaml
 Type: UInt16
@@ -324,7 +324,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies a Query string to filter results.
 
 ```yaml
 Type: String
@@ -339,7 +339,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rack_Group_Id
-{{ Fill Rack_Group_Id Description }}
+Specifies the Rack_Group_Id to filter results.
 
 ```yaml
 Type: UInt64
@@ -354,7 +354,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rack_Id
-{{ Fill Rack_Id Description }}
+Specifies the Rack_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -369,7 +369,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -384,7 +384,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role to filter results.
 
 ```yaml
 Type: String
@@ -399,7 +399,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role_Id
-{{ Fill Role_Id Description }}
+Specifies the Role_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -414,7 +414,7 @@ Accept wildcard characters: False
 ```
 
 ### -Serial
-{{ Fill Serial Description }}
+Specifies the Serial number to filter results.
 
 ```yaml
 Type: String
@@ -429,7 +429,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site
-{{ Fill Site Description }}
+Specifies the Site to filter results.
 
 ```yaml
 Type: String
@@ -444,7 +444,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site_Id
-{{ Fill Site_Id Description }}
+Specifies the Site_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -459,7 +459,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status to filter results.
 
 ```yaml
 Type: Object
@@ -474,7 +474,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant to filter results.
 
 ```yaml
 Type: String
@@ -489,7 +489,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Id
-{{ Fill Tenant_Id Description }}
+Specifies the Tenant_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -504,7 +504,7 @@ Accept wildcard characters: False
 ```
 
 ### -Virtual_Chassis_Id
-{{ Fill Virtual_Chassis_Id Description }}
+Specifies the Virtual_Chassis_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -533,3 +533,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

@@ -35,7 +35,7 @@ Add new Site MySite on Netbox
 ## PARAMETERS
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the name of the site.
 
 ```yaml
 Type: String
@@ -50,7 +50,7 @@ Accept wildcard characters: False
 ```
 
 ### -Slug
-{{ Fill Slug Description }}
+Specifies the site slug.
 
 ```yaml
 Type: String
@@ -65,7 +65,7 @@ Accept wildcard characters: False
 ```
 
 ### -Facility
-{{ Fill Facility Description }}
+Specifies the Facility parameter.
 
 ```yaml
 Type: String
@@ -80,7 +80,7 @@ Accept wildcard characters: False
 ```
 
 ### -ASN
-{{ Fill ASN Description }}
+Specifies the ASN for the site.
 
 ```yaml
 Type: UInt64
@@ -95,7 +95,7 @@ Accept wildcard characters: False
 ```
 
 ### -Latitude
-{{ Fill Latitude Description }}
+Specifies latitude coordinate.
 
 ```yaml
 Type: Decimal
@@ -110,7 +110,7 @@ Accept wildcard characters: False
 ```
 
 ### -Longitude
-{{ Fill Longitude Description }}
+Specifies longitude coordinate.
 
 ```yaml
 Type: Decimal
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -Contact_Name
-{{ Fill Contact_Name Description }}
+Specifies the contact name.
 
 ```yaml
 Type: String
@@ -140,7 +140,7 @@ Accept wildcard characters: False
 ```
 
 ### -Contact_Phone
-{{ Fill Contact_Phone Description }}
+Specifies the contact phone number.
 
 ```yaml
 Type: String
@@ -155,7 +155,7 @@ Accept wildcard characters: False
 ```
 
 ### -Contact_Email
-{{ Fill Contact_Email Description }}
+Specifies the contact email.
 
 ```yaml
 Type: String
@@ -170,7 +170,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Group
-{{ Fill Tenant_Group Description }}
+Specifies the Tenant_Group parameter.
 
 ```yaml
 Type: UInt64
@@ -185,7 +185,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: UInt64
@@ -200,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: String
@@ -215,7 +215,7 @@ Accept wildcard characters: False
 ```
 
 ### -Region
-{{ Fill Region Description }}
+Specifies the Region parameter.
 
 ```yaml
 Type: UInt64
@@ -230,7 +230,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -245,7 +245,7 @@ Accept wildcard characters: False
 ```
 
 ### -Comments
-{{ Fill Comments Description }}
+Specifies the Comments parameter.
 
 ```yaml
 Type: String
@@ -260,7 +260,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+Specifies the Raw parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -318,3 +318,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

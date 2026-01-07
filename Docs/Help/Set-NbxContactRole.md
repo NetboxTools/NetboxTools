@@ -31,7 +31,7 @@ New-NbxContact -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
 ## PARAMETERS
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -166,3 +166,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Additional information about the function.
 
 ## RELATED LINKS
+

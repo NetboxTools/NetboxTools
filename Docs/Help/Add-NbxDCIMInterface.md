@@ -20,7 +20,7 @@ Add-NbxDCIMInterface [-Device] <UInt64> [-Name] <String> [[-Type] <String>] [[-E
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -34,7 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device parameter.
 
 ```yaml
 Type: UInt64
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Enabled
-{{ Fill Enabled Description }}
+Specifies whether the interface is enabled.
 
 ```yaml
 Type: Boolean
@@ -79,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -Form_Factor
-{{ Fill Form_Factor Description }}
+Specifies the Form_Factor parameter.
 
 ```yaml
 Type: Object
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -LAG
-{{ Fill LAG Description }}
+Specifies the LAG parameter.
 
 ```yaml
 Type: UInt64
@@ -109,7 +109,7 @@ Accept wildcard characters: False
 ```
 
 ### -MAC_Address
-{{ Fill MAC_Address Description }}
+Specifies the MAC_Address parameter.
 
 ```yaml
 Type: String
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -MGMT_Only
-{{ Fill MGMT_Only Description }}
+Specifies whether the interface is management-only.
 
 ```yaml
 Type: Boolean
@@ -139,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -MTU
-{{ Fill MTU Description }}
+Specifies the MTU for the interface.
 
 ```yaml
 Type: UInt16
@@ -154,7 +154,7 @@ Accept wildcard characters: False
 ```
 
 ### -Mode
-{{ Fill Mode Description }}
+Specifies the Mode parameter.
 
 ```yaml
 Type: String
@@ -170,7 +170,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name of the interface.
 
 ```yaml
 Type: String
@@ -185,7 +185,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tagged_VLANs
-{{ Fill Tagged_VLANs Description }}
+Specifies the Tagged_VLANs parameter.
 
 ```yaml
 Type: UInt16[]
@@ -200,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-{{ Fill Type Description }}
+Specifies the Type parameter.
 
 ```yaml
 Type: String
@@ -216,7 +216,7 @@ Accept wildcard characters: False
 ```
 
 ### -Untagged_VLAN
-{{ Fill Untagged_VLAN Description }}
+Specifies the Untagged_VLAN parameter.
 
 ```yaml
 Type: UInt16
@@ -246,3 +246,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

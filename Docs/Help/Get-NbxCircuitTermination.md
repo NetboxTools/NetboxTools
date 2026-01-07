@@ -25,7 +25,7 @@ Get-NbxCircuitTermination [-Id <UInt64[]>] [-Raw] [-ProgressAction <ActionPrefer
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -39,7 +39,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Circuit_ID
-{{ Fill Circuit_ID Description }}
+Specifies the Circuit_ID parameter.
 
 ```yaml
 Type: String
@@ -54,7 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -69,7 +69,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -84,7 +84,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -99,7 +99,7 @@ Accept wildcard characters: False
 ```
 
 ### -Port_Speed
-{{ Fill Port_Speed Description }}
+Specifies Port_Speed filter.
 
 ```yaml
 Type: UInt64
@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies a Query string to filter results.
 
 ```yaml
 Type: String
@@ -129,7 +129,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -144,7 +144,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site
-{{ Fill Site Description }}
+Specifies the Site parameter.
 
 ```yaml
 Type: String
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site_ID
-{{ Fill Site_ID Description }}
+Specifies the Site_ID parameter.
 
 ```yaml
 Type: String
@@ -174,7 +174,7 @@ Accept wildcard characters: False
 ```
 
 ### -Term_Side
-{{ Fill Term_Side Description }}
+Specifies the Term_Side parameter.
 
 ```yaml
 Type: String
@@ -189,7 +189,7 @@ Accept wildcard characters: False
 ```
 
 ### -XConnect_ID
-{{ Fill XConnect_ID Description }}
+Specifies the XConnect_ID parameter.
 
 ```yaml
 Type: String
@@ -218,3 +218,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+
