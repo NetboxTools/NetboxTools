@@ -5,19 +5,6 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
-    BeforeAll {
-
-        Mock -ModuleName NetboxTools -CommandName VerifyAPIConnectivity {
-            'Success'
-        }
-
-        Mock -ModuleName NetboxTools -CommandName Get-NbxCredential {
-            @{
-                'Username' = 'admin'
-                'Password'    = 'passwordvalue'
-            }
-        }
-    }
 }
 
 Describe "Add-NbxDCIMRearPort" {
