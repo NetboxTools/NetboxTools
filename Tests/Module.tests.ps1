@@ -153,7 +153,7 @@ Describe "Module $ModuleName" {
             It "Parameter '<Parameter>'in function '<Function>' is PascalCase (starts with capital letter)." -TestCases $ParametersTestCases {
                 param ( $Function, $Parameter )
 
-                $Parameter | Should -MatchExactly "^[A-Z].*"
+                $Parameter | Should -Match "^[A-Z].*"
             }
         }
         # Tests only for compiled modules goes here

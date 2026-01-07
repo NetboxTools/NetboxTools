@@ -1,3 +1,18 @@
+$Token = ConvertTo-SecureString -String 'passwordvalue' -AsPlainText -Force
+$script:NbxConfig = @{
+	'Connected'     = $true
+	'Choices'       = @{
+	}
+	'APIDefinition' = $null
+	'ContentTypes'  = $null
+	'NbxVersion'    = @{
+		'Netbox-version' = '3.5.4'
+	}
+	'Timeout' = 30
+	'Credential' =  [System.Management.Automation.PSCredential]::new('notapplicable', $Token)
+	'InvokeParams' = @{ SkipCertificateCheck = $false }
+}
+
 # import classes
 foreach ($file in (Get-ChildItem "$PSScriptRoot\Classes\*.ps1"))
 {

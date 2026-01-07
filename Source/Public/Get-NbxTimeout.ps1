@@ -6,9 +6,9 @@ function Get-NbxTimeout {
 
     Write-Verbose "Getting Nbx Timeout"
     if ($null -eq $script:NbxConfig.Timeout) {
-        throw "Nbx Timeout is not set! You may set it with Set-NbxTimeout -TimeoutSeconds [uint16]"
+        Write-warning "Nbx Timeout is not set! Defaulting to 30 seconds. You may set it with Set-NbxTimeout -TimeoutSeconds [uint16]"
+        return 30
+    } else {
+        $script:NbxConfig.Timeout
     }
-
-    $script:NbxConfig.Timeout
-
 }
