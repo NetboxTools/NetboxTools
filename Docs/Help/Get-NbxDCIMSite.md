@@ -27,7 +27,7 @@ Get-NbxDCIMSite [-Id <UInt64>] [-Raw] [-ProgressAction <ActionPreference>] [<Com
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -41,7 +41,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -ASN
-{{ Fill ASN Description }}
+Specifies the ASN parameter.
 
 ```yaml
 Type: UInt64
@@ -56,7 +56,7 @@ Accept wildcard characters: False
 ```
 
 ### -Contact_Email
-{{ Fill Contact_Email Description }}
+Specifies contact email.
 
 ```yaml
 Type: String
@@ -71,7 +71,7 @@ Accept wildcard characters: False
 ```
 
 ### -Contact_Name
-{{ Fill Contact_Name Description }}
+Specifies contact name.
 
 ```yaml
 Type: String
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Contact_Phone
-{{ Fill Contact_Phone Description }}
+Specifies contact phone number.
 
 ```yaml
 Type: String
@@ -101,7 +101,7 @@ Accept wildcard characters: False
 ```
 
 ### -Facility
-{{ Fill Facility Description }}
+Specifies the Facility parameter.
 
 ```yaml
 Type: String
@@ -116,7 +116,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Site Id.
 
 ```yaml
 Type: UInt64
@@ -131,7 +131,7 @@ Accept wildcard characters: False
 ```
 
 ### -Latitude
-{{ Fill Latitude Description }}
+Specifies the latitude coordinate.
 
 ```yaml
 Type: Decimal
@@ -146,7 +146,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -161,7 +161,7 @@ Accept wildcard characters: False
 ```
 
 ### -Longitude
-{{ Fill Longitude Description }}
+Specifies the Longitude parameter.
 
 ```yaml
 Type: Decimal
@@ -176,7 +176,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: String
@@ -191,7 +191,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -206,7 +206,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies the Query parameter.
 
 ```yaml
 Type: String
@@ -221,7 +221,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+Specifies the Raw parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -236,7 +236,7 @@ Accept wildcard characters: False
 ```
 
 ### -Region
-{{ Fill Region Description }}
+Specifies the Region parameter.
 
 ```yaml
 Type: String
@@ -251,7 +251,7 @@ Accept wildcard characters: False
 ```
 
 ### -Region_ID
-{{ Fill Region_ID Description }}
+Specifies the Region_ID parameter.
 
 ```yaml
 Type: UInt64
@@ -266,7 +266,7 @@ Accept wildcard characters: False
 ```
 
 ### -Slug
-{{ Fill Slug Description }}
+Specifies the Slug parameter.
 
 ```yaml
 Type: String
@@ -281,7 +281,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: String
@@ -296,7 +296,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: String
@@ -311,7 +311,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Group
-{{ Fill Tenant_Group Description }}
+Specifies the Tenant_Group parameter.
 
 ```yaml
 Type: String
@@ -326,7 +326,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Group_ID
-{{ Fill Tenant_Group_ID Description }}
+Specifies the Tenant_Group_ID parameter.
 
 ```yaml
 Type: UInt64
@@ -341,7 +341,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_ID
-{{ Fill Tenant_ID Description }}
+Specifies the Tenant_ID parameter.
 
 ```yaml
 Type: UInt64
@@ -371,3 +371,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

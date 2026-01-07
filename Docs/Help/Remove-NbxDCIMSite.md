@@ -39,7 +39,7 @@ Remove DCM Site with name My Site without confirmation
 ## PARAMETERS
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt32
@@ -96,3 +96,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

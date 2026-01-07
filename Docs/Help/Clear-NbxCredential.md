@@ -17,7 +17,7 @@ Clear-NbxCredential [-Force] [-ProgressAction <ActionPreference>] [-WhatIf] [-Co
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -46,7 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies whether to force credential clearance.
 
 ```yaml
 Type: SwitchParameter
@@ -91,3 +91,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

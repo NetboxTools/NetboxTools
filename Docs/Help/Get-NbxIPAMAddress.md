@@ -27,7 +27,7 @@ Get-NbxIPAMAddress [-Id <UInt64[]>] [-Raw] [-ProgressAction <ActionPreference>] 
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -41,7 +41,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Address
-{{ Fill Address Description }}
+Specifies the Address parameter.
 
 ```yaml
 Type: String
@@ -56,7 +56,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device to filter addresses.
 
 ```yaml
 Type: String
@@ -71,7 +71,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device_ID
-{{ Fill Device_ID Description }}
+Specifies the Device_ID parameter.
 
 ```yaml
 Type: UInt64
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Family
-{{ Fill Family Description }}
+Specifies the Family parameter.
 
 ```yaml
 Type: Object
@@ -101,7 +101,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -116,7 +116,7 @@ Accept wildcard characters: False
 ```
 
 ### -Interface_Id
-{{ Fill Interface_Id Description }}
+Specifies the Interface_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -131,7 +131,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -146,7 +146,7 @@ Accept wildcard characters: False
 ```
 
 ### -Mask_Length
-{{ Fill Mask_Length Description }}
+Specifies the Mask_Length parameter.
 
 ```yaml
 Type: Byte
@@ -161,7 +161,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -176,7 +176,7 @@ Accept wildcard characters: False
 ```
 
 ### -Parent
-{{ Fill Parent Description }}
+Specifies the Parent parameter.
 
 ```yaml
 Type: String
@@ -191,7 +191,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies the Query parameter.
 
 ```yaml
 Type: String
@@ -206,7 +206,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+Specifies the Raw parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -221,7 +221,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role parameter.
 
 ```yaml
 Type: Object
@@ -236,7 +236,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: Object
@@ -251,7 +251,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: String
@@ -266,7 +266,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Id
-{{ Fill Tenant_Id Description }}
+Specifies the Tenant_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -281,7 +281,7 @@ Accept wildcard characters: False
 ```
 
 ### -VRF
-{{ Fill VRF Description }}
+Specifies the VRF parameter.
 
 ```yaml
 Type: String
@@ -296,7 +296,7 @@ Accept wildcard characters: False
 ```
 
 ### -VRF_Id
-{{ Fill VRF_Id Description }}
+Specifies the VRF_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -311,7 +311,7 @@ Accept wildcard characters: False
 ```
 
 ### -Virtual_Machine
-{{ Fill Virtual_Machine Description }}
+Specifies the Virtual_Machine parameter.
 
 ```yaml
 Type: String
@@ -326,7 +326,7 @@ Accept wildcard characters: False
 ```
 
 ### -Virtual_Machine_Id
-{{ Fill Virtual_Machine_Id Description }}
+Specifies the Virtual_Machine_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -355,3 +355,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

@@ -22,7 +22,7 @@ Get-NbxDCIMCable [[-Limit] <UInt16>] [[-Offset] <UInt16>] [[-Id] <UInt64[]>] [[-
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -36,7 +36,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Color
-{{ Fill Color Description }}
+Specifies the Color parameter.
 
 ```yaml
 Type: String
@@ -51,7 +51,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device parameter.
 
 ```yaml
 Type: String
@@ -66,7 +66,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device_ID
-{{ Fill Device_ID Description }}
+Specifies the Device_ID parameter.
 
 ```yaml
 Type: UInt64
@@ -81,7 +81,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -96,7 +96,7 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-{{ Fill Label Description }}
+Specifies the Label parameter.
 
 ```yaml
 Type: String
@@ -111,7 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -126,7 +126,7 @@ Accept wildcard characters: False
 ```
 
 ### -Location
-{{ Fill Location Description }}
+Specifies the Location parameter.
 
 ```yaml
 Type: String
@@ -141,7 +141,7 @@ Accept wildcard characters: False
 ```
 
 ### -Location_ID
-{{ Fill Location_ID Description }}
+Specifies the Location_ID parameter.
 
 ```yaml
 Type: UInt64
@@ -156,7 +156,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -171,7 +171,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rack
-{{ Fill Rack Description }}
+Specifies the Rack parameter.
 
 ```yaml
 Type: String
@@ -186,7 +186,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rack_Id
-{{ Fill Rack_Id Description }}
+Specifies the Rack_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -201,7 +201,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -216,7 +216,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: String
@@ -231,7 +231,7 @@ Accept wildcard characters: False
 ```
 
 ### -Termination_A_ID
-{{ Fill Termination_A_ID Description }}
+Specifies Termination_A_ID.
 
 ```yaml
 Type: UInt64
@@ -246,7 +246,7 @@ Accept wildcard characters: False
 ```
 
 ### -Termination_A_Type
-{{ Fill Termination_A_Type Description }}
+Specifies Termination_A_Type.
 
 ```yaml
 Type: String
@@ -261,7 +261,7 @@ Accept wildcard characters: False
 ```
 
 ### -Termination_B_ID
-{{ Fill Termination_B_ID Description }}
+Specifies Termination_B_ID.
 
 ```yaml
 Type: UInt64
@@ -276,7 +276,7 @@ Accept wildcard characters: False
 ```
 
 ### -Termination_B_Type
-{{ Fill Termination_B_Type Description }}
+Specifies Termination_B_Type.
 
 ```yaml
 Type: String
@@ -291,7 +291,7 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-{{ Fill Type Description }}
+Specifies the Type parameter.
 
 ```yaml
 Type: String
@@ -320,3 +320,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

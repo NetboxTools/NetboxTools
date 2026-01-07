@@ -18,7 +18,7 @@ Set-NbxHostScheme [[-Scheme] <String>] [-ProgressAction <ActionPreference>] [-Wh
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -47,7 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -Scheme
-{{ Fill Scheme Description }}
+Specifies the Scheme parameter.
 
 ```yaml
 Type: String
@@ -94,3 +94,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

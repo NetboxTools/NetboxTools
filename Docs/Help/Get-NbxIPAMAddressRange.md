@@ -25,7 +25,7 @@ Get-NbxIPAMAddressRange [-Id <UInt64[]>] [-Raw] [-ProgressAction <ActionPreferen
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -39,7 +39,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Family
-{{ Fill Family Description }}
+Specifies the Family parameter.
 
 ```yaml
 Type: Object
@@ -54,7 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -69,7 +69,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -84,7 +84,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -99,7 +99,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies a Query string to filter results.
 
 ```yaml
 Type: String
@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Range
-{{ Fill Range Description }}
+Specifies the Range parameter.
 
 ```yaml
 Type: String
@@ -129,7 +129,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API data.
 
 ```yaml
 Type: SwitchParameter
@@ -144,7 +144,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role parameter.
 
 ```yaml
 Type: Object
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: Object
@@ -174,7 +174,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: String
@@ -189,7 +189,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant_Id
-{{ Fill Tenant_Id Description }}
+Specifies the Tenant_Id parameter.
 
 ```yaml
 Type: UInt32
@@ -204,7 +204,7 @@ Accept wildcard characters: False
 ```
 
 ### -VRF
-{{ Fill VRF Description }}
+Specifies the VRF parameter.
 
 ```yaml
 Type: String
@@ -219,7 +219,7 @@ Accept wildcard characters: False
 ```
 
 ### -VRF_Id
-{{ Fill VRF_Id Description }}
+Specifies the VRF_Id parameter.
 
 ```yaml
 Type: UInt32
@@ -248,3 +248,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

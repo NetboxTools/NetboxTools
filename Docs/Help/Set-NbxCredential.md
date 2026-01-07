@@ -25,7 +25,7 @@ Set-NbxCredential -Token <SecureString> [-ProgressAction <ActionPreference>] [-W
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -54,7 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -Credential
-{{ Fill Credential Description }}
+Specifies the Credential parameter.
 
 ```yaml
 Type: PSCredential
@@ -69,7 +69,7 @@ Accept wildcard characters: False
 ```
 
 ### -Token
-{{ Fill Token Description }}
+Specifies the Token parameter.
 
 ```yaml
 Type: SecureString
@@ -115,3 +115,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

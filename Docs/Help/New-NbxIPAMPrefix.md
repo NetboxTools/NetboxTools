@@ -20,7 +20,7 @@ New-NbxIPAMPrefix [-Prefix] <String> [[-Status] <Object>] [[-Tenant] <UInt64>] [
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -Custom_Fields
-{{ Fill Custom_Fields Description }}
+Specifies the Custom_Fields parameter.
 
 ```yaml
 Type: Hashtable
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -79,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -IsPool
-{{ Fill IsPool Description }}
+Specifies the IsPool parameter.
 
 ```yaml
 Type: Boolean
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -Prefix
-{{ Fill Prefix Description }}
+Specifies the Prefix parameter.
 
 ```yaml
 Type: String
@@ -109,7 +109,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+Specifies the Raw parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role parameter.
 
 ```yaml
 Type: Object
@@ -139,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -Site
-{{ Fill Site Description }}
+Specifies the Site parameter.
 
 ```yaml
 Type: UInt64
@@ -154,7 +154,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: Object
@@ -169,7 +169,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: UInt64
@@ -184,7 +184,7 @@ Accept wildcard characters: False
 ```
 
 ### -VLAN
-{{ Fill VLAN Description }}
+Specifies the VLAN parameter.
 
 ```yaml
 Type: UInt64
@@ -199,7 +199,7 @@ Accept wildcard characters: False
 ```
 
 ### -VRF
-{{ Fill VRF Description }}
+Specifies the VRF parameter.
 
 ```yaml
 Type: UInt64
@@ -244,3 +244,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

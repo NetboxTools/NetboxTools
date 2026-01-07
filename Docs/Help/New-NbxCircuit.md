@@ -20,7 +20,7 @@ New-NbxCircuit [-CID] <String> [-Provider] <UInt64> [-Type] <UInt64> [[-Status] 
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -34,7 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -CID
-{{ Fill CID Description }}
+Specifies the Circuit ID (CID).
 
 ```yaml
 Type: String
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -Comments
-{{ Fill Comments Description }}
+Specifies comments for the circuit.
 
 ```yaml
 Type: String
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Commit_Rate
-{{ Fill Commit_Rate Description }}
+Specifies the Commit_Rate parameter.
 
 ```yaml
 Type: UInt64
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -Custom_Fields
-{{ Fill Custom_Fields Description }}
+Specifies custom fields to set.
 
 ```yaml
 Type: Hashtable
@@ -109,7 +109,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies whether to force creation.
 
 ```yaml
 Type: SwitchParameter
@@ -139,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -Install_Date
-{{ Fill Install_Date Description }}
+Specifies the Install_Date for the circuit.
 
 ```yaml
 Type: DateTime
@@ -154,7 +154,7 @@ Accept wildcard characters: False
 ```
 
 ### -Provider
-{{ Fill Provider Description }}
+Specifies the Provider for the circuit.
 
 ```yaml
 Type: UInt64
@@ -169,7 +169,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+When set, returns raw API response.
 
 ```yaml
 Type: SwitchParameter
@@ -184,7 +184,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the circuit Status parameter.
 
 ```yaml
 Type: UInt16
@@ -199,7 +199,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant to assign.
 
 ```yaml
 Type: UInt64
@@ -214,7 +214,7 @@ Accept wildcard characters: False
 ```
 
 ### -Termination_A
-{{ Fill Termination_A Description }}
+Specifies the Termination_A parameter.
 
 ```yaml
 Type: String
@@ -229,7 +229,7 @@ Accept wildcard characters: False
 ```
 
 ### -Termination_Z
-{{ Fill Termination_Z Description }}
+Specifies the Termination_Z parameter.
 
 ```yaml
 Type: String
@@ -244,7 +244,7 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-{{ Fill Type Description }}
+Specifies the Type parameter.
 
 ```yaml
 Type: UInt64
@@ -290,3 +290,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

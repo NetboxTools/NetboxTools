@@ -21,7 +21,7 @@ Get-NbxDCIMDeviceType [[-Offset] <UInt16>] [[-Limit] <UInt16>] [[-Id] <UInt64[]>
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -35,7 +35,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -50,7 +50,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_Console_Server
-{{ Fill Is_Console_Server Description }}
+Specifies the Is_Console_Server parameter.
 
 ```yaml
 Type: Boolean
@@ -65,7 +65,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_Full_Depth
-{{ Fill Is_Full_Depth Description }}
+Specifies the Is_Full_Depth parameter.
 
 ```yaml
 Type: Boolean
@@ -80,7 +80,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_Network_Device
-{{ Fill Is_Network_Device Description }}
+Specifies the Is_Network_Device parameter.
 
 ```yaml
 Type: Boolean
@@ -95,7 +95,7 @@ Accept wildcard characters: False
 ```
 
 ### -Is_PDU
-{{ Fill Is_PDU Description }}
+Specifies the Is_PDU parameter.
 
 ```yaml
 Type: Boolean
@@ -110,7 +110,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-{{ Fill Limit Description }}
+Specifies the Limit parameter.
 
 ```yaml
 Type: UInt16
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -Manufacturer
-{{ Fill Manufacturer Description }}
+Specifies the Manufacturer parameter.
 
 ```yaml
 Type: String
@@ -140,7 +140,7 @@ Accept wildcard characters: False
 ```
 
 ### -Manufacturer_Id
-{{ Fill Manufacturer_Id Description }}
+Specifies the Manufacturer_Id.
 
 ```yaml
 Type: UInt64
@@ -155,7 +155,7 @@ Accept wildcard characters: False
 ```
 
 ### -Model
-{{ Fill Model Description }}
+Specifies the Model parameter.
 
 ```yaml
 Type: String
@@ -170,7 +170,7 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-{{ Fill Offset Description }}
+Specifies the Offset parameter.
 
 ```yaml
 Type: UInt16
@@ -185,7 +185,7 @@ Accept wildcard characters: False
 ```
 
 ### -Part_Number
-{{ Fill Part_Number Description }}
+Specifies the Part_Number parameter.
 
 ```yaml
 Type: String
@@ -200,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -Query
-{{ Fill Query Description }}
+Specifies the Query parameter.
 
 ```yaml
 Type: String
@@ -215,7 +215,7 @@ Accept wildcard characters: False
 ```
 
 ### -Raw
-{{ Fill Raw Description }}
+Specifies the Raw parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -230,7 +230,7 @@ Accept wildcard characters: False
 ```
 
 ### -Slug
-{{ Fill Slug Description }}
+Specifies the Slug parameter.
 
 ```yaml
 Type: String
@@ -245,7 +245,7 @@ Accept wildcard characters: False
 ```
 
 ### -Subdevice_Role
-{{ Fill Subdevice_Role Description }}
+Specifies the Subdevice_Role parameter.
 
 ```yaml
 Type: UInt16
@@ -260,7 +260,7 @@ Accept wildcard characters: False
 ```
 
 ### -U_Height
-{{ Fill U_Height Description }}
+Specifies the U_Height parameter.
 
 ```yaml
 Type: UInt16
@@ -289,3 +289,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

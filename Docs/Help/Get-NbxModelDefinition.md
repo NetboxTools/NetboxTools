@@ -24,7 +24,7 @@ Get-NbxModelDefinition -URIPath <String> [-Method <String>] [-ProgressAction <Ac
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -38,7 +38,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Method
-{{ Fill Method Description }}
+Specifies the Method parameter.
 
 ```yaml
 Type: String
@@ -53,7 +53,7 @@ Accept wildcard characters: False
 ```
 
 ### -ModelName
-{{ Fill ModelName Description }}
+Specifies the ModelName parameter.
 
 ```yaml
 Type: String
@@ -68,7 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -URIPath
-{{ Fill URIPath Description }}
+Specifies the URIPath parameter.
 
 ```yaml
 Type: String
@@ -97,3 +97,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

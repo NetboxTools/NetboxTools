@@ -19,7 +19,7 @@ Add-NbxDCIMRearPort [-Device] <UInt64> [[-Module] <UInt64>] [-Name] <String> [[-
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -33,7 +33,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Color
-{{ Fill Color Description }}
+Specifies the Color parameter.
 
 ```yaml
 Type: String
@@ -48,7 +48,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -63,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device parameter.
 
 ```yaml
 Type: UInt64
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-{{ Fill Label Description }}
+Specifies the Label parameter.
 
 ```yaml
 Type: String
@@ -93,7 +93,7 @@ Accept wildcard characters: False
 ```
 
 ### -Mark_Connected
-{{ Fill Mark_Connected Description }}
+Specifies whether to mark connected status.
 
 ```yaml
 Type: Boolean
@@ -108,7 +108,7 @@ Accept wildcard characters: False
 ```
 
 ### -Module
-{{ Fill Module Description }}
+Specifies the Module parameter.
 
 ```yaml
 Type: UInt64
@@ -123,7 +123,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name for the rear port.
 
 ```yaml
 Type: String
@@ -138,7 +138,7 @@ Accept wildcard characters: False
 ```
 
 ### -Positions
-{{ Fill Positions Description }}
+Specifies rear port Positions.
 
 ```yaml
 Type: UInt16
@@ -153,7 +153,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tags
-{{ Fill Tags Description }}
+Specifies tags to set on the rear port.
 
 ```yaml
 Type: UInt16[]
@@ -168,7 +168,7 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-{{ Fill Type Description }}
+Specifies the Type parameter.
 
 ```yaml
 Type: String
@@ -198,3 +198,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

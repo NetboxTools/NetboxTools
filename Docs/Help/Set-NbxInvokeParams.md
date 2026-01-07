@@ -18,7 +18,7 @@ Set-NbxInvokeParams [-InvokeParams] <Array> [-ProgressAction <ActionPreference>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -47,7 +47,7 @@ Accept wildcard characters: False
 ```
 
 ### -InvokeParams
-{{ Fill InvokeParams Description }}
+Specifies the InvokeParams parameter.
 
 ```yaml
 Type: Array
@@ -93,3 +93,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

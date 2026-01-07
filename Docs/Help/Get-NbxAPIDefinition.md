@@ -17,7 +17,7 @@ Get-NbxAPIDefinition [[-Format] <String>] [-ProgressAction <ActionPreference>] [
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -31,7 +31,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Format
-{{ Fill Format Description }}
+Specifies output format.
 
 ```yaml
 Type: String
@@ -61,3 +61,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

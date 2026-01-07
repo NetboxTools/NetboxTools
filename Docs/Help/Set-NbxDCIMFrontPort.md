@@ -20,7 +20,7 @@ Set-NbxDCIMFrontPort [-Id] <UInt64[]> [[-Device] <UInt16>] [[-Module] <UInt16>] 
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -34,7 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Color
-{{ Fill Color Description }}
+Specifies the Color parameter.
 
 ```yaml
 Type: String
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -79,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -Device
-{{ Fill Device Description }}
+Specifies the Device parameter.
 
 ```yaml
 Type: UInt16
@@ -94,7 +94,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies the Force parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -109,7 +109,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -Label
-{{ Fill Label Description }}
+Specifies the Label parameter.
 
 ```yaml
 Type: String
@@ -139,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -Mark_Connected
-{{ Fill Mark_Connected Description }}
+Specifies the Mark_Connected parameter.
 
 ```yaml
 Type: Boolean
@@ -154,7 +154,7 @@ Accept wildcard characters: False
 ```
 
 ### -Module
-{{ Fill Module Description }}
+Specifies the Module parameter.
 
 ```yaml
 Type: UInt16
@@ -169,7 +169,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Specifies the Name parameter.
 
 ```yaml
 Type: String
@@ -184,7 +184,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rear_Port
-{{ Fill Rear_Port Description }}
+Specifies the Rear_Port parameter.
 
 ```yaml
 Type: UInt64
@@ -199,7 +199,7 @@ Accept wildcard characters: False
 ```
 
 ### -Rear_Port_Position
-{{ Fill Rear_Port_Position Description }}
+Specifies the Rear_Port_Position parameter.
 
 ```yaml
 Type: UInt16
@@ -214,7 +214,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tags
-{{ Fill Tags Description }}
+Specifies the Tags parameter.
 
 ```yaml
 Type: UInt64[]
@@ -229,7 +229,7 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-{{ Fill Type Description }}
+Specifies the Type parameter.
 
 ```yaml
 Type: String
@@ -275,3 +275,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+

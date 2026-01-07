@@ -20,7 +20,7 @@ Set-NbxIPAMAddress [-Id] <UInt64[]> [[-Address] <String>] [[-Status] <String>] [
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Specifies the in the parameter.
 
 ## EXAMPLES
 
@@ -34,7 +34,7 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### -Address
-{{ Fill Address Description }}
+Specifies the Address parameter.
 
 ```yaml
 Type: String
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -Assigned_Object_Id
-{{ Fill Assigned_Object_Id Description }}
+Specifies the Assigned_Object_Id parameter.
 
 ```yaml
 Type: UInt64
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -Assigned_Object_Type
-{{ Fill Assigned_Object_Type Description }}
+Specifies the Assigned_Object_Type parameter.
 
 ```yaml
 Type: String
@@ -95,7 +95,7 @@ Accept wildcard characters: False
 ```
 
 ### -Custom_Fields
-{{ Fill Custom_Fields Description }}
+Specifies the Custom_Fields parameter.
 
 ```yaml
 Type: Hashtable
@@ -110,7 +110,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Specifies the Description parameter.
 
 ```yaml
 Type: String
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -Dns_name
-{{ Fill Dns_name Description }}
+Specifies the Dns_name parameter.
 
 ```yaml
 Type: String
@@ -140,7 +140,7 @@ Accept wildcard characters: False
 ```
 
 ### -Force
-{{ Fill Force Description }}
+Specifies the Force parameter.
 
 ```yaml
 Type: SwitchParameter
@@ -155,7 +155,7 @@ Accept wildcard characters: False
 ```
 
 ### -Id
-{{ Fill Id Description }}
+Specifies the Id parameter.
 
 ```yaml
 Type: UInt64[]
@@ -170,7 +170,7 @@ Accept wildcard characters: False
 ```
 
 ### -NAT_Inside
-{{ Fill NAT_Inside Description }}
+Specifies the NAT_Inside parameter.
 
 ```yaml
 Type: UInt64
@@ -185,7 +185,7 @@ Accept wildcard characters: False
 ```
 
 ### -Role
-{{ Fill Role Description }}
+Specifies the Role parameter.
 
 ```yaml
 Type: Object
@@ -200,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Specifies the Status parameter.
 
 ```yaml
 Type: String
@@ -215,7 +215,7 @@ Accept wildcard characters: False
 ```
 
 ### -Tenant
-{{ Fill Tenant Description }}
+Specifies the Tenant parameter.
 
 ```yaml
 Type: UInt64
@@ -230,7 +230,7 @@ Accept wildcard characters: False
 ```
 
 ### -VRF
-{{ Fill VRF Description }}
+Specifies the VRF parameter.
 
 ```yaml
 Type: UInt64
@@ -275,3 +275,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
+
