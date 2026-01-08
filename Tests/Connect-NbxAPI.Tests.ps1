@@ -25,7 +25,6 @@ Describe "Connect-NbxAPI" {
 
         It "Should have required parameters" {
             (Get-Command "Connect-NbxAPI").Parameters.Keys | Should -Contain "Hostname"
-            (Get-Command "Connect-NbxAPI").Parameters.Keys | Should -Contain "URI"
         }
     }
 

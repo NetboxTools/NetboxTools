@@ -34,7 +34,7 @@ Describe "Add-NbxDCIMRearPort" {
     Context "Function behavior and mocking" {
         BeforeAll {
             
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRequest -MockWith {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
                 return @'
                 [
                     {
