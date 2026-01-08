@@ -8,7 +8,7 @@ $script:NbxConfig = @{
 		'Netbox-version' = '3.5.4'
 	}
 	'Timeout' = 30
-	'Credential' =  [System.Management.Automation.PSCredential]::new('notapplicable', $env:DUMMY_SECRET)
+	'Credential' =  [System.Management.Automation.PSCredential]::Empty
 	'InvokeParams' = @{ SkipCertificateCheck = $false }
 }
 
