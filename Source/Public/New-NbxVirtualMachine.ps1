@@ -5,10 +5,10 @@ function New-NbxVirtualMachine {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Name,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Site,
 
         [uint64]$Cluster,

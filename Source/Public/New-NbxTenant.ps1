@@ -34,12 +34,12 @@ function New-NbxTenant {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
                    ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [ValidateLength(1, 100)]
         [ValidatePattern('^[-a-zA-Z0-9_]+$')]
         [string]$Slug,

@@ -49,12 +49,12 @@ function New-NbxContact {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
                    ValueFromPipelineByPropertyName = $true)]
         [ValidateLength(1, 100)]
         [string]$Name,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [ValidateLength(0, 254)]
         [string]$Email,
 

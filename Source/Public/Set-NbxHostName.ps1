@@ -5,7 +5,7 @@ function Set-NbxHostName {
     [OutputType([string])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Hostname
     )
 

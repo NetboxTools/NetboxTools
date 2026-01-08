@@ -5,7 +5,7 @@ function Set-NbxHostPort {
     [OutputType([string])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint16]$Port
     )
 

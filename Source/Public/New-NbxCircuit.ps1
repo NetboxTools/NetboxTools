@@ -5,14 +5,14 @@ function New-NbxCircuit {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [string]$CID,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Provider,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Type,
 
         #[ValidateSet('Active', 'Planned', 'Provisioning', 'Offline', 'Deprovisioning', 'Decommissioned ')]

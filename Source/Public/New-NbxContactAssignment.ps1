@@ -37,18 +37,18 @@ function New-NbxContactAssignment {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
                    ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('circuits.circuit', 'circuits.provider', 'circuits.provideraccount', 'dcim.device', 'dcim.location', 'dcim.manufacturer', 'dcim.powerpanel', 'dcim.rack', 'dcim.region', 'dcim.site', 'dcim.sitegroup', 'tenancy.tenant', 'virtualization.cluster', 'virtualization.clustergroup', 'virtualization.virtualmachine', IgnoreCase = $true)]
         [string]$Content_Type,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Object_Id,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Contact,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Role,
 
         [ValidateSet('primary', 'secondary', 'tertiary', 'inactive', IgnoreCase = $true)]

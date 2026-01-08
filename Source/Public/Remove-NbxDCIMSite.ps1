@@ -23,7 +23,7 @@ function Remove-NbxDCIMSite {
         SupportsShouldProcess = $true)]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [uint]$Id
 

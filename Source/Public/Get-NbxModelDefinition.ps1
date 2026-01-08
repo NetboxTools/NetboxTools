@@ -4,11 +4,11 @@ function Get-NbxModelDefinition {
     param
     (
         [Parameter(ParameterSetName = 'ByName',
-                   Mandatory = $true)]
+                   Mandatory)]
         [string]$ModelName,
 
         [Parameter(ParameterSetName = 'ByPath',
-                   Mandatory = $true)]
+                   Mandatory)]
         [string]$URIPath,
 
         [Parameter(ParameterSetName = 'ByPath')]

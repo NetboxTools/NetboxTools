@@ -5,7 +5,7 @@ function Remove-NbxDCIMRearPort {
         SupportsShouldProcess = $true)]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
 

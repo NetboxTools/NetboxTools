@@ -4,7 +4,7 @@ function Set-NbxInvokeParams {
         SupportsShouldProcess = $true)]
     [OutputType([string])]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [array]$InvokeParams
     )
 

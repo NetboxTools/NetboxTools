@@ -5,7 +5,7 @@ function Remove-NbxDCIMInterfaceConnection {
     [OutputType([void])]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
                    ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
 

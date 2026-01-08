@@ -3,8 +3,7 @@ function Set-NbxDCIMDevice {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param
     (
-        [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory)]
         [uint64[]]$Id,
 
         [string]$Name,

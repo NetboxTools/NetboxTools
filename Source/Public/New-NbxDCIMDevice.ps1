@@ -6,16 +6,16 @@ function New-NbxDCIMDevice {
     #region Parameters
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Name,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [object]$Device_Role,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [object]$Device_Type,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Site,
 
         [object]$Status = 'Active',

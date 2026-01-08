@@ -19,7 +19,7 @@ function New-NbxDCIMSite {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Name,
 
         [string]$Slug,
