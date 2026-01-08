@@ -60,7 +60,7 @@ function New-NbxIPAMAddress {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [string]$Address,
 
@@ -90,17 +90,23 @@ function New-NbxIPAMAddress {
         [switch]$Raw
     )
 
-    process {
-        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses'))
-        $Method = 'POST'
-
-        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-        $URI = BuildNewURI -Segments $URIComponents.Segments
-
-        if ($PSCmdlet.ShouldProcess($Address, 'Create new IP address')) {
-            InvokeNbxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
-        }
+    $Body = @{
+        address              = $Address
+        status               = $Status
+        tenant               = $Tenant
+        vrf                  = $VRF
+        role                 = $Role
+        nat_inside           = $NAT_Inside
+        custom_fields       = $Custom_Fields
+        interface            = $Interface
+        description          = $Description
+        dns_name             = $Dns_name
+        assigned_object_type = $Assigned_Object_Type
+        assigned_object_id   = $Assigned_Object_Id
     }
+
+    $Json = $Body | ConvertTo-Json -Depth 100
+
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses" -Method POST -Body $Json
 
 }

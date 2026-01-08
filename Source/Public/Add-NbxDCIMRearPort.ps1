@@ -4,18 +4,18 @@ function Add-NbxDCIMRearPort {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Device,
+
+        [Parameter(Mandatory)]
+        [string]$Name,
+        
+        [Parameter(Mandatory)]
+        [string]$Type,
 
         [uint64]$Module,
 
-        [Parameter(Mandatory = $true)]
-        [string]$Name,
-
         [string]$Label,
-
-        [Parameter(Mandatory = $true)]
-        [string]$Type,
 
         [ValidatePattern('^[0-9a-f]{6}$')]
         [string]$Color,
@@ -29,22 +29,21 @@ function Add-NbxDCIMRearPort {
         [uint16[]]$Tags
     )
 
-    begin {
-
+    $Body = @{
+        device         = $Device
+        name           = $Name
+        type           = $Type
+        module         = $Module
+        label          = $Label
+        color          = $Color
+        positions      = $Positions
+        description    = $Description
+        mark_connected = $Mark_Connected
+        tags           = $Tag
     }
 
-    process {
-        $Segments = [System.Collections.ArrayList]::new(@('dcim', 'rear-ports'))
+    $Json = $Body | ConvertTo-Json -Depth 100
 
-        $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-        $URI = BuildNewURI -Segments $URIComponents.Segments
-
-        InvokeNbxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
-    }
-
-    end {
-
-    }
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/rear-ports" -Method POST -Body $Json
 
 }

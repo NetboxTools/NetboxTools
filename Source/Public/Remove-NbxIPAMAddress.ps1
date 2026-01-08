@@ -20,29 +20,16 @@ function Remove-NbxIPAMAddress {
         Additional information about the function.
 #>
 
-    [CmdletBinding(ConfirmImpact = 'High',
-        SupportsShouldProcess = $true)]
+    [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true,
-            ValueFromPipelineByPropertyName = $true)]
-        [uint64[]]$Id,
-
-        [switch]$Force
+        [Parameter(Mandatory)]
+        [uint64[]]$Id
     )
 
-    process {
-        foreach ($IPId in $Id) {
-            $CurrentIP = Get-NbxIPAMAddress -Id $IPId -ErrorAction Stop
 
-            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
-
-            if ($Force -or $pscmdlet.ShouldProcess($CurrentIP.Address, "Delete")) {
-                $URI = BuildNewURI -Segments $Segments
-
-                InvokeNbxRequest -URI $URI -Method DELETE
-            }
-        }
+    $Id | ForEach-Object {
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses/$($_)" -Method DELETE
     }
 
 }

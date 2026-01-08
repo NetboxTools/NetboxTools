@@ -1,10 +1,9 @@
 function Set-NbxIPAMAddress {
 
-    [CmdletBinding(ConfirmImpact = 'Medium',
-        SupportsShouldProcess = $true)]
+    [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
 
@@ -29,56 +28,35 @@ function Set-NbxIPAMAddress {
 
         [string]$Description,
 
-        [string]$Dns_name,
-
-        [switch]$Force
+        [string]$Dns_name
     )
-
-    begin {
-        #        Write-Verbose "Validating enum properties"
-        #        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', 0))
-        $Method = 'PATCH'
-        #
-        #        # Value validation
-        #        $ModelDefinition = GetModelDefinitionFromURIPath -Segments $Segments -Method $Method
-        #        $EnumProperties = GetModelEnumProperties -ModelDefinition $ModelDefinition
-        #
-        #        foreach ($Property in $EnumProperties.Keys) {
-        #            if ($PSBoundParameters.ContainsKey($Property)) {
-        #                Write-Verbose "Validating property [$Property] with value [$($PSBoundParameters.$Property)]"
-        #                $PSBoundParameters.$Property = ValidateValue -ModelDefinition $ModelDefinition -Property $Property -ProvidedValue $PSBoundParameters.$Property
-        #            } else {
-        #                Write-Verbose "User did not provide a value for [$Property]"
-        #            }
-        #        }
-        #
-        #        Write-Verbose "Finished enum validation"
-    }
-
-    process {
-        foreach ($IPId in $Id) {
-            if ($PSBoundParameters.ContainsKey('Assigned_Object_Type') -or $PSBoundParameters.ContainsKey('Assigned_Object_Id')) {
-                if ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) {
-                    throw "Assigned_Object_Type is required when specifying Assigned_Object_Id"
-                }
-                elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
-                    throw "Assigned_Object_Id is required when specifying Assigned_Object_Type"
-                }
+    
+    $Id | ForEach-Object {
+        if ($PSBoundParameters.ContainsKey('Assigned_Object_Type') -or $PSBoundParameters.ContainsKey('Assigned_Object_Id')) {
+            if ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) {
+                throw "Assigned_Object_Type is required when specifying Assigned_Object_Id"
             }
-
-            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-addresses', $IPId))
-
-            Write-Verbose "Obtaining IP from ID $IPId"
-            $CurrentIP = Get-NbxIPAMAddress -Id $IPId -ErrorAction Stop
-
-            if ($Force -or $PSCmdlet.ShouldProcess($CurrentIP.Address, 'Set')) {
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-
-                $URI = BuildNewURI -Segments $URIComponents.Segments
-
-                InvokeNbxRequest -URI $URI -Body $URIComponents.Parameters -Method $Method
+            elseif ((-not [string]::IsNullOrWhiteSpace($Assigned_Object_Type)) -and [string]::IsNullOrWhiteSpace($Assigned_Object_Id)) {
+                throw "Assigned_Object_Id is required when specifying Assigned_Object_Type"
             }
         }
+        $Body = @{
+            Address              = $Address
+            Status               = $Status
+            Tenant               = $Tenant
+            VRF                  = $VRF
+            Role                 = $Role
+            NAT_Inside           = $NAT_Inside
+            Custom_Fields        = $Custom_Fields
+            Assigned_Object_Type = $Assigned_Object_Type
+            Assigned_Object_Id   = $Assigned_Object_Id
+            Description          = $Description
+            Dns_name             = $Dns_name
+        }
+
+        $Json = $Body | ConvertTo-Json -Depth 100
+
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses/$($_)" -Method PATCH -Body $Json
     }
 
 }

@@ -11,24 +11,10 @@ function Get-NbxIPAMAvailablePrefix {
     .PARAMETER Prefix_ID
         A description of the Prefix_ID parameter.
 
-    .PARAMETER Limit
-        A description of the Limit parameter.
-
-    .PARAMETER Raw
-        A description of the Raw parameter.
-
-    .PARAMETER NumberOfIPs
-        A description of the NumberOfIPs parameter.
-
     .EXAMPLE
         Get-NbxIPAMAvailableIP -Prefix_ID (Get-NbxIPAMPrefix -Prefix 192.0.2.0/24).id
 
         Get (Next) Available IP on the Prefix 192.0.2.0/24
-
-    .EXAMPLE
-        Get-NbxIPAMAvailableIP -Prefix_ID 2 -NumberOfIPs 3
-
-        Get 3 (Next) Available IP on the Prefix 192.0.2.0/24
 
     .NOTES
         Additional information about the function.
@@ -37,20 +23,12 @@ function Get-NbxIPAMAvailablePrefix {
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [Alias('Id')]
         [uint64]$Prefix_ID
     )
 
-    process {
-        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes', $Prefix_ID, 'available-prefixes'))
-
-        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'prefix_id'
-
-        $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-        InvokeNbxRequest -URI $uri -Raw:$Raw
-    }
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-prefixes" -Method GET
 
 }

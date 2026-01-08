@@ -46,10 +46,10 @@ function New-NbxIPAMVLAN {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint16]$VID,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Name,
 
         [object]$Status = 'Active',
@@ -65,20 +65,18 @@ function New-NbxIPAMVLAN {
         [switch]$Raw
     )
 
-    #    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -VLANStatus
-
-    #    if ($null -ne $Role) {
-    #        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -IPAddressRole
-    #    }
-
-    $segments = [System.Collections.ArrayList]::new(@('ipam', 'vlans'))
-
-    $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
-
-    $URI = BuildNewURI -Segments $URIComponents.Segments
-
-    if ($PSCmdlet.ShouldProcess($nae, 'Create new Vlan $($vid)')) {
-        InvokeNbxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
+    $Body = @{
+        vid           = $VID
+        name          = $Name
+        status        = $Status
+        tenant        = $Tenant
+        role          = $Role
+        description   = $Description
+        custom_fields = $Custom_Fields
     }
+
+    $Json = $Body | ConvertTo-Json -Depth 100
+
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/vlans" -Method POST -Body $Json
 
 }

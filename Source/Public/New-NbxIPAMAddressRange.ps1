@@ -58,10 +58,10 @@ function New-NbxIPAMAddressRange {
     [OutputType([pscustomobject])]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Start_Address,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$End_Address,
 
         [object]$Status = 'Active',
@@ -85,17 +85,22 @@ function New-NbxIPAMAddressRange {
         [switch]$Raw
     )
 
-    process {
-        $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges'))
-        $Method = 'POST'
-
-        $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-        $URI = BuildNewURI -Segments $URIComponents.Segments
-
-        if ($PSCmdlet.ShouldProcess($Start_Address, 'Create new IP address range')) {
-            InvokeNbxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
-        }
+    $Body = @{
+        start_address  = $Start_Address
+        end_address    = $End_Address
+        status         = $Status
+        tenant         = $Tenant
+        vrf            = $VRF
+        role           = $Role
+        custom_fields  = $Custom_Fields
+        description    = $Description
+        comments       = $Comments
+        tags           = $Tags
+        mark_utilized  = $Mark_Utilized.IsPresent
     }
+
+    $Json = $Body | ConvertTo-Json -Depth 100
+
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-ranges" -Method POST -Body $Json
 
 }

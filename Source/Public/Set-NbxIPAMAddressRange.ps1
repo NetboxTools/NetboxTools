@@ -1,11 +1,11 @@
 function Set-NbxIPAMAddressRange {
 
     [CmdletBinding(ConfirmImpact = 'Medium',
-                   SupportsShouldProcess = $true)]
+        SupportsShouldProcess = $true)]
     param
     (
-        [Parameter(Mandatory = $true,
-                   ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory,
+            ValueFromPipelineByPropertyName = $true)]
         [uint64[]]$Id,
 
         [string]$Start_Address,
@@ -28,32 +28,25 @@ function Set-NbxIPAMAddressRange {
 
         [object[]]$Tags,
 
-        [switch]$Mark_Utilized,
-
-        [switch]$Force,
-
-        [switch]$Raw
+        [switch]$Mark_Utilized
     )
 
-    begin {
-        $Method = 'PATCH'
+    $Body = @{
+        Start_Address  = $Start_Address
+        End_Address    = $End_Address
+        Status         = $Status
+        Tenant         = $Tenant
+        VRF            = $VRF
+        Role           = $Role
+        Custom_Fields  = $Custom_Fields
+        Description    = $Description
+        Comments       = $Comments
+        Tags           = $Tags
+        Mark_Utilized  = $Mark_Utilized
     }
 
-    process {
-        foreach ($RangeID in $Id) {
-            $Segments = [System.Collections.ArrayList]::new(@('ipam', 'ip-ranges', $RangeID))
+    $Json = $Body | ConvertTo-Json -Depth 100
 
-            Write-Verbose "Obtaining IP range from ID $RangeID"
-            $CurrentRange = Get-NbxIPAMAddressRange -Id $RangeID -ErrorAction Stop
-
-            if ($Force -or $PSCmdlet.ShouldProcess("$($CurrentRange.Start_Address) - $($CurrentRange.End_Address)", 'Set')) {
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-
-                $URI = BuildNewURI -Segments $URIComponents.Segments
-
-                InvokeNbxRequest -URI $URI -Body $URIComponents.Parameters -Method $Method
-            }
-        }
-    }
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-ranges/$($_)" -Method PATCH -Body $Json
 
 }

@@ -29,10 +29,10 @@ function Add-NbxDCIMInterfaceConnection {
     (
         [object]$Connection_Status,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Interface_A,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Interface_B
     )
 
@@ -40,12 +40,14 @@ function Add-NbxDCIMInterfaceConnection {
     Get-NbxDCIMInterface -Id $Interface_A -ErrorAction Stop | Out-null
     Get-NbxDCIMInterface -Id $Interface_B -ErrorAction Stop | Out-null
 
-    $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interface-connections'))
+    $Body = @{
+        connection_status = $Connection_Status
+        interface_a      = $Interface_A
+        interface_b      = $Interface_B
+    }
 
-    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
+    $Json = $Body | ConvertTo-Json -Depth 100
 
-    $URI = BuildNewURI -Segments $URIComponents.Segments
-
-    InvokeNbxRequest -URI $URI -Body $URIComponents.Parameters -Method POST
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/interface-connections" -Method POST -Body $Json
 
 }

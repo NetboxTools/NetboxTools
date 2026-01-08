@@ -4,10 +4,10 @@ function Get-NbxCredential {
     [OutputType([pscredential])]
     param ()
 
-    if (-not $script:NbxConfig.Credential) {
-        throw "Nbx Credentials not set! You may set with Set-Nbxcredential"
+    if (-not $script:NbxConfig.Token) {
+        throw "Nbx Credentials not set! Please run Connect-NbxAPI with valid credentials."
     }
 
-    $script:NbxConfig.Credential
+    $script:NbxConfig.Token
 
 }

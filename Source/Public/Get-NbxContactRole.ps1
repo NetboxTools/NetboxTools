@@ -13,18 +13,6 @@ function Get-NbxContactRole {
     .PARAMETER Id
         The database ID of the contact role
 
-    .PARAMETER Query
-        A standard search query that will match one or more contact roles.
-
-    .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
-
     .EXAMPLE
         PS C:\> Get-NbxContactRole
 
@@ -32,60 +20,20 @@ function Get-NbxContactRole {
         Additional information about the function.
 #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [CmdletBinding()]
     param
     (
-        [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
-        [string]$Name,
-
-        [Parameter(ParameterSetName = 'ByID')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Slug,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Description,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
+        [Parameter()]
+        [uint64[]]$Id
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($ContactRole_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles', $ContactRole_ID))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
-                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNbxRequest -URI $uri -Raw:$Raw
-            }
-
-            break
+    if ($Id) {
+        $Id | ForEach-Object {
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/$($_)" -Method GET
         }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-roles'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNbxRequest -URI $uri -Raw:$Raw
-
-            break
-        }
+    }
+    else {
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles?limit=9999" -Method GET
     }
 
 }

@@ -1,59 +1,19 @@
 function Get-NbxCircuitProvider {
 
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [CmdletBinding()]
     param
     (
-        [Parameter(ParameterSetName = 'ById',
-                   Mandatory = $true)]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query',
-                   Mandatory = $false)]
-        [string]$Name,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Slug,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$ASN,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Account,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
+        [Parameter()]
+        [uint64[]]$Id
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($i in $ID) {
-                $Segments = [System.Collections.ArrayList]::new(@('circuits', 'providers', $i))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-
-                $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNbxRequest -URI $URI -Raw:$Raw
-            }
+    if ($Id) {
+        $Id | ForEach-Object {
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/providers/$($_)" -Method GET
         }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('circuits', 'providers'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-            $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNbxRequest -URI $URI -Raw:$Raw
-        }
+    }
+    else {
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/providers?limit=9999" -Method GET
     }
 
 }

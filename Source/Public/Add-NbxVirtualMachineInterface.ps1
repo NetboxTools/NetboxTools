@@ -3,10 +3,10 @@ function Add-NbxVirtualMachineInterface {
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Name,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [uint64]$Virtual_Machine,
 
         [boolean]$Enabled = $true,
@@ -19,15 +19,17 @@ function Add-NbxVirtualMachineInterface {
 
         [switch]$Raw
     )
+    $Body = @{
+        Name            = $Name
+        Virtual_Machine = $Virtual_Machine
+        Enabled         = $Enabled
+        MAC_Address     = $MAC_Address
+        MTU             = $MTU
+        Description     = $Description
+    }
 
-    $Segments = [System.Collections.ArrayList]::new(@('virtualization', 'interfaces'))
+    $Json = $Body | ConvertTo-Json -Depth 100
 
-    $PSBoundParameters.Enabled = $Enabled
-
-    $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-    $uri = BuildNewURI -Segments $URIComponents.Segments
-
-    InvokeNbxRequest -URI $uri -Method POST -Body $URIComponents.Parameters
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/virtualization/interfaces" -Method POST -Body $Json
 
 }

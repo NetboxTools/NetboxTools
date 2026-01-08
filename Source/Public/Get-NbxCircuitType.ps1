@@ -1,51 +1,19 @@
 function Get-NbxCircuitType {
 
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [CmdletBinding()]
     param
     (
-        [Parameter(ParameterSetName = 'ById')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Name,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Slug,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
+        [Parameter()]
+        [uint64[]]$Id
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($i in $ID) {
-                $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit_types', $i))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-
-                $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNbxRequest -URI $URI -Raw:$Raw
-            }
+    if ($Id) {
+        $Id | ForEach-Object {
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-types/$($_)" -Method GET
         }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit-types'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-            $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNbxRequest -URI $URI -Raw:$Raw
-        }
+    }
+    else {
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-types?limit=9999" -Method GET
     }
 
 }

@@ -5,7 +5,7 @@ function New-NbxIPAMPrefix {
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]$Prefix,
 
         [object]$Status = 'Active',
@@ -29,23 +29,21 @@ function New-NbxIPAMPrefix {
         [switch]$Raw
     )
 
-    #    $PSBoundParameters.Status = ValidateIPAMChoice -ProvidedValue $Status -PrefixStatus
-
-    <#
-    # As of 2018/10/18, this does not appear to be a validated IPAM choice
-    if ($null -ne $Role) {
-        $PSBoundParameters.Role = ValidateIPAMChoice -ProvidedValue $Role -PrefixRole
+    $Body = @{
+        Prefix        = $Prefix
+        Status       = $Status
+        Tenant       = $Tenant
+        Role         = $Role
+        IsPool       = $IsPool
+        Description  = $Description
+        Site         = $Site
+        VRF          = $VRF
+        VLAN         = $VLAN
+        Custom_Fields= $Custom_Fields
     }
-    #>
 
-    $segments = [System.Collections.ArrayList]::new(@('ipam', 'prefixes'))
+    $Json = $Body | ConvertTo-Json -Depth 100
 
-    $URIComponents = BuildURIComponents -URISegments $segments -ParametersDictionary $PSBoundParameters
-
-    $URI = BuildNewURI -Segments $URIComponents.Segments
-
-    if ($PSCmdlet.ShouldProcess($Prefix, 'Create new Prefix')) {
-        InvokeNbxRequest -URI $URI -Method POST -Body $URIComponents.Parameters -Raw:$Raw
-    }
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes" -Method POST -Body $Json
 
 }

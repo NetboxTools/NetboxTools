@@ -1,66 +1,19 @@
 function Get-NbxCircuitTermination {
 
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [CmdletBinding()]
     param
     (
-        [Parameter(ParameterSetName = 'ById',
-                   ValueFromPipelineByPropertyName = $true)]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Circuit_ID,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Term_Side,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint64]$Port_Speed,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Query,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Site_ID,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Site,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$XConnect_ID,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
+        [Parameter()]
+        [uint64[]]$Id
     )
 
-    process {
-        switch ($PSCmdlet.ParameterSetName) {
-            'ById' {
-                foreach ($i in $ID) {
-                    $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit-terminations', $i))
-
-                    $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName "Id"
-
-                    $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                    InvokeNbxRequest -URI $URI -Raw:$Raw
-                }
-            }
-
-            default {
-                $Segments = [System.Collections.ArrayList]::new(@('circuits', 'circuit-terminations'))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters
-
-                $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNbxRequest -URI $URI -Raw:$Raw
-            }
+    if ($Id) {
+        $Id | ForEach-Object {
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-terminations/$($_)" -Method GET
         }
+    }
+    else {
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-terminations?limit=9999" -Method GET
     }
 
 }

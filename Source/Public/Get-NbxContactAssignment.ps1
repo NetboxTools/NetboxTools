@@ -1,6 +1,6 @@
 function Get-NbxContactAssignment {
 
-<#
+    <#
     .SYNOPSIS
         Get a contact Assignment from Netbox
 
@@ -44,66 +44,20 @@ function Get-NbxContactAssignment {
         Additional information about the function.
 #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [CmdletBinding()]
     param
     (
-        [Parameter(ParameterSetName = 'Query',
-                   Position = 0)]
-        [string]$Name,
-
-        [Parameter(ParameterSetName = 'ByID')]
-        [uint64[]]$Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint64]$Content_Type_Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [string]$Content_Type,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint64]$Object_Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint64]$Contact_Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint64]$Role_Id,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Limit,
-
-        [Parameter(ParameterSetName = 'Query')]
-        [uint16]$Offset,
-
-        [switch]$Raw
+        [Parameter()]
+        [uint64[]]$Id
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'ById' {
-            foreach ($ContactAssignment_ID in $Id) {
-                $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments', $ContactAssignment_ID))
-
-                $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id'
-
-                $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-                InvokeNbxRequest -URI $uri -Raw:$Raw
-            }
-
-            break
+    if ($Id) {
+        $Id | ForEach-Object {
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/$($_)" -Method GET
         }
-
-        default {
-            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contact-assignments'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters
-
-            $uri = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNbxRequest -URI $uri -Raw:$Raw
-
-            break
-        }
+    }
+    else {
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments?limit=9999" -Method GET
     }
 
 }
