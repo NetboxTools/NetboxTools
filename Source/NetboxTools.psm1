@@ -1,4 +1,3 @@
-$Token = ConvertTo-SecureString -String 'passwordvalue' -AsPlainText -Force
 $script:NbxConfig = @{
 	'Connected'     = $true
 	'Choices'       = @{
@@ -9,7 +8,7 @@ $script:NbxConfig = @{
 		'Netbox-version' = '3.5.4'
 	}
 	'Timeout' = 30
-	'Credential' =  [System.Management.Automation.PSCredential]::new('notapplicable', $Token)
+	'Credential' =  [System.Management.Automation.PSCredential]::new('notapplicable', $env:DUMMY_SECRET)
 	'InvokeParams' = @{ SkipCertificateCheck = $false }
 }
 
