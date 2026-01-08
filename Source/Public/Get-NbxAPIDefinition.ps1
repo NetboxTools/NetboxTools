@@ -7,6 +7,6 @@ function Get-NbxAPIDefinition {
         [string]$Format = 'json'
     )
 
-    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/api/schema" -Method GET
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/api/schema/?format=$Format" -Method GET
 
 }

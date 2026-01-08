@@ -22,49 +22,66 @@ function Connect-NbxAPI {
     .PARAMETER SkipVerification
         Skip verification of organization access
 #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Authorized')]
     param
     (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Authorized')]
+        [Parameter(Mandatory, ParameterSetName = 'Anonymous')]
         [string]$Hostname,
         
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Authorized')]
+        [Parameter(ParameterSetName = 'Anonymous')]
         [ValidateSet('https', 'http', IgnoreCase = $true)]
         [string]$Scheme = 'https',
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Authorized')]
+        [Parameter(ParameterSetName = 'Anonymous')]
         [uint16]$Port = 443,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Authorized')]
         [string]$Token,
         
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Authorized')]
         [switch]$SkipVerification
     )
 
-    $script:NbxConfig = @{
-        'Hostname'  = $Hostname
-        'Scheme'    = $Scheme
-        'Port'      = $Port
-        'URI'       = [System.UriBuilder]::new($Scheme, $Hostname, $Port)
-        'Token'     = $Token
-    }
-    
-
-    if (-not $PSBoundParameters.ContainsKey('SkipVerification')) {
-        # Get User context
-        $Me = InvokeNbxRestMethod -Method GET -Token $script:NbxConfig.Token -Uri "$($script:NbxConfig.URI)/api/users/config/"
-
-        if ($Me) {
-            Write-Verbose "Connected to Netbox"
-            Write-verbose $($Me | ConvertTo-json -Depth 100)
-        } else {
-            throw "Failed to connect to Netbox at $($script:NbxConfig.URI) using provided token."
+    switch ($PSCmdlet.ParameterSetName) {
+        'Anonymous' {
+            $script:NbxConfig = @{
+                'Hostname' = $Hostname
+                'Scheme'   = $Scheme
+                'Port'     = $Port
+                'URI'      = [System.UriBuilder]::new($Scheme, $Hostname, $Port, 'api').ToString().TrimEnd('/')
+            }
+            Write-Verbose "Connected to Netbox at $($script:NbxConfig.URI) in anonymous mode."
         }
+        'Authorized' {
+            $script:NbxConfig = @{
+                'Hostname' = $Hostname
+                'Scheme'   = $Scheme
+                'Port'     = $Port
+                'URI'      = [System.UriBuilder]::new($Scheme, $Hostname, $Port, 'api').ToString().TrimEnd('/')
+                'Token'    = $Token
+            }
+            
+            Write-Verbose "Connecting to Netbox at $($script:NbxConfig.URI) with provided token."
 
-    }
-    else {
-        Write-Verbose 'Skipping netbox access verification.'
-    }
+            if (-not $PSBoundParameters.ContainsKey('SkipVerification')) {
+                # Get User context
+                $Me = InvokeNbxRestMethod -Method GET -Token $script:NbxConfig.Token -Uri "$($script:NbxConfig.URI)/api/users/config/"
 
+                if ($Me) {
+                    Write-Verbose "Connected to Netbox"
+                    Write-verbose $($Me | ConvertTo-json -Depth 100)
+                }
+                else {
+                    throw "Failed to connect to Netbox at $($script:NbxConfig.URI) using provided token."
+                }
+
+            }
+            else {
+                Write-Verbose 'Skipping netbox access verification.'
+            }
+        }
+    }
 }
