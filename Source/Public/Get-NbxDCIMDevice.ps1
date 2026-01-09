@@ -9,11 +9,11 @@ function Get-NbxDCIMDevice {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/devices/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/devices/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/devices?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/devices/?limit=9999" -Method GET
     }
 
 }

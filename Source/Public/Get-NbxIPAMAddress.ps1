@@ -10,11 +10,11 @@ function Get-NbxIPAMAddress {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-addresses/?limit=9999" -Method GET
     }
 
 }

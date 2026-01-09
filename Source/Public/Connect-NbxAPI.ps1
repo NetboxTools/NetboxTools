@@ -48,27 +48,29 @@ function Connect-NbxAPI {
     switch ($PSCmdlet.ParameterSetName) {
         'Anonymous' {
             $script:NbxConfig = @{
-                'Hostname' = $Hostname
-                'Scheme'   = $Scheme
-                'Port'     = $Port
-                'URI'      = [System.UriBuilder]::new($Scheme, $Hostname, $Port, 'api').ToString().TrimEnd('/')
+                'Hostname'           = $Hostname
+                'Scheme'             = $Scheme
+                'Port'               = $Port
+                'URI'                = [System.UriBuilder]::new($Scheme, $Hostname, $Port, 'api').ToString().TrimEnd('/')
+                'AuthenticationType' = 'Anonymous'
             }
             Write-Verbose "Connected to Netbox at $($script:NbxConfig.URI) in anonymous mode."
         }
         'Authorized' {
             $script:NbxConfig = @{
-                'Hostname' = $Hostname
-                'Scheme'   = $Scheme
-                'Port'     = $Port
-                'URI'      = [System.UriBuilder]::new($Scheme, $Hostname, $Port, 'api').ToString().TrimEnd('/')
-                'Token'    = $Token
+                'Hostname'           = $Hostname
+                'Scheme'             = $Scheme
+                'Port'               = $Port
+                'URI'                = [System.UriBuilder]::new($Scheme, $Hostname, $Port, 'api').ToString().TrimEnd('/')
+                'Token'              = $Token
+                'AuthenticationType' = 'Token'
             }
             
             Write-Verbose "Connecting to Netbox at $($script:NbxConfig.URI) with provided token."
 
             if (-not $PSBoundParameters.ContainsKey('SkipVerification')) {
                 # Get User context
-                $Me = InvokeNbxRestMethod -Method GET -Token $script:NbxConfig.Token -Uri "$($script:NbxConfig.URI)/api/users/config/"
+                $Me = InvokeNbxRestMethod -Method GET -Token $script:NbxConfig.Token -Uri "$($script:NbxConfig.URI)/users/config/"
 
                 if ($Me) {
                     Write-Verbose "Connected to Netbox"

@@ -29,6 +29,6 @@ function Get-NbxIPAMAvailablePrefix {
         [uint64]$Prefix_ID
     )
 
-    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-prefixes" -Method GET
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-prefixes/" -Method GET
 
 }

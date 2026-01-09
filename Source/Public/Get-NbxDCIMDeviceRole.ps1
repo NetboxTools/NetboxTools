@@ -37,13 +37,7 @@ function Get-NbxDCIMDeviceRole {
         }
 
         default {
-            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'device-roles'))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Raw'
-
-            $URI = BuildNewURI -Segments $URIComponents.Segments -Parameters $URIComponents.Parameters
-
-            InvokeNbxRequest -URI $URI -Raw:$Raw
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/device-roles/?limit=9999" -Method GET
         }
     }
 

@@ -9,11 +9,11 @@ function Get-NbxCircuitTermination {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-terminations/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-terminations/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-terminations?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuit-terminations/?limit=9999" -Method GET
     }
 
 }

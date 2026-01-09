@@ -25,11 +25,11 @@ function Get-NbxCircuit {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuits/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuits/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuits?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/circuits/circuits/?limit=9999" -Method GET
     }
 }
 

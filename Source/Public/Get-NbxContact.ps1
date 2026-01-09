@@ -29,11 +29,11 @@ function Get-NbxContact {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts/?limit=9999" -Method GET
     }
 
 

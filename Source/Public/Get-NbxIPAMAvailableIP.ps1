@@ -27,6 +27,6 @@ function Get-NbxIPAMAvailableIP {
         [uint64]$Prefix_ID
     )
 
-    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-ips" -Method GET
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-ips/" -Method GET
 
 }

@@ -29,11 +29,11 @@ function Get-NbxContactRole {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/?limit=9999" -Method GET
     }
 
 }

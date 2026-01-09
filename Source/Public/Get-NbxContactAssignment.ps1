@@ -53,11 +53,11 @@ function Get-NbxContactAssignment {
 
     if ($Id) {
         $Id | ForEach-Object {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/$($_)" -Method GET
+            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/$($_)/" -Method GET
         }
     }
     else {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments?limit=9999" -Method GET
+        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/?limit=9999" -Method GET
     }
 
 }

@@ -48,6 +48,6 @@ function Add-NbxDCIMInterfaceConnection {
 
     $Json = $Body | ConvertTo-Json -Depth 100
 
-    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/interface-connections" -Method POST -Body $Json
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/dcim/interface-connections/" -Method POST -Body $Json
 
 }
