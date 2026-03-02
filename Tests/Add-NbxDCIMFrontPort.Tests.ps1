@@ -47,7 +47,34 @@ Describe "Add-NbxDCIMFrontPort" {
             (Get-Command "Add-NbxDCIMFrontPort").Parameters.Keys | Should -Contain "Mark_Connected"
             (Get-Command "Add-NbxDCIMFrontPort").Parameters.Keys | Should -Contain "Tags"
         }
-        
+
     }
-    
+
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; name = 'FrontPort1' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            Add-NbxDCIMFrontPort -Device 1 -Name 'FrontPort1' -Type '8p8c' -Rear_Port 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/dcim/front-ports/*'
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { Add-NbxDCIMFrontPort -Device 1 -Name 'FrontPort1' -Type '8p8c' -Rear_Port 1 } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

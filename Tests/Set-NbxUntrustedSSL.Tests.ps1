@@ -34,4 +34,13 @@ Describe "Set-NbxUntrustedSSL" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should be callable" {
+            $cmd = Get-Command Set-NbxUntrustedSSL
+            $cmd | Should -Not -BeNullOrEmpty
+            $cmd.CommandType | Should -Be 'Function'
+        }
+    }
+
 }

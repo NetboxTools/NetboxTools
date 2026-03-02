@@ -31,4 +31,33 @@ Describe "Get-NbxHostPort" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should throw when HostPort is not set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.HostPort = $null
+                try {
+                    { Get-NbxHostPort } | Should -Throw '*host port is not set*'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should return the host port when it is set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.HostPort = 8443
+                try {
+                    Get-NbxHostPort | Should -Be 8443
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+    }
+
 }

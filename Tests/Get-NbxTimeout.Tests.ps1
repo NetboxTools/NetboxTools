@@ -24,4 +24,33 @@ Describe "Get-NbxTimeout" {
         }
 
     }
+
+    Context "Function behavior" {
+
+        It "Should return default 30 when Timeout is not set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Timeout = $null
+                try {
+                    Get-NbxTimeout -WarningAction SilentlyContinue | Should -Be 30
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should return the configured timeout when set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Timeout = 60
+                try {
+                    Get-NbxTimeout | Should -Be 60
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+    }
 }

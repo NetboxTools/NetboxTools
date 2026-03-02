@@ -34,4 +34,38 @@ Describe "New-NbxVirtualMachine" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            New-NbxVirtualMachine -Name 'TestVM'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/virtualization/virtual-machines/*'
+            }
+        }
+
+        It "Should include mandatory parameters in the request body" {
+            New-NbxVirtualMachine -Name 'TestVM'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Body -ne $null
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { New-NbxVirtualMachine -Name 'TestVM' } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

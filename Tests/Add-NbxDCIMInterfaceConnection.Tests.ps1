@@ -25,4 +25,35 @@ Describe "Add-NbxDCIMInterfaceConnection" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1 }
+            }
+            Mock -ModuleName NetboxTools -CommandName Get-NbxDCIMInterface -MockWith {
+                return [pscustomobject]@{ id = 1; name = 'eth0' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            Add-NbxDCIMInterfaceConnection -Interface_A 1 -Interface_B 2
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST'
+            }
+        }
+
+        It "Should verify both interfaces exist" {
+            Add-NbxDCIMInterfaceConnection -Interface_A 1 -Interface_B 2
+            Should -Invoke -ModuleName NetboxTools -CommandName Get-NbxDCIMInterface -Times 2
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

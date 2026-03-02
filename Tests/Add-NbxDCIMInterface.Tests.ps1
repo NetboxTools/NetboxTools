@@ -31,4 +31,31 @@ Describe "Add-NbxDCIMInterface" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; name = 'eth0' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            Add-NbxDCIMInterface -Device 1 -Name 'eth0'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/dcim/interfaces/*'
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { Add-NbxDCIMInterface -Device 1 -Name 'eth0' } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

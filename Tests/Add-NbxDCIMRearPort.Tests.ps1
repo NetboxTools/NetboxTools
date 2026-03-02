@@ -118,5 +118,12 @@ Describe "Add-NbxDCIMRearPort" {
         It "Should call InvokeNbxRequest if used by the function" {
             {Add-NbxDCIMRearPort -Device '1' -Name 'RearPort1' -Type '8p8c'} | Should -Not -Throw
         }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            Add-NbxDCIMRearPort -Device '1' -Name 'RearPort1' -Type '8p8c'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/dcim/rear-ports/*'
+            }
+        }
     }
 }

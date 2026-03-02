@@ -31,4 +31,46 @@ Describe "Get-NbxIPAMRole" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with Id parameter set" {
+            Get-NbxIPAMRole -Id 42
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/ipam/roles/*42/*' -and $Method -eq 'GET'
+            }
+        }
+
+        It "Should call InvokeNbxRestMethod for each Id when multiple are provided" {
+            Get-NbxIPAMRole -Id 1, 2, 3
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 3
+        }
+
+        It "Should call InvokeNbxRestMethod with Query parameter set" {
+            Get-NbxIPAMRole -Query @{ name = 'Test' }
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/ipam/roles/*' -and $Method -eq 'GET' -and $Query.name -eq 'Test'
+            }
+        }
+
+        It "Should call InvokeNbxRestMethod with Default parameter set" {
+            Get-NbxIPAMRole
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/ipam/roles/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

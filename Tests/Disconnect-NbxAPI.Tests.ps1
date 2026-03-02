@@ -24,4 +24,29 @@ Describe "Disconnect-NbxAPI" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should set NbxConfig to null" {
+            Disconnect-NbxAPI
+            InModuleScope NetboxTools {
+                $script:NbxConfig | Should -BeNullOrEmpty
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig = @{
+                    'Connected'     = $true
+                    'Choices'       = @{}
+                    'APIDefinition' = $null
+                    'ContentTypes'  = $null
+                    'NbxVersion'    = @{ 'Netbox-version' = '3.5.4' }
+                    'Timeout'       = 30
+                    'Credential'    = [System.Management.Automation.PSCredential]::Empty
+                    'InvokeParams'  = @{ SkipCertificateCheck = $false }
+                }
+            }
+        }
+    }
+
 }

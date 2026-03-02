@@ -25,4 +25,27 @@ Describe "Get-NbxVersion" {
 
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ 'netbox-version' = '3.5.4' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod to get version" {
+            Get-NbxVersion
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/status/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

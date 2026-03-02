@@ -26,4 +26,33 @@ Describe "Get-NbxCredential" {
 
     }
 
+    Context "Function behavior" {
+
+        It "Should throw when Token is not set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Token = $null
+                try {
+                    { Get-NbxCredential } | Should -Throw '*Credentials not set*'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should return the token when it is set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Token = 'test-api-token-12345'
+                try {
+                    Get-NbxCredential | Should -Be 'test-api-token-12345'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+    }
+
 }

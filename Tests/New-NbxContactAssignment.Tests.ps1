@@ -36,4 +36,38 @@ Describe "New-NbxContactAssignment" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            New-NbxContactAssignment -ObjectType 'dcim.device' -ObjectId 1 -Contact 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/tenancy/contact-assignments/*'
+            }
+        }
+
+        It "Should include mandatory parameters in the request body" {
+            New-NbxContactAssignment -ObjectType 'dcim.device' -ObjectId 1 -Contact 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Body -ne $null
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { New-NbxContactAssignment -ObjectType 'dcim.device' -ObjectId 1 -Contact 1 } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

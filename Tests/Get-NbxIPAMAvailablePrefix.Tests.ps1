@@ -31,4 +31,27 @@ Describe "Get-NbxIPAMAvailablePrefix" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; prefix = '10.0.0.0/24' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with the prefix ID" {
+            Get-NbxIPAMAvailablePrefix -Prefix_ID 5
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/ipam/prefixes/5/available-prefixes/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

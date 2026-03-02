@@ -36,4 +36,38 @@ Describe "New-NbxDCIMDevice" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/dcim/devices/*'
+            }
+        }
+
+        It "Should include mandatory parameters in the request body" {
+            New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Body -ne $null
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1 } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

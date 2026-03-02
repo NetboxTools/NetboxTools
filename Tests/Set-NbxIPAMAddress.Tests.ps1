@@ -25,4 +25,31 @@ Describe "Set-NbxIPAMAddress" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with PATCH method" {
+            Set-NbxIPAMAddress -Id 1 -Address '10.0.0.1/24'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'PATCH' -and $Uri -like '*/ipam/ip-addresses/*1/*'
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { Set-NbxIPAMAddress -Id 1 -Address '10.0.0.1/24' } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

@@ -29,4 +29,30 @@ Describe "Add-NbxVirtualMachineInterface" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; name = 'eth0' }
+            }
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            Add-NbxVirtualMachineInterface -Name 'eth0' -Virtual_Machine 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/virtualization/interfaces/*'
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { Add-NbxVirtualMachineInterface -Name 'eth0' -Virtual_Machine 1 } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

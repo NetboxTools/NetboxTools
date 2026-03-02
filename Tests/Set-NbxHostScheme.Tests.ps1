@@ -31,4 +31,33 @@ Describe "Set-NbxHostScheme" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should set the scheme to https and return it" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                try {
+                    Set-NbxHostScheme -Scheme 'https' -Confirm:$false | Should -Be 'https'
+                    $script:NbxConfig.HostScheme | Should -Be 'https'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should warn when setting scheme to http" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                try {
+                    Set-NbxHostScheme -Scheme 'http' -Confirm:$false -WarningAction SilentlyContinue | Should -Be 'http'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+    }
+
 }

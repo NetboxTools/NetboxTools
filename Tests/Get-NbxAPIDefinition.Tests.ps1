@@ -25,4 +25,27 @@ Describe "Get-NbxAPIDefinition" {
 
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ openapi = '3.0' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with default parameters" {
+            Get-NbxAPIDefinition
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/schema/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

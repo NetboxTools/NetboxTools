@@ -30,4 +30,31 @@ Describe "Remove-NbxIPAMPrefix" {
             }
         }
     }
+
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {}
+
+        }
+
+        It "Should call InvokeNbxRestMethod with DELETE method" {
+            Remove-NbxIPAMPrefix -Id 1
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'DELETE' -and $Uri -like '*/ipam/prefixes/*1/*'
+            }
+        }
+
+        It "Should process multiple IDs" {
+            Remove-NbxIPAMPrefix -Id 1, 2, 3
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 3
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

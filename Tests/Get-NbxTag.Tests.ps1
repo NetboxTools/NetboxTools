@@ -31,4 +31,39 @@ Describe "Get-NbxTag" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with Id parameter set" {
+            Get-NbxTag -Id 42
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/extras/tags/*42/*' -and $Method -eq 'GET'
+            }
+        }
+
+        It "Should call InvokeNbxRestMethod for each Id when multiple are provided" {
+            Get-NbxTag -Id 1, 2, 3
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 3
+        }
+
+        It "Should call InvokeNbxRestMethod with Default parameter set" {
+            Get-NbxTag
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/extras/tags/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

@@ -31,4 +31,33 @@ Describe "Get-NbxHostScheme" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should throw when HostScheme is not set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Hostscheme = $null
+                try {
+                    { Get-NbxHostScheme } | Should -Throw '*not set*'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should return the host scheme when it is set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.HostScheme = 'https'
+                try {
+                    Get-NbxHostScheme | Should -Be 'https'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+    }
+
 }

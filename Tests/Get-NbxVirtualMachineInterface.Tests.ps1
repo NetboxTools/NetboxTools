@@ -34,4 +34,39 @@ Describe "Get-NbxVirtualMachineInterface" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with specific Id" {
+            Get-NbxVirtualMachineInterface -Id 42
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/virtualization/interfaces/42/*' -and $Method -eq 'GET'
+            }
+        }
+
+        It "Should call InvokeNbxRestMethod for each Id via pipeline" {
+            @(1, 2, 3) | ForEach-Object { Get-NbxVirtualMachineInterface -Id $_ }
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 3
+        }
+
+        It "Should call InvokeNbxRestMethod to get all when no Id specified" {
+            Get-NbxVirtualMachineInterface
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/virtualization/interfaces/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

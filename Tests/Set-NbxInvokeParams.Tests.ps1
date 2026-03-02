@@ -26,4 +26,22 @@ Describe "Set-NbxInvokeParams" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should set invoke params and return them" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                try {
+                    $params = @('SkipCertificateCheck')
+                    Set-NbxInvokeParams -InvokeParams $params -Confirm:$false | Should -Be $params
+                    $script:NbxConfig.InvokeParams | Should -Be $params
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+    }
+
 }

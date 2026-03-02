@@ -31,4 +31,21 @@ Describe "Set-NbxHostPort" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should set the port and return it" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                try {
+                    Set-NbxHostPort -Port 8443 -Confirm:$false | Should -Be 8443
+                    $script:NbxConfig.HostPort | Should -Be 8443
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+    }
+
 }

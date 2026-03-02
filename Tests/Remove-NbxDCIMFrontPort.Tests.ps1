@@ -31,4 +31,40 @@ Describe "Remove-NbxDCIMFrontPort" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            InModuleScope NetboxTools {
+                Set-Item -Path function:script:BuildNewURI -Value {
+                    param($Segments)
+                    return 'https://netbox.example.com/api/test/1/'
+                }
+                Set-Item -Path function:script:InvokeNbxRequest -Value {
+                    param($URI, $Method)
+                }
+            }
+            Mock -ModuleName NetboxTools -CommandName Get-NbxDCIMFrontPort -MockWith {
+                return [pscustomobject]@{ id = 1; Name = 'Test'; display = 'Test' }
+            }
+            Mock -ModuleName NetboxTools -CommandName BuildNewURI -MockWith {
+                return 'https://netbox.example.com/api/test/1/'
+            }
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRequest -MockWith {}
+        }
+
+        It "Should call InvokeNbxRequest when Force is used" {
+            Remove-NbxDCIMFrontPort -Id 1 -Force
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRequest -Times 1
+        }
+
+        It "Should call Get-NbxDCIMFrontPort to verify the object exists" {
+            Remove-NbxDCIMFrontPort -Id 1 -Force
+            Should -Invoke -ModuleName NetboxTools -CommandName Get-NbxDCIMFrontPort -Times 1
+        }
+
+        It "Should not throw with valid parameters" {
+            { Remove-NbxDCIMFrontPort -Id 1 -Force } | Should -Not -Throw
+        }
+    }
+
 }

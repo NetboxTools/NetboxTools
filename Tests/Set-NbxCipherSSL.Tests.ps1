@@ -31,4 +31,13 @@ Describe "Set-NbxCipherSSL" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should be callable" {
+            $cmd = Get-Command Set-NbxCipherSSL
+            $cmd | Should -Not -BeNullOrEmpty
+            $cmd.CommandType | Should -Be 'Function'
+        }
+    }
+
 }

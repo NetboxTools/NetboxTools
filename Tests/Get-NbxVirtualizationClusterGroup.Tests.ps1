@@ -31,4 +31,39 @@ Describe "Get-NbxVirtualizationClusterGroup" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with specific Id" {
+            Get-NbxVirtualizationClusterGroup -Id 42
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/virtualization/cluster-groups/42/*' -and $Method -eq 'GET'
+            }
+        }
+
+        It "Should call InvokeNbxRestMethod for each Id when multiple are provided" {
+            Get-NbxVirtualizationClusterGroup -Id 1, 2, 3
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 3
+        }
+
+        It "Should call InvokeNbxRestMethod to get all when no Id specified" {
+            Get-NbxVirtualizationClusterGroup
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Uri -like '*/virtualization/cluster-groups/*' -and $Method -eq 'GET'
+            }
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

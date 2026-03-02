@@ -31,4 +31,33 @@ Describe "Get-NbxHostname" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should throw when Hostname is not set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Hostname = $null
+                try {
+                    { Get-NbxHostname } | Should -Throw '*Hostname is not set*'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should return the hostname when it is set" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                $script:NbxConfig.Hostname = 'netbox.example.com'
+                try {
+                    Get-NbxHostname | Should -Be 'netbox.example.com'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+    }
+
 }

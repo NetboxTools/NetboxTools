@@ -8,7 +8,6 @@ param (
 [string]$ModuleSourcePath = "$PSScriptRoot\Source"
 [string]$HelpSourcePath = "$PSScriptRoot\Docs\Help"
 [string]$BuildSourcePath = "$PSScriptRoot"
-
 [string]$OutputPath = "$PSScriptRoot\Bin\$ModuleName\$Version"
 
 task Clean {
@@ -40,7 +39,7 @@ Task Build_Documentation {
     $mdfiles | Where-Object Filetype -match 'CommandHelp' |
     Import-MarkdownCommandHelp -Path { $_.FilePath } |
     Export-MamlCommandHelp -OutputFolder "$OutputPath\en-US"
-    Move-Item -Path "$OutputPath\en-US\NetboxTools\NetboxTools-Help.xml" -Destination "$OutputPath\en-US\NetboxTools-Help.xml" 
+    Move-Item -Path "$OutputPath\en-US\NetboxTools\NetboxTools-Help.xml" -Destination "$OutputPath\en-US\NetboxTools-Help.xml" -Force
     Remove-Item "$OutputPath\en-US\NetboxTools" -Force
 }
 

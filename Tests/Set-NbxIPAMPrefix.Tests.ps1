@@ -25,4 +25,31 @@ Describe "Set-NbxIPAMPrefix" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with PATCH method" {
+            Set-NbxIPAMPrefix -Id 1 -Prefix '10.0.0.0/24' -Confirm:$false
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'PATCH' -and $Uri -like '*/ipam/prefixes/*'
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { Set-NbxIPAMPrefix -Id 1 -Prefix '10.0.0.0/24' -Confirm:$false } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

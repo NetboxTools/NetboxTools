@@ -31,4 +31,40 @@ Describe "Remove-NbxDCIMInterface" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            InModuleScope NetboxTools {
+                Set-Item -Path function:script:BuildNewURI -Value {
+                    param($Segments)
+                    return 'https://netbox.example.com/api/test/1/'
+                }
+                Set-Item -Path function:script:InvokeNbxRequest -Value {
+                    param($URI, $Method)
+                }
+            }
+            Mock -ModuleName NetboxTools -CommandName Get-NbxDCIMInterface -MockWith {
+                return [pscustomobject]@{ id = 1; Name = 'Test'; display = 'Test' }
+            }
+            Mock -ModuleName NetboxTools -CommandName BuildNewURI -MockWith {
+                return 'https://netbox.example.com/api/test/1/'
+            }
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRequest -MockWith {}
+        }
+
+        It "Should call InvokeNbxRequest when Force is used" {
+            Remove-NbxDCIMInterface -Id 1 -Force
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRequest -Times 1
+        }
+
+        It "Should call Get-NbxDCIMInterface to verify the object exists" {
+            Remove-NbxDCIMInterface -Id 1 -Force
+            Should -Invoke -ModuleName NetboxTools -CommandName Get-NbxDCIMInterface -Times 1
+        }
+
+        It "Should not throw with valid parameters" {
+            { Remove-NbxDCIMInterface -Id 1 -Force } | Should -Not -Throw
+        }
+    }
+
 }

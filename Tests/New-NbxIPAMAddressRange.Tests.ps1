@@ -35,4 +35,38 @@ Describe "New-NbxIPAMAddressRange" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            New-NbxIPAMAddressRange -Start_Address '10.0.0.1' -End_Address '10.0.0.254'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/ipam/ip-ranges/*'
+            }
+        }
+
+        It "Should include mandatory parameters in the request body" {
+            New-NbxIPAMAddressRange -Start_Address '10.0.0.1' -End_Address '10.0.0.254'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Body -ne $null
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { New-NbxIPAMAddressRange -Start_Address '10.0.0.1' -End_Address '10.0.0.254' } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }

@@ -31,4 +31,33 @@ Describe "Set-NbxHostName" {
         }
     }
 
+    Context "Function behavior" {
+
+        It "Should set the hostname and return it" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                try {
+                    Set-NbxHostName -Hostname 'netbox.example.com' -Confirm:$false | Should -Be 'netbox.example.com'
+                    $script:NbxConfig.Hostname | Should -Be 'netbox.example.com'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+        It "Should trim whitespace from hostname" {
+            InModuleScope NetboxTools {
+                $savedConfig = $script:NbxConfig.Clone()
+                try {
+                    Set-NbxHostName -Hostname '  netbox.example.com  ' -Confirm:$false | Should -Be 'netbox.example.com'
+                }
+                finally {
+                    $script:NbxConfig = $savedConfig
+                }
+            }
+        }
+
+    }
+
 }

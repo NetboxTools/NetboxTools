@@ -31,4 +31,38 @@ Describe "New-NbxContact" {
         }
     }
 
+    Context "Function behavior" {
+
+        BeforeAll {
+            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
+                return [pscustomobject]@{ id = 1; display = 'Test' }
+            }
+
+        }
+
+        It "Should call InvokeNbxRestMethod with POST method" {
+            New-NbxContact -Name 'John Doe'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Method -eq 'POST' -and $Uri -like '*/tenancy/contacts/*'
+            }
+        }
+
+        It "Should include mandatory parameters in the request body" {
+            New-NbxContact -Name 'John Doe'
+            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
+                $Body -ne $null
+            }
+        }
+
+        It "Should not throw with valid parameters" {
+            { New-NbxContact -Name 'John Doe' } | Should -Not -Throw
+        }
+
+        AfterAll {
+            InModuleScope NetboxTools {
+                $script:NbxConfig.Remove('URI')
+            }
+        }
+    }
+
 }
