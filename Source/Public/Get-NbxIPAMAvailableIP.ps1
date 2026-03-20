@@ -10,6 +10,9 @@ function Get-NbxIPAMAvailableIP {
     .PARAMETER Prefix_ID
         A description of the Prefix_ID parameter.
 
+    .PARAMETER Query
+        A hashtable containing all the parameters for a query string
+
     .EXAMPLE
         Get-NbxIPAMAvailableIP -Prefix_ID (Get-NbxIPAMPrefix -Prefix 192.0.2.0/24).id
 
@@ -19,14 +22,19 @@ function Get-NbxIPAMAvailableIP {
         Additional information about the function.
 #>
 
-[CmdletBinding()]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory,
             ValueFromPipelineByPropertyName = $true)]
         [Alias('Id')]
-        [uint64]$Prefix_ID
+        [uint64]
+        $Prefix_ID,
+
+        [Parameter()]
+        [hashtable]
+        $Query
     )
 
-    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-ips/" -Method GET
+    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-ips/" -Method GET -Query $Query
 }
