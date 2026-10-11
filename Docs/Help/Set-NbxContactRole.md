@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxContactRole
 ---
@@ -13,7 +12,7 @@ title: Set-NbxContactRole
 
 ## SYNOPSIS
 
-Update a contact role in Netbox
+Updates contact roles in NetBox.
 
 ## SYNTAX
 
@@ -21,20 +20,63 @@ Update a contact role in Netbox
 
 ```
 Set-NbxContactRole [-Id] <ulong[]> [[-Name] <string>] [[-Slug] <string>] [[-Description] <string>]
- [[-Custom_Fields] <hashtable>] [-Raw] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-Comments] <string>] [[-Tag] <ulong[]>] [[-CustomField] <hashtable>]
+ [[-OptionalAttribute] <hashtable>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Updates a contact role in Netbox
+Updates one or more contact roles using the NetBox API endpoint 'tenancy/contact-roles'.
+Only the specified properties are changed, all other properties keep their current values.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-New-NbxContact -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+```powershell
+Set-NbxContactRole -Id 42 -Description 'Updated with NetboxTools'
+```
+
+Updates the description of the contact role with ID 42.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxContactRole -Query @{ q = 'example' } | Set-NbxContactRole -Description 'Updated' -PassThru
+```
+
+Updates the description of all contact roles matching the search 'example' and returns the updated contact roles.
 
 ## PARAMETERS
+
+### -Comments
+
+Comments about the contact role.
+Supports Markdown.
+Specify $null to clear the value.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 4
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
 
 ### -Confirm
 
@@ -58,18 +100,20 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Custom_Fields
+### -CustomField
 
-A description of the Custom_Fields parameter.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
 Type: System.Collections.Hashtable
 DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- custom_fields
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 6
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -81,7 +125,8 @@ HelpMessage: ''
 
 ### -Description
 
-Short description of the contact role
+A short description of the contact role.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -100,9 +145,31 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -Force
+
+Updates the object without asking for confirmation.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Id
 
-Identifier of the contact role to update.
+The ID of the contact role to update.
+Accepts contact role objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -113,8 +180,8 @@ ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -123,7 +190,7 @@ HelpMessage: ''
 
 ### -Name
 
-The contact role name, e.g "Network Support"
+The name of the contact role.
 
 ```yaml
 Type: System.String
@@ -135,16 +202,39 @@ ParameterSets:
   Position: 1
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Raw
+### -OptionalAttribute
 
-Return the unparsed data from the HTTP request
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 7
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PassThru
+
+Returns the updated contact role.
+By default, this cmdlet does not generate any output.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -165,8 +255,9 @@ HelpMessage: ''
 
 ### -Slug
 
-The unique URL for the role.
-Can only contain hypens, A-Z, a-z, 0-9, and underscores
+The URL-friendly unique name of the contact role.
+Generated from the name when not specified.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -185,9 +276,34 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -Tag
+
+The tags of the contact role.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- tags
+ParameterSets:
+- Name: (All)
+  Position: 5
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -216,27 +332,24 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt64[]
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.ContactRole
 
-### System.String
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe contact role IDs or contact role objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.ContactRole
+
+With -PassThru the updated contact role is returned.
 
 ## NOTES
 
-Additional information about the function.
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxContactRole](Get-NbxContactRole.md)
+- [New-NbxContactRole](New-NbxContactRole.md)
+- [Remove-NbxContactRole](Remove-NbxContactRole.md)

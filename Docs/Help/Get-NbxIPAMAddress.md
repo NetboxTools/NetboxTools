@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMAddress
 ---
@@ -13,42 +12,151 @@ title: Get-NbxIPAMAddress
 
 ## SYNOPSIS
 
-Retrieves IPAM address records from NetBox (individual IP addresses).
+Gets IP addresses from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxIPAMAddress [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxIPAMAddress [-Address <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxIPAMAddress -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets IP address objects from the IPAM area of NetBox. Use `-Id` or appropriate filters to narrow results.
+Gets IP addresses from the NetBox API endpoint 'ipam/ip-addresses'.
+Without parameters all IP addresses are returned,
+the cmdlet follows the pagination of the API.
+
+IP address objects are returned as they are returned by the API, with the type name 'NetboxTools.IPAMAddress',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxIPAMAddress -Id 400
+```powershell
+Get-NbxIPAMAddress
+```
 
-Returns the IPAM address record with ID 400.
+Gets all IP addresses.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMAddress -Id 42
+```
+
+Gets the IP address with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxIPAMAddress -Address 'example'
+```
+
+Gets IP addresses where the address is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxIPAMAddress -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 IP addresses matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -Address
 
-Specifies the Id parameter.
+Filters IP addresses by address.
+Multiple values return IP addresses matching any of the values.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.String[]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -All
+
+Returns all objects, which is the default.
+Kept for backward compatibility.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the IP address to get.
+Accepts IP address objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of IP addresses to return.
+By default all matching IP addresses are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +168,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +181,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,12 +199,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.UInt64
+
+### NetboxTools.IPAMAddress
+
+You can pipe IP address IDs or IP address objects to this cmdlet.
+
 ## OUTPUTS
 
-### System.Object
-
-Detailed description of the cmdlet's behavior. Update this with function-specific details.
+### NetboxTools.IPAMAddress
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [New-NbxIPAMAddress](New-NbxIPAMAddress.md)
+- [Set-NbxIPAMAddress](Set-NbxIPAMAddress.md)
+- [Remove-NbxIPAMAddress](Remove-NbxIPAMAddress.md)

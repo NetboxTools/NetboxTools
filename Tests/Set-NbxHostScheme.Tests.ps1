@@ -5,59 +5,37 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxHostScheme" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxHostScheme" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxHostScheme").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Set-NbxHostScheme"
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $cmd.Parameters.Keys | Should -Contain $p.Key
-                    }
-                }
-            }
-        }
+Describe 'Set-NbxHostScheme' {
+    AfterEach {
+        Initialize-NbxTestConnection
     }
 
-    Context "Function behavior" {
-
-        It "Should set the scheme to https and return it" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                try {
-                    Set-NbxHostScheme -Scheme 'https' -Confirm:$false | Should -Be 'https'
-                    $script:NbxConfig.HostScheme | Should -Be 'https'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
-
-        It "Should warn when setting scheme to http" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                try {
-                    Set-NbxHostScheme -Scheme 'http' -Confirm:$false -WarningAction SilentlyContinue | Should -Be 'http'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
-
+    It 'Sets the value without output' {
+        Set-NbxHostScheme -Scheme 'http' | Should -BeNullOrEmpty
+        InModuleScope NetboxTools { $script:NbxConfig.Scheme } | Should -Be 'http'
     }
 
+    It 'Returns the value with -PassThru' {
+        Set-NbxHostScheme -Scheme 'http' -PassThru | Should -Be 'http'
+    }
+
+    It 'Does not change the value with -WhatIf' {
+        $Before = InModuleScope NetboxTools { $script:NbxConfig.Scheme }
+        Set-NbxHostScheme -Scheme 'http' -WhatIf
+        InModuleScope NetboxTools { $script:NbxConfig.Scheme } | Should -Be $Before
+    }
+
+    It 'Updates the API URI' {
+        Set-NbxHostScheme -Scheme 'http'
+        InModuleScope NetboxTools { $script:NbxConfig.URI } | Should -Be 'http://netbox.example.com/api'
+    }
+
+    It 'Warns when http is used' {
+        Set-NbxHostScheme -Scheme http -WarningVariable Warnings -WarningAction SilentlyContinue
+        $Warnings | Should -Not -BeNullOrEmpty
+    }
 }

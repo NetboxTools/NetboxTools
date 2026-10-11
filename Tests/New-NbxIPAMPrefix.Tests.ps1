@@ -5,67 +5,71 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "New-NbxIPAMPrefix" {
+Describe 'New-NbxIPAMPrefix' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "New-NbxIPAMPrefix" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+    It 'Creates the prefix with a POST request' {
+        $Result = New-NbxIPAMPrefix -Prefix '192.0.2.0/24'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'POST' -and $Uri -eq 'https://netbox.example.com/api/ipam/prefixes/'
         }
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.IPAMPrefix'
+    }
 
-        It "Parameter names are PascalCase" {
-            (Get-Command "New-NbxIPAMPrefix").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "New-NbxIPAMPrefix"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'Prefix'
+    It 'Sends the parameters with NetBox field names' {
+        New-NbxIPAMPrefix -Prefix '192.0.2.0/24'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.prefix | Should -Be '192.0.2.0/24'
+            $true
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with POST method" {
-            New-NbxIPAMPrefix -Prefix '10.0.0.0/24'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Method -eq 'POST' -and $Uri -like '*/ipam/prefixes/*'
-            }
-        }
-
-        It "Should include mandatory parameters in the request body" {
-            New-NbxIPAMPrefix -Prefix '10.0.0.0/24'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Body -ne $null
-            }
-        }
-
-        It "Should not throw with valid parameters" {
-            { New-NbxIPAMPrefix -Prefix '10.0.0.0/24' } | Should -Not -Throw
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Merges OptionalAttribute into the body' {
+        New-NbxIPAMPrefix -Prefix '192.0.2.0/24' -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            ($Body | ConvertFrom-Json).custom_fields.owner -eq 'IT'
         }
     }
 
+    It 'Accepts NetBox objects from the pipeline' {
+        $InputObject = [pscustomobject]@{
+            id = 99
+            url = 'https://netbox.example.com/api/ipam/prefixes/99/'
+            prefix = '192.0.2.0/24'
+        }
+        $InputObject | New-NbxIPAMPrefix
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.prefix | Should -Be '192.0.2.0/24'
+            $Body.PSObject.Properties.Name -notcontains 'id'
+        }
+    }
+
+    It 'Creates one prefix per pipeline object' {
+        $InputObject = [pscustomobject]@{
+            prefix = '192.0.2.0/24'
+        }
+        $InputObject, $InputObject | New-NbxIPAMPrefix
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        New-NbxIPAMPrefix -Prefix '192.0.2.0/24' -WhatIf
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Scopes the prefix to a site object' {
+        New-NbxIPAMPrefix -Prefix '192.0.2.0/24' -Scope ([pscustomobject]@{ id = 3; url = 'https://netbox.example.com/api/dcim/sites/3/' })
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.scope_type -eq 'dcim.site' -and $Body.scope_id -eq 3
+        }
+    }
 }

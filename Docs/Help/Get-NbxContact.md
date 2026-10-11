@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxContact
 ---
@@ -13,31 +12,97 @@ title: Get-NbxContact
 
 ## SYNOPSIS
 
-Get a contact from Netbox
+Gets contacts from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxContact [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxContact [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxContact -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Obtain a contact or contacts from Netbox by ID or query
+Gets contacts from the NetBox API endpoint 'tenancy/contacts'.
+Without parameters all contacts are returned,
+the cmdlet follows the pagination of the API.
+
+Contact objects are returned as they are returned by the API, with the type name 'NetboxTools.Contact',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
+```powershell
 Get-NbxContact
+```
+
+Gets all contacts.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxContact -Id 42
+```
+
+Gets the contact with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxContact -Name 'example'
+```
+
+Gets contacts where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxContact -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 contacts matching the search 'example'.
 
 ## PARAMETERS
 
+### -All
+
+Returns all objects, which is the default.
+Kept for backward compatibility.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Id
 
-The database ID of the Contact
+The ID of the contact to get.
+Accepts contact objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -45,8 +110,76 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of contacts to return.
+By default all matching contacts are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters contacts by name.
+Multiple values return contacts matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Query
+
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -65,10 +198,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.UInt64
+
+### NetboxTools.Contact
+
+You can pipe contact IDs or contact objects to this cmdlet.
+
 ## OUTPUTS
+
+### NetboxTools.Contact
 
 ## NOTES
 
-Additional information about the function.
 ## RELATED LINKS
 
+- [New-NbxContact](New-NbxContact.md)
+- [Set-NbxContact](Set-NbxContact.md)
+- [Remove-NbxContact](Remove-NbxContact.md)

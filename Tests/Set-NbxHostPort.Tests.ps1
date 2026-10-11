@@ -5,47 +5,32 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxHostPort" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxHostPort" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxHostPort").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Set-NbxHostPort"
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $cmd.Parameters.Keys | Should -Contain $p.Key
-                    }
-                }
-            }
-        }
+Describe 'Set-NbxHostPort' {
+    AfterEach {
+        Initialize-NbxTestConnection
     }
 
-    Context "Function behavior" {
-
-        It "Should set the port and return it" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                try {
-                    Set-NbxHostPort -Port 8443 -Confirm:$false | Should -Be 8443
-                    $script:NbxConfig.HostPort | Should -Be 8443
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
-
+    It 'Sets the value without output' {
+        Set-NbxHostPort -Port 8443 | Should -BeNullOrEmpty
+        InModuleScope NetboxTools { $script:NbxConfig.Port } | Should -Be 8443
     }
 
+    It 'Returns the value with -PassThru' {
+        Set-NbxHostPort -Port 8443 -PassThru | Should -Be 8443
+    }
+
+    It 'Does not change the value with -WhatIf' {
+        $Before = InModuleScope NetboxTools { $script:NbxConfig.Port }
+        Set-NbxHostPort -Port 8443 -WhatIf
+        InModuleScope NetboxTools { $script:NbxConfig.Port } | Should -Be $Before
+    }
+
+    It 'Updates the API URI' {
+        Set-NbxHostPort -Port 8443
+        InModuleScope NetboxTools { $script:NbxConfig.URI } | Should -Be 'https://netbox.example.com:8443/api'
+    }
 }

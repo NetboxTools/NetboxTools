@@ -1,37 +1,103 @@
 function Get-NbxVirtualMachine {
-
     <#
     .SYNOPSIS
-        Obtains virtual machines from NetBox.
+        Gets virtual machines from NetBox.
 
     .DESCRIPTION
-        Obtains one or more virtual machines based on provided filters.
+        Gets virtual machines from the NetBox API endpoint 'virtualization/virtual-machines'. Without parameters all virtual machines are returned,
+        the cmdlet follows the pagination of the API.
+
+        Virtual machine objects are returned as they are returned by the API, with the type name 'NetboxTools.VirtualMachine',
+        and can be piped to the other cmdlets of the module.
 
     .PARAMETER Id
-        Database ID of the VM
+        The ID of the virtual machine to get. Accepts virtual machine objects from the pipeline.
+
+    .PARAMETER Name
+        Filters virtual machines by name. Multiple values return virtual machines matching any of the values.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
+
+    .PARAMETER Limit
+        The maximum number of virtual machines to return. By default all matching virtual machines are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxVirtualMachine
+        Get-NbxVirtualMachine
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all virtual machines.
 
-    [CmdletBinding()]
-    param
-    (
-        [uint64[]]$Id
+    .EXAMPLE
+        Get-NbxVirtualMachine -Id 42
+
+        Gets the virtual machine with ID 42.
+
+    .EXAMPLE
+        Get-NbxVirtualMachine -Name 'example'
+
+        Gets virtual machines where the name is 'example'.
+
+    .EXAMPLE
+        Get-NbxVirtualMachine -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 virtual machines matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.VirtualMachine
+        You can pipe virtual machine IDs or virtual machine objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.VirtualMachine
+
+    .LINK
+        New-NbxVirtualMachine
+
+    .LINK
+        Set-NbxVirtualMachine
+
+    .LINK
+        Remove-NbxVirtualMachine
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.VirtualMachine')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('virtualization/virtual-machines')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string[]]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    if ($Id) {
-        $Id | ForEach-Object {
-            Write-Verbose "Getting virtual machine with ID: $($_) at $($script:NbxConfig.URI)/virtualization/virtual-machines/$($_)/"
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/virtualization/virtual-machines/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "virtualization/virtual-machines/$ObjectId/" -TypeName 'NetboxTools.VirtualMachine'
+            }
+            return
         }
-    }
-    else {
-        Write-Verbose "Getting All virtual machines at $($script:NbxConfig.URI)/virtualization/virtual-machines"
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/virtualization/virtual-machines/" -Method GET
-    }
 
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
+            }
+        }
+        if ($PSBoundParameters.ContainsKey('Name')) {
+            $Filter['name'] = $Name
+        }
+
+        InvokeNbxRestMethod -Endpoint 'virtualization/virtual-machines/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.VirtualMachine'
+    }
 }

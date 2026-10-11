@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxContactAssignment
 ---
@@ -13,27 +12,47 @@ title: Set-NbxContactAssignment
 
 ## SYNOPSIS
 
-Update a contact role assignment in Netbox
+Updates contact assignments in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxContactAssignment [-Id] <ulong[]> [[-Content_Type] <string>] [[-Object_Id] <ulong>]
- [[-Contact] <ulong>] [[-Role] <ulong>] [[-Priority] <string>] [-Raw] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Set-NbxContactAssignment [-Id] <ulong[]> [[-Object] <Object>] [[-ObjectType] <string>]
+ [[-ObjectId] <int>] [[-Contact] <ulong>] [[-Role] <ulong>] [[-Priority] <string>]
+ [[-Tag] <ulong[]>] [[-CustomField] <hashtable>] [[-OptionalAttribute] <hashtable>] [-PassThru]
+ [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Updates a contact role assignment in Netbox
+Updates one or more contact assignments using the NetBox API endpoint 'tenancy/contact-assignments'.
+Only the specified properties are changed, all other properties keep their current values.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Set-NbxContactAssignment -Id 11 -Content_Type 'dcim.location' -Object_id 10 -Contact 15 -Role 10 -Priority 'Primary'
+```powershell
+Set-NbxContactAssignment -Id 42 -Description 'Updated with NetboxTools'
+```
+
+Updates the description of the contact assignment with ID 42.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxContactAssignment -Query @{ q = 'example' } | Set-NbxContactAssignment -Description 'Updated' -PassThru
+```
+
+Updates the description of all contact assignments matching the search 'example' and returns the updated contact assignments.
 
 ## PARAMETERS
 
@@ -61,16 +80,17 @@ HelpMessage: ''
 
 ### -Contact
 
-ID of the contact to assign.
+The contact of the contact assignment.
+Accepts an ID or an object from Get-NbxContact.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: 4
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -80,60 +100,20 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Content_Type
+### -CustomField
 
-The content type for this assignment.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
-Type: System.String
+Type: System.Collections.Hashtable
 DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- custom_fields
 ParameterSets:
 - Name: (All)
-  Position: 1
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Id
-
-Identifier of the contact assignment to update.
-
-```yaml
-Type: System.UInt64[]
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: 0
-  IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Object_Id
-
-ID of the object to assign.
-
-```yaml
-Type: System.UInt64
-DefaultValue: 0
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: 2
+  Position: 8
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -143,30 +123,9 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Priority
+### -Force
 
-Priority of the contact assignment.
-
-```yaml
-Type: System.String
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: 5
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Raw
-
-Return the unparsed data from the HTTP request
+Updates the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -185,18 +144,204 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Role
+### -Id
 
-ID of the contact role to assign.
+The ID of the contact assignment to update.
+Accepts contact assignment objects from the pipeline.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 0
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Object
+
+The object to assign the contact to, such as a site from Get-NbxDCIMSite.
+Sets ObjectType and ObjectId.
+
+```yaml
+Type: System.Object
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 1
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -ObjectId
+
+The ID of the object the contact is assigned to.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.Int32]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- object_id
+ParameterSets:
+- Name: (All)
+  Position: 3
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -ObjectType
+
+The type of the object the contact is assigned to, e.g.
+'dcim.site'.
+Common values are: circuits.circuit, circuits.provider, dcim.device, dcim.location, dcim.manufacturer, dcim.rack, dcim.region, dcim.site, dcim.sitegroup, tenancy.tenant, virtualization.cluster, virtualization.virtualmachine.
+Specify $null to clear the value.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- object_type
+- Content_Type
+ParameterSets:
+- Name: (All)
+  Position: 2
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -OptionalAttribute
+
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 9
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PassThru
+
+Returns the updated contact assignment.
+By default, this cmdlet does not generate any output.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Priority
+
+The priority of the contact assignment.
+Common values are: primary, secondary, tertiary, inactive.
+Specify $null to clear the value.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 6
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Role
+
+The contact role.
+Accepts an ID or an object from Get-NbxContactRole.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 5
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Tag
+
+The tags of the contact assignment.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- tags
+ParameterSets:
+- Name: (All)
+  Position: 7
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -208,7 +353,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -237,27 +383,24 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt64[]
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.ContactAssignment
 
-### System.String
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe contact assignment IDs or contact assignment objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.ContactAssignment
+
+With -PassThru the updated contact assignment is returned.
 
 ## NOTES
 
-Valid content types: https://docs.netbox.dev/en/stable/features/contacts/#contacts_1
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxContactAssignment](Get-NbxContactAssignment.md)
+- [New-NbxContactAssignment](New-NbxContactAssignment.md)
+- [Remove-NbxContactAssignment](Remove-NbxContactAssignment.md)

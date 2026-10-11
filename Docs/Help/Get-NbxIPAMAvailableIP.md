@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 03-20-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMAvailableIP
 ---
@@ -13,46 +12,76 @@ title: Get-NbxIPAMAvailableIP
 
 ## SYNOPSIS
 
-A convenience method for returning available IP addresses within a prefix
+Gets available IP addresses within a prefix.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Get-NbxIPAMAvailableIP [-Prefix_ID] <ulong> [[-Query] <hashtable>] [<CommonParameters>]
+Get-NbxIPAMAvailableIP [-Prefix] <ulong[]> [[-Query] <hashtable>] [[-Limit] <int>]
+ [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-A convenience method for returning available IP addresses within a prefix
+Gets the IP addresses within a prefix that are not in use, from the NetBox API endpoint 'ipam/prefixes/{id}/available-ips'.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Get-NbxIPAMAvailableIP -Prefix_ID (Get-NbxIPAMPrefix -Prefix 192.0.2.0/24).id
+```powershell
+Get-NbxIPAMPrefix -Prefix '192.0.2.0/24' | Get-NbxIPAMAvailableIP -Limit 1
+```
 
-Get (Next) Available IP on the Prefix 192.0.2.0/24
+Gets the next available IP address in the prefix 192.0.2.0/24.
 
 ## PARAMETERS
 
-### -Prefix_ID
+### -Limit
 
-A description of the Prefix_ID parameter.
+The maximum number of IP addresses to return for each prefix.
 
 ```yaml
-Type: System.UInt64
+Type: System.Int32
 DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 2
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Prefix
+
+The ID of the prefix.
+Accepts prefix objects from Get-NbxIPAMPrefix, also from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - Id
+- Prefix_ID
 ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -61,7 +90,8 @@ HelpMessage: ''
 
 ### -Query
 
-A hashtable containing all the parameters for a query string
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ vrf_id = 2 }.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -91,16 +121,16 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-Prefix identifier passed to the cmdlet.
+### NetboxTools.IPAMPrefix
 
-### Hashtable
-
-Hashtable with query parameters passed to the cmdlet.
+You can pipe prefix IDs or prefix objects to this cmdlet.
 
 ## OUTPUTS
 
+### System.Management.Automation.PSObject
+
 ## NOTES
 
-Additional information about the function.
-
 ## RELATED LINKS
+
+- [Get-NbxIPAMPrefix](Get-NbxIPAMPrefix.md)

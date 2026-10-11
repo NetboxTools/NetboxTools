@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMRole
 ---
@@ -13,33 +12,97 @@ title: Get-NbxIPAMRole
 
 ## SYNOPSIS
 
-Get IPAM Prefix/VLAN roles
+Gets IPAM roles from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxIPAMRole [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxIPAMRole [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxIPAMRole -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-A role indicates the function of a prefix or VLAN.
-For example, you might define Data, Voice, and Security roles.
-Generally, a prefix will be assigned the same functional role as the VLAN to which it is assigned (if any).
+Gets IPAM roles from the NetBox API endpoint 'ipam/roles'.
+Without parameters all IPAM roles are returned,
+the cmdlet follows the pagination of the API.
+
+IPAM role objects are returned as they are returned by the API, with the type name 'NetboxTools.IPAMRole',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
+```powershell
 Get-NbxIPAMRole
+```
+
+Gets all IPAM roles.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMRole -Id 42
+```
+
+Gets the IPAM role with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxIPAMRole -Name 'example'
+```
+
+Gets IPAM roles where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxIPAMRole -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 IPAM roles matching the search 'example'.
 
 ## PARAMETERS
 
+### -All
+
+Returns all objects, which is the default.
+Kept for backward compatibility.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Id
 
-Unique ID
+The ID of the IPAM role to get.
+Accepts IPAM role objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -47,8 +110,52 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of IPAM roles to return.
+By default all matching IPAM roles are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters IPAM roles by name.
+Multiple values return IPAM roles matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +167,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +180,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,16 +198,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.IPAMRole
+
+You can pipe IPAM role IDs or IPAM role objects to this cmdlet.
 
 ## OUTPUTS
 
-System.Object
-
-Objects representing IPAM role records (properties: `id`, `name`, `slug`, `description`).
+### NetboxTools.IPAMRole
 
 ## NOTES
 
-Additional information about the function.
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
 

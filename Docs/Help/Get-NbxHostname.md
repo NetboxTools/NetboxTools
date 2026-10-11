@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxHostname
 ---
@@ -13,7 +12,7 @@ title: Get-NbxHostname
 
 ## SYNOPSIS
 
-Retrieves hostname configuration or host records related to NetBox-managed devices.
+Gets the hostname of the NetBox connection.
 
 ## SYNTAX
 
@@ -23,17 +22,24 @@ Retrieves hostname configuration or host records related to NetBox-managed devic
 Get-NbxHostname [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Returns hostname entries or host records associated with devices. Use filters or `-Id` where supported to narrow results.
+Gets the hostname used to connect to the NetBox API.
+The hostname is set by Connect-NbxAPI or Set-NbxHostname.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> <Run the cmdlet with appropriate parameters>
+```powershell
+Get-NbxHostname
+```
 
-A short example description.
+Gets the hostname.
 
 ## PARAMETERS
 
@@ -48,11 +54,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Object
-
-Detailed description of the cmdlet's behavior. Update this with function-specific details.
+### string
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [Set-NbxHostname](Set-NbxHostname.md)

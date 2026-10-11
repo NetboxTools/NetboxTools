@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxHostPort
 ---
@@ -13,7 +12,7 @@ title: Get-NbxHostPort
 
 ## SYNOPSIS
 
-Retrieves host port records (host-side port representations) from NetBox.
+Gets the port of the NetBox connection.
 
 ## SYNTAX
 
@@ -23,17 +22,24 @@ Retrieves host port records (host-side port representations) from NetBox.
 Get-NbxHostPort [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Gets the port used to connect to the NetBox API.
+The port is set by Connect-NbxAPI or Set-NbxHostPort and defaults to 443.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxHostPort -Id 7
+```powershell
+Get-NbxHostPort
+```
 
-Returns host port with ID 7.
+Gets the port.
 
 ## PARAMETERS
 
@@ -48,11 +54,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Object
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### int
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [Set-NbxHostPort](Set-NbxHostPort.md)

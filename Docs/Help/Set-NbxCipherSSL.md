@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxCipherSSL
 ---
@@ -13,45 +12,57 @@ title: Set-NbxCipherSSL
 
 ## SYNOPSIS
 
-Configures the SSL cipher suite policy used for NetBox connections.
+Enables TLS 1.1 and 1.2 for the NetBox connection. Deprecated.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxCipherSSL
+Set-NbxCipherSSL [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+This cmdlet is deprecated, has no effect and will be removed in a future version.
+
+It configured System.Net.ServicePointManager, which is not used by Invoke-RestMethod in PowerShell 7.
+PowerShell 7 uses the TLS versions supported by the operating system, including TLS 1.2 and 1.3.
+To select TLS versions, use Set-NbxInvokeParameter -InvokeParameter @{ SslProtocol = 'Tls12' }.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxCipherSSL -Ciphers 'TLS_AES_128_GCM_SHA256'
+```powershell
+Set-NbxInvokeParameter -InvokeParameter @{ SslProtocol = 'Tls12' }
+```
 
-Sets the preferred SSL cipher list.
+Use this instead of Set-NbxCipherSSL to restrict the TLS version.
 
 ## PARAMETERS
+
+### CommonParameters
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
 ## OUTPUTS
 
-### System.Object
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+This cmdlet does not return output.
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Set-NbxInvokeParameter](Set-NbxInvokeParameter.md)

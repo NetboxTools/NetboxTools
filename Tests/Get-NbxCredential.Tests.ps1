@@ -5,54 +5,21 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-
-Describe "Get-NbxCredential" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Get-NbxCredential" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Should have parameters (if any)" {
-            (Get-Command "Get-NbxCredential").Parameters.Keys | Should -Not -BeNullOrEmpty -Because 'most functions have parameters or at least a parameter collection'
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Get-NbxCredential").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
+Describe 'Get-NbxCredential' {
+    AfterAll {
+        Initialize-NbxTestConnection
     }
 
-    Context "Function behavior" {
-
-        It "Should throw when Token is not set" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.Token = $null
-                try {
-                    { Get-NbxCredential } | Should -Throw '*Credentials not set*'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
-
-        It "Should return the token when it is set" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.Token = 'test-api-token-12345'
-                try {
-                    Get-NbxCredential | Should -Be 'test-api-token-12345'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
+    It 'Returns the credential with the API token' {
+        (Get-NbxCredential).GetNetworkCredential().Password | Should -Be '0123456789abcdef'
     }
 
+    It 'Throws when no token is configured' {
+        Disconnect-NbxAPI
+        { Get-NbxCredential } | Should -Throw '*No NetBox API token*'
+    }
 }

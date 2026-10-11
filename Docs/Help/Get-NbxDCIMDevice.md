@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxDCIMDevice
 ---
@@ -13,45 +12,153 @@ title: Get-NbxDCIMDevice
 
 ## SYNOPSIS
 
-Retrieves DCIM device objects from NetBox.
+Gets devices from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxDCIMDevice [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxDCIMDevice [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxDCIMDevice -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Gets devices from the NetBox API endpoint 'dcim/devices'.
+Without parameters all devices are returned,
+the cmdlet follows the pagination of the API.
+
+Device objects are returned as they are returned by the API, with the type name 'NetboxTools.DCIMDevice',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxDCIMDevice -Id 10
+```powershell
+Get-NbxDCIMDevice
+```
 
-Returns the DCIM device with ID 10.
+Gets all devices.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMDevice -Id 42
+```
+
+Gets the device with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxDCIMDevice -Name 'example'
+```
+
+Gets devices where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxDCIMDevice -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 devices matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the device to get.
+Accepts device objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of devices to return.
+By default all matching devices are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters devices by name.
+Multiple values return devices matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -60,7 +167,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +180,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,14 +198,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.DCIMDevice
+
+You can pipe device IDs or device objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
-
-Objects representing DCIM device records (common properties: `id`, `name`, `device_role`, `device_type`, `site`).
+### NetboxTools.DCIMDevice
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [New-NbxDCIMDevice](New-NbxDCIMDevice.md)
+- [Set-NbxDCIMDevice](Set-NbxDCIMDevice.md)
+- [Remove-NbxDCIMDevice](Remove-NbxDCIMDevice.md)

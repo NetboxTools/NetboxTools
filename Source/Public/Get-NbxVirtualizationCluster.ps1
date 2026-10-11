@@ -1,43 +1,94 @@
 function Get-NbxVirtualizationCluster {
-
     <#
     .SYNOPSIS
-        Obtains virtualization clusters from NetBox.
+        Gets clusters from NetBox.
 
     .DESCRIPTION
-        Obtains one or more virtualization clusters based on provided filters.
-   .PARAMETER Id
-        Database ID(s) of the cluster
+        Gets clusters from the NetBox API endpoint 'virtualization/clusters'. Without parameters all clusters are returned,
+        the cmdlet follows the pagination of the API.
+
+        Cluster objects are returned as they are returned by the API, with the type name 'NetboxTools.VirtualizationCluster',
+        and can be piped to the other cmdlets of the module.
+
+    .PARAMETER Id
+        The ID of the cluster to get. Accepts cluster objects from the pipeline.
+
+    .PARAMETER Name
+        Filters clusters by name. Multiple values return clusters matching any of the values.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
+
+    .PARAMETER Limit
+        The maximum number of clusters to return. By default all matching clusters are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxVirtualizationCluster
+        Get-NbxVirtualizationCluster
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all clusters.
 
-[CmdletBinding(DefaultParameterSetName = 'Default')]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'Id')]
-        [uint64[]]
-        $Id,
+    .EXAMPLE
+        Get-NbxVirtualizationCluster -Id 42
 
-        [Parameter(ParameterSetName = 'Default')]
-        [switch]
-        $All
+        Gets the cluster with ID 42.
+
+    .EXAMPLE
+        Get-NbxVirtualizationCluster -Name 'example'
+
+        Gets clusters where the name is 'example'.
+
+    .EXAMPLE
+        Get-NbxVirtualizationCluster -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 clusters matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.VirtualizationCluster
+        You can pipe cluster IDs or cluster objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.VirtualizationCluster
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.VirtualizationCluster')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('virtualization/clusters')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string[]]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Id' {
-            $Id | ForEach-Object {
-                InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/virtualization/clusters/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "virtualization/clusters/$ObjectId/" -TypeName 'NetboxTools.VirtualizationCluster'
+            }
+            return
+        }
+
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
             }
         }
-        'Default' {
-        write-Verbose "Getting All clusters at $($script:NbxConfig.URI)/virtualization/clusters"
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/virtualization/clusters/" -Method GET
+        if ($PSBoundParameters.ContainsKey('Name')) {
+            $Filter['name'] = $Name
         }
-    }
 
+        InvokeNbxRestMethod -Endpoint 'virtualization/clusters/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.VirtualizationCluster'
+    }
 }

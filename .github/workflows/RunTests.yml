@@ -10,7 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Import required modules
-      run: Install-Module -Name Pester -Force -SkipPublisherCheck
+      run: |
+        Install-Module -Name Pester -MinimumVersion 6.0.0 -Force -SkipPublisherCheck
+        Install-Module -Name PSScriptAnalyzer -Force
       shell: pwsh
     - name: Run tests
       run: .\Tests\TestRunner.ps1 -TestResults -Verbosity Normal -ModuleLoadPath ".\Source\NetboxTools.psm1" -CodeCoveragePath ".\Source\Public"

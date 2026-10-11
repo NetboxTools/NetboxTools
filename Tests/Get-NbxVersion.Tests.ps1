@@ -5,47 +5,21 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Get-NbxVersion" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Get-NbxVersion" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Should have parameters (if any)" {
-            (Get-Command "Get-NbxVersion").Parameters.Keys | Should -Not -BeNullOrEmpty -Because 'most functions have parameters or at least a parameter collection'
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Get-NbxVersion").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
+Describe 'Get-NbxVersion' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { [pscustomobject]@{ 'netbox-version' = '4.7.2' } }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ 'netbox-version' = '3.5.4' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod to get version" {
-            Get-NbxVersion
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*/status/*' -and $Method -eq 'GET'
-            }
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Gets the status from the status endpoint' {
+        $Result = Get-NbxVersion
+        $Result.'netbox-version' | Should -Be '4.7.2'
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.Status'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'GET' -and $Uri -like 'https://netbox.example.com/api/status/*'
         }
     }
-
 }

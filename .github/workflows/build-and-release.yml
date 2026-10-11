@@ -20,34 +20,42 @@ jobs:
 
     - name: Get version number and run build
       run: |
-        $Pattern = '^(refs\/tags\/|)[vV]?(?<versionNumber>[0-9\.]{1,10}).*'
-        $versionNumber = [regex]::Match("${{ github.ref }}",$Pattern).Groups['versionNumber'].Value
+        # Tags such as v2.0.0 or v2.0.0-preview1, the suffix is published as a prerelease version
+        $Pattern = '^(refs\/tags\/|)[vV]?(?<versionNumber>\d+\.\d+\.\d+)(-(?<prerelease>[0-9A-Za-z]+))?$'
+        $Match = [regex]::Match("${{ github.ref }}", $Pattern)
 
-        if ([string]::IsNullOrEmpty( $versionNumber )) {
+        if (-not $Match.Success) {
           # If this is manually triggered we will see if latest release is already on PSGallery.
-          # If it isn't, assume this is a retry and use this version
-          $latestReleasedTag = (Invoke-RestMethod 'https://api.github.com/repos/NetboxTools/NetboxTools/releases/latest').tag_name
-          $versionNumber = [regex]::Match("$latestReleasedTag", $Pattern).Groups['versionNumber'].Value
-
-          $PublishedVersion = Find-Module NetboxTools -MinimumVersion $versionNumber -MaximumVersion $versionNumber -ErrorAction SilentlyContinue
-          if ($PublishedVersion.Version -eq $versionNumber) {
-                throw "$VersionNumber appears to already be published. Fix this issue and retry. Or dont. I'm a workflow, not the law."
-          }
-          else {
-            Write-Host "$VersionNumber does not appear to be released. Going on."
+          # If it isn't, assume this is a retry and use this version. The list includes prereleases, releases/latest does not.
+          $latestReleasedTag = (Invoke-RestMethod 'https://api.github.com/repos/${{ github.repository }}/releases?per_page=1')[0].tag_name
+          $Match = [regex]::Match("$latestReleasedTag", $Pattern)
+          if (-not $Match.Success) {
+            throw "The tag '$latestReleasedTag' is not a version such as v2.0.0 or v2.0.0-preview1."
           }
         }
-        Write-Host "Versionnumber: $versionNumber"
-        Invoke-Build -Version $versionNumber
+
+        $versionNumber = $Match.Groups['versionNumber'].Value
+        $prerelease = $Match.Groups['prerelease'].Value
+        $fullVersion = if ($prerelease) { "$versionNumber-$prerelease" } else { $versionNumber }
+
+        $PublishedVersion = Find-Module NetboxTools -RequiredVersion $fullVersion -AllowPrerelease -ErrorAction SilentlyContinue
+        if ($PublishedVersion) {
+          throw "$fullVersion appears to already be published. Fix this issue and retry. Or dont. I'm a workflow, not the law."
+        }
+        Write-Host "Version: $fullVersion"
+        "MODULE_VERSION=$versionNumber" | Out-File -FilePath $env:GITHUB_ENV -Append
+        Invoke-Build -Version $versionNumber -Prerelease $prerelease
       shell: pwsh
-    
+
     - name: publish to PSGallery
       env:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
       shell: pwsh
       run: |
-        Get-ChildItem "${{ github.workspace }}\Bin\NetboxTools" -recurse
-        Publish-Module -Path "${{ github.workspace }}\Bin\NetboxTools" -NuGetApiKey $env:NUGET_KEY -Verbose
+        # Publish only the version that was built, Bin also contains earlier builds
+        $ModulePath = "${{ github.workspace }}\Bin\NetboxTools\$env:MODULE_VERSION"
+        Get-ChildItem $ModulePath -Recurse
+        Publish-Module -Path $ModulePath -NuGetApiKey $env:NUGET_KEY -Verbose
     - name: Archive current build
       uses: actions/upload-artifact@v4
       with:

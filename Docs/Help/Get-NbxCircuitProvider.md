@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxCircuitProvider
 ---
@@ -13,42 +12,151 @@ title: Get-NbxCircuitProvider
 
 ## SYNOPSIS
 
-Retrieves circuit provider records from NetBox.
+Gets circuit providers from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxCircuitProvider [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxCircuitProvider [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxCircuitProvider -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets one or more circuit provider objects from NetBox. Use `-Id` to request specific providers by NetBox database ID; omit `-Id` to return all providers.
+Gets circuit providers from the NetBox API endpoint 'circuits/providers'.
+Without parameters all circuit providers are returned,
+the cmdlet follows the pagination of the API.
+
+Circuit provider objects are returned as they are returned by the API, with the type name 'NetboxTools.CircuitProvider',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxCircuitProvider -Id 10
+```powershell
+Get-NbxCircuitProvider
+```
 
-Returns the circuit provider with database ID 10.
+Gets all circuit providers.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxCircuitProvider -Id 42
+```
+
+Gets the circuit provider with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxCircuitProvider -Name 'example'
+```
+
+Gets circuit providers where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxCircuitProvider -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 circuit providers matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the circuit provider to get.
+Accepts circuit provider objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of circuit providers to return.
+By default all matching circuit providers are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters circuit providers by name.
+Multiple values return circuit providers matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +168,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +181,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,14 +199,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.CircuitProvider
+
+You can pipe circuit provider IDs or circuit provider objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
-
-Objects representing circuit provider records (properties include `id`, `name`, `slug`, `asn`, etc.).
+### NetboxTools.CircuitProvider
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
+

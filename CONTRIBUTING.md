@@ -28,11 +28,44 @@ The repo is organized as below:
 Import-Module .\Source\NetboxTools.psd1
 ```
 
+### Cmdlet conventions
+
+All cmdlets work the same way, see [Working with the cmdlets](README.md#working-with-the-cmdlets). When adding a cmdlet,
+start from an existing cmdlet of the same verb, for example `Get-NbxDCIMSite`, `New-NbxDCIMSite`, `Set-NbxDCIMSite` and
+`Remove-NbxDCIMSite`, and keep the same structure:
+
+- `Get-*` has an `Id` parameter set (`-Id`, from the pipeline) and a `Query` parameter set (`-Name` or the main field,
+  `-Query`, `-Limit`).
+- `New-*` binds parameters by property name from the pipeline (`ValueFromPipelineByPropertyName`) and has `-OptionalAttribute`.
+- `Set-*` takes `-Id` from the pipeline and has `-OptionalAttribute`, `-PassThru` and `-Force`.
+- `Remove-*` takes `-Id` from the pipeline, has `ConfirmImpact = 'High'` and `-Force`.
+- `New-*`, `Set-*` and `Remove-*` support `-WhatIf` and `-Confirm` (`SupportsShouldProcess`).
+- Parameter names are PascalCase without underscores. When the NetBox field name differs from the lower cased parameter
+  name, the first alias is the NetBox field name, e.g. `[Alias('device_type')]` on `-DeviceType`. The request body is
+  built from these names by `ConvertToNbxBody`. Aliases kept for backward compatibility must not be all lower case.
+- References to other objects use `[NbxIdTransformation('<endpoint>')]`, so they accept IDs and NetBox objects, and
+  objects of another type are rejected. Choice fields use `[NbxChoiceTransformation()]` with `[ArgumentCompletions()]`
+  instead of `[ValidateSet()]`, as NetBox choices can be extended.
+- All requests go through the private function `InvokeNbxRestMethod`, which handles authentication, pagination and errors.
+- Fields and endpoints are verified against the NetBox API serializers of the supported NetBox version.
+
 ### Tests
 
 The NetboxTools module is developed using Test-driven development(TDD) where we aim for full test coverage for all our functions. Make sure that all new features and updates are covered by Pester tests. All tests will be executed when a Pull Request is submitted as a build validation step. PRs with failing tests will not be approved.
 
-[Pester](https://github.com/pester/Pester) is the ubiquitous test and mock framework for PowerShell.
+[Pester](https://github.com/pester/Pester) is the ubiquitous test and mock framework for PowerShell. The tests require Pester 6.
+
+```powershell
+Install-Module -Name Pester -MinimumVersion 6.0.0 -Scope CurrentUser
+.\Tests\TestRunner.ps1 -ModuleLoadPath .\Source\NetboxTools.psm1 -CodeCoveragePath .\Source\Public
+```
+
+- Every public function has a test file `Tests\<Function>.Tests.ps1`.
+- Tests mock `Invoke-RestMethod`, the boundary to the NetBox API, and not the module's own functions, so that the URIs,
+  query strings and request bodies sent to NetBox are tested. `Tests\TestHelpers.ps1` sets up a test connection
+  (`Initialize-NbxTestConnection`) and returns responses like NetBox does (`New-NbxTestResponse`).
+- `Tests\Conventions.Tests.ps1` checks the cmdlet conventions above for all public functions, including comment-based
+  help for every parameter and PSScriptAnalyzer.
 
 Exclusion of standard tests can be done using the SkipTest attribute.
 
@@ -55,22 +88,37 @@ Install-Module -Name Microsoft.Powershell.PlatyPS -Scope CurrentUser
 Import-Module Microsoft.Powershell.PlatyPS
 ```
 
+Write the help as comment-based help in the function (synopsis, description, every parameter, examples, inputs and
+outputs) and generate the markdown from it.
+
 - Create initial Markdown help file for `NetboxTools` module (This will only create help files for new commands, existing files will not be overwritten):
 
 ```powershell
 # you should have module imported in the session
 Import-Module .\Source\NetboxTools.psd1
-New-MarkdownCommandHelp -Command (Get-Command My-NewCommand) -OutputFolder .\Docs\Help
+New-MarkdownCommandHelp -CommandInfo (Get-Command My-NewCommand) -OutputFolder .\Docs\Help
 ```
-Move the newly creaated markdown from `.\Docs\Help\NetboxTools` to `.\Docs\Help` folder and populate `{{ ... }}` placeholders with missed help content.
+Move the newly created markdown from `.\Docs\Help\NetboxTools` to `.\Docs\Help` folder and populate `{{ ... }}` placeholders with missed help content, such as the INPUTS and OUTPUTS descriptions and the ALIASES section.
 
 - If you've made a lot of changes to the module code, you can easily update the markdown file(s) automatically with:
 
 ```powershell
 # re-import your module with latest changes
 Import-Module .\Source\NetboxTools.psd1 -Force
-Update-MarkdownHelp .\Docs\Help
+Update-MarkdownCommandHelp -Path .\Docs\Help\*.md
 ```
+
+## Releasing
+
+Publishing a GitHub release runs the `build and release` workflow, which builds, tests and publishes the module to the
+PowerShell Gallery. The version is taken from the release tag:
+
+- `v2.0.0` publishes version 2.0.0.
+- `v2.0.0-preview1` publishes the prerelease version 2.0.0-preview1. Mark the GitHub release as a pre-release.
+  Prerelease labels may only contain letters and digits (`preview1`, not `preview.1`). Prereleases are only installed
+  with `Install-Module NetboxTools -AllowPrerelease`.
+
+Versions published to the PowerShell Gallery can be unlisted but not deleted, and a version number can not be reused.
 
 ## Pull Requests
 

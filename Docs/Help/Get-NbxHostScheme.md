@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxHostScheme
 ---
@@ -13,7 +12,7 @@ title: Get-NbxHostScheme
 
 ## SYNOPSIS
 
-Retrieves host scheme definitions from NetBox (URI/host naming schemes, etc.).
+Gets the scheme of the NetBox connection.
 
 ## SYNTAX
 
@@ -23,17 +22,24 @@ Retrieves host scheme definitions from NetBox (URI/host naming schemes, etc.).
 Get-NbxHostScheme [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Gets host scheme objects from NetBox. Use `-Id` to request specific schemes.
+Gets the scheme used to connect to the NetBox API.
+The scheme is set by Connect-NbxAPI or Set-NbxHostScheme and defaults to 'https'.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> <Run the cmdlet with appropriate parameters>
+```powershell
+Get-NbxHostScheme
+```
 
-A short example description.
+Gets the scheme.
 
 ## PARAMETERS
 
@@ -48,11 +54,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Object
-
-Detailed description of the cmdlet's behavior. Update this with function-specific details.
+### string
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [Set-NbxHostScheme](Set-NbxHostScheme.md)

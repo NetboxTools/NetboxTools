@@ -1,56 +1,169 @@
 ---
-external help file: NetboxTools-help.xml
+document type: cmdlet
+external help file: NetboxTools-Help.xml
+HelpUri: ''
+Locale: en-US
 Module Name: NetboxTools
-online version:
-schema: 2.0.0
+PlatyPS schema version: 2024-05-01
+title: Remove-NbxIPAMPrefix
 ---
 
 # Remove-NbxIPAMPrefix
 
 ## SYNOPSIS
-Remove an IPAM prefixes from Netbox
+
+Removes prefixes from NetBox.
 
 ## SYNTAX
 
+### __AllParameterSets
+
 ```
-Remove-NbxIPAMPrefix [-Id] <UInt64[]> [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Remove-NbxIPAMPrefix [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
-Removes/deletes an IPAM prefix from Netbox by ID
+
+Removes one or more prefixes using the NetBox API endpoint 'ipam/prefixes'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
+
+```powershell
+Remove-NbxIPAMPrefix -Id 42
 ```
-Remove-NbxIPAMPrefix -Id $value1
+
+Removes the prefix with ID 42 after confirmation.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMPrefix -Query @{ q = 'example' } | Remove-NbxIPAMPrefix -Force
 ```
+
+Removes all prefixes matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
-### -Id
-Database ID of the IPAM prefix object.
+### -Confirm
+
+Prompts you for confirmation before running the cmdlet.
 
 ```yaml
-Type: UInt64[]
-Parameter Sets: (All)
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
 Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
 
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
+### -Force
+
+Removes the object without asking for confirmation.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the prefix to remove.
+Accepts prefix objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 0
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -WhatIf
+
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
+-InformationAction, -InformationVariable, -OutBuffer, -OutVariable, -PipelineVariable,
+-ProgressAction, -Verbose, -WarningAction, and -WarningVariable. For more information, see
+[about_CommonParameters](https://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
+### System.UInt64
+
+### NetboxTools.IPAMPrefix
+
+You can pipe prefix IDs or prefix objects to this cmdlet.
+
 ## OUTPUTS
 
+### None
+
+This cmdlet does not return output.
+
 ## NOTES
-Additional information about the function.
 
 ## RELATED LINKS
+
+- [Get-NbxIPAMPrefix](Get-NbxIPAMPrefix.md)
+- [New-NbxIPAMPrefix](New-NbxIPAMPrefix.md)
+- [Set-NbxIPAMPrefix](Set-NbxIPAMPrefix.md)

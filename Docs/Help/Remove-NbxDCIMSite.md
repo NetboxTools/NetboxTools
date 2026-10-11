@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Remove-NbxDCIMSite
 ---
@@ -13,33 +12,42 @@ title: Remove-NbxDCIMSite
 
 ## SYNOPSIS
 
-Remove a Site
+Removes sites from NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Remove-NbxDCIMSite [-Id] <uint> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-NbxDCIMSite [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Remove a DCIM Site from Netbox
+Removes one or more sites using the NetBox API endpoint 'dcim/sites'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Remove-NbxDCIMSite -Id 1
+```powershell
+Remove-NbxDCIMSite -Id 42
+```
 
-Remove DCM Site with id 1
+Removes the site with ID 42 after confirmation.
 
 ### EXAMPLE 2
 
-Get-NbxDCIMSite -name My Site | Remove-NbxDCIMSite -confirm:$false
+```powershell
+Get-NbxDCIMSite -Query @{ q = 'example' } | Remove-NbxDCIMSite -Force
+```
 
-Remove DCM Site with name My Site without confirmation
+Removes all sites matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
@@ -65,21 +73,43 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Id
+### -Force
 
-Identifier of the site to remove.
+Removes the object without asking for confirmation.
 
 ```yaml
-Type: System.UInt32
-DefaultValue: 0
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the site to remove.
+Accepts site objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -88,7 +118,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -117,14 +148,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt32
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMSite
+
+You can pipe site IDs or site objects to this cmdlet.
 
 ## OUTPUTS
+
+### None
+
+This cmdlet does not return output.
 
 ## NOTES
 
 ## RELATED LINKS
 
-
+- [Get-NbxDCIMSite](Get-NbxDCIMSite.md)
+- [New-NbxDCIMSite](New-NbxDCIMSite.md)
+- [Set-NbxDCIMSite](Set-NbxDCIMSite.md)

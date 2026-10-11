@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Remove-NbxDCIMFrontPort
 ---
@@ -13,7 +12,7 @@ title: Remove-NbxDCIMFrontPort
 
 ## SYNOPSIS
 
-Removes a front port from a device in NetBox.
+Removes front ports from NetBox.
 
 ## SYNTAX
 
@@ -23,17 +22,32 @@ Removes a front port from a device in NetBox.
 Remove-NbxDCIMFrontPort [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Removes one or more front ports using the NetBox API endpoint 'dcim/front-ports'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Remove-NbxDCIMFrontPort -ID 3
+```powershell
+Remove-NbxDCIMFrontPort -Id 42
+```
 
-Removes front port ID 3.
+Removes the front port with ID 42 after confirmation.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMFrontPort -Query @{ q = 'example' } | Remove-NbxDCIMFrontPort -Force
+```
+
+Removes all front ports matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
@@ -43,7 +57,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -61,7 +75,7 @@ HelpMessage: ''
 
 ### -Force
 
-Specifies the Force parameter.
+Removes the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -82,19 +96,20 @@ HelpMessage: ''
 
 ### -Id
 
-Specifies the Id parameter.
+The ID of the front port to remove.
+Accepts front port objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -108,7 +123,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -135,25 +150,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMFrontPort
 
-### System.UInt64[]
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe front port IDs or front port objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+This cmdlet does not return output.
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxDCIMFrontPort](Get-NbxDCIMFrontPort.md)
+- [New-NbxDCIMFrontPort](New-NbxDCIMFrontPort.md)
+- [Set-NbxDCIMFrontPort](Set-NbxDCIMFrontPort.md)

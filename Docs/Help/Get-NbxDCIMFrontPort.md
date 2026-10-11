@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxDCIMFrontPort
 ---
@@ -13,33 +12,166 @@ title: Get-NbxDCIMFrontPort
 
 ## SYNOPSIS
 
-Retrieves front port objects from NetBox (ports exposed on device front panels).
+Gets front ports from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxDCIMFrontPort [<CommonParameters>]
+Get-NbxDCIMFrontPort [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxDCIMFrontPort -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets front port records for DCIM devices in NetBox. Use `-Id` to retrieve specific front ports or omit to list all.
+Gets front ports from the NetBox API endpoint 'dcim/front-ports'.
+Without parameters all front ports are returned,
+the cmdlet follows the pagination of the API.
+
+Front port objects are returned as they are returned by the API, with the type name 'NetboxTools.DCIMFrontPort',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxDCIMFrontPort -Device 1
+```powershell
+Get-NbxDCIMFrontPort
+```
 
-Returns front ports for device ID 1.
+Gets all front ports.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMFrontPort -Id 42
+```
+
+Gets the front port with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxDCIMFrontPort -Name 'example'
+```
+
+Gets front ports where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxDCIMFrontPort -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 front ports matching the search 'example'.
 
 ## PARAMETERS
 
+### -All
+
+Returns all objects, which is the default.
+Kept for backward compatibility.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the front port to get.
+Accepts front port objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of front ports to return.
+By default all matching front ports are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters front ports by name.
+Multiple values return front ports matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -49,7 +181,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -69,15 +201,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-None. This cmdlet does not accept pipeline input.
+### NetboxTools.DCIMFrontPort
+
+You can pipe front port IDs or front port objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMFrontPort
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [New-NbxDCIMFrontPort](New-NbxDCIMFrontPort.md)
+- [Set-NbxDCIMFrontPort](Set-NbxDCIMFrontPort.md)
+- [Remove-NbxDCIMFrontPort](Remove-NbxDCIMFrontPort.md)

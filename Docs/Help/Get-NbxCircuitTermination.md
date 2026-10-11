@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxCircuitTermination
 ---
@@ -13,42 +12,120 @@ title: Get-NbxCircuitTermination
 
 ## SYNOPSIS
 
-Retrieves circuit termination objects from NetBox.
+Gets circuit terminations from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxCircuitTermination [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxCircuitTermination [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxCircuitTermination -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets one or more circuit termination records (attachment points for circuits). Use `-Id` to limit results to specific terminations by NetBox ID.
+Gets circuit terminations from the NetBox API endpoint 'circuits/circuit-terminations'.
+Without parameters all circuit terminations are returned,
+the cmdlet follows the pagination of the API.
+
+Circuit termination objects are returned as they are returned by the API, with the type name 'NetboxTools.CircuitTermination',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxCircuitTermination -Id 99
+```powershell
+Get-NbxCircuitTermination
+```
 
-Returns the circuit termination with NetBox ID 99.
+Gets all circuit terminations.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxCircuitTermination -Id 42
+```
+
+Gets the circuit termination with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxCircuitTermination -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 circuit terminations matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the circuit termination to get.
+Accepts circuit termination objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of circuit terminations to return.
+By default all matching circuit terminations are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +137,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +150,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -90,12 +170,17 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-None. This cmdlet does not accept pipeline input.
+### NetboxTools.CircuitTermination
+
+You can pipe circuit termination IDs or circuit termination objects to this cmdlet.
+
 ## OUTPUTS
 
-### System.Object
+### NetboxTools.CircuitTermination
 
-Objects returned by the cmdlet (typically API response objects).
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
+

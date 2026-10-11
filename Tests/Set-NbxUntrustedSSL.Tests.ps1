@@ -5,42 +5,23 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxUntrustedSSL" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxUntrustedSSL" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxUntrustedSSL").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Set-NbxUntrustedSSL"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -BeNullOrEmpty
-        }
+Describe 'Set-NbxUntrustedSSL' {
+    AfterEach {
+        Initialize-NbxTestConnection
     }
 
-    Context "Function behavior" {
-
-        It "Should be callable" {
-            $cmd = Get-Command Set-NbxUntrustedSSL
-            $cmd | Should -Not -BeNullOrEmpty
-            $cmd.CommandType | Should -Be 'Function'
-        }
+    It 'Enables SkipCertificateCheck and warns that it is deprecated' {
+        Set-NbxUntrustedSSL -WarningVariable Warnings -WarningAction SilentlyContinue
+        $Warnings | Should -BeLike '*deprecated*'
+        InModuleScope NetboxTools { $script:NbxConfig.InvokeParams.SkipCertificateCheck } | Should -BeTrue
     }
 
+    It 'Does not change the configuration with -WhatIf' {
+        Set-NbxUntrustedSSL -WhatIf -WarningAction SilentlyContinue
+        InModuleScope NetboxTools { $script:NbxConfig.InvokeParams.SkipCertificateCheck } | Should -BeFalse
+    }
 }

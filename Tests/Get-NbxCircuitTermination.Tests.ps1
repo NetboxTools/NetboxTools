@@ -5,66 +5,53 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Get-NbxCircuitTermination" {
+Describe 'Get-NbxCircuitTermination' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Get-NbxCircuitTermination" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+    It 'Gets all circuit terminations from the list endpoint' {
+        $Result = Get-NbxCircuitTermination
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'GET' -and $Uri -eq 'https://netbox.example.com/api/circuits/circuit-terminations/?limit=1000'
         }
+        $Result | Should -HaveCount 1
+    }
 
-        It "Parameter names are PascalCase" {
-            (Get-Command "Get-NbxCircuitTermination").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
+    It 'Returns objects with the type name NetboxTools.CircuitTermination' {
+        (Get-NbxCircuitTermination).PSObject.TypeNames | Should -Contain 'NetboxTools.CircuitTermination'
+    }
 
-        It "Should have mandatory parameters" {
-            (Get-Command "Get-NbxCircuitTermination").Parameters.Keys | Should -Contain "Id"
-            (Get-Command "Get-NbxCircuitTermination").Parameters.Keys | Should -Contain "Query"
+    It 'Gets circuit terminations by Id' {
+        Get-NbxCircuitTermination -Id 41, 42
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Method -eq 'GET' -and $Uri -eq 'https://netbox.example.com/api/circuits/circuit-terminations/41/' }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Method -eq 'GET' -and $Uri -eq 'https://netbox.example.com/api/circuits/circuit-terminations/42/' }
+    }
+
+    It 'Accepts IDs and circuit termination objects from the pipeline' {
+        41, [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/circuits/circuit-terminations/42/' } | Get-NbxCircuitTermination
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/circuits/circuit-terminations/42/' }
+    }
+
+    It 'Rejects objects of another type' {
+        { [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/dcim/sites/42/' } | Get-NbxCircuitTermination -ErrorAction Stop } | Should -Throw '*not of the expected type*'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Passes the query to the API' {
+        Get-NbxCircuitTermination -Query @{ q = 'test value'; tag = 'a', 'b' }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri.AbsoluteUri -like '*q=test%20value*' -and $Uri.AbsoluteUri -like '*tag=a&tag=b*'
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with Id parameter set" {
-            Get-NbxCircuitTermination -Id 42
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*/circuits/circuit-terminations/42/*' -and $Method -eq 'GET'
-            }
-        }
-
-        It "Should call InvokeNbxRestMethod for each Id when multiple are provided" {
-            Get-NbxCircuitTermination -Id 1, 2, 3
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 3
-        }
-
-        It "Should call InvokeNbxRestMethod with Query parameter set" {
-            Get-NbxCircuitTermination -Query @{ name = 'Test' }
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*/circuits/circuit-terminations/*' -and $Method -eq 'GET' -and $Query.name -eq 'Test'
-            }
-        }
-
-        It "Should call InvokeNbxRestMethod with Default parameter set" {
-            Get-NbxCircuitTermination
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*/circuits/circuit-terminations/*' -and $Method -eq 'GET'
-            }
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
-        }
+    It 'Limits the number of returned objects' {
+        Get-NbxCircuitTermination -Limit 5
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/circuits/circuit-terminations/?limit=5' }
     }
-
 }

@@ -5,79 +5,49 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxContactRole" {
+Describe 'Set-NbxContactRole' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxContactRole" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxContactRole").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Set-NbxContactRole"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'Id'
+    It 'Updates only the specified properties with a PATCH request' {
+        Set-NbxContactRole -Id 42 -Description 'Updated' -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Method -eq 'PATCH' -and $Uri -eq 'https://netbox.example.com/api/tenancy/contact-roles/42/' -and
+            $Body.description -eq 'Updated' -and @($Body.PSObject.Properties).Count -eq 1
         }
     }
 
-    Context "Function behavior" {
 
-        BeforeAll {
-            InModuleScope NetboxTools {
-                Set-Item -Path function:script:BuildURIComponents -Value {
-                    param($URISegments, $ParametersDictionary, $SkipParameterByName)
-                    return @{ Segments = $URISegments; Parameters = @{} }
-                }
-                Set-Item -Path function:script:BuildNewURI -Value {
-                    param($Segments)
-                    return 'https://netbox.example.com/api/test/1/'
-                }
-                Set-Item -Path function:script:InvokeNbxRequest -Value {
-                    param($URI, $Body, $Method)
-                    return [pscustomobject]@{ id = 1 }
-                }
-            }
-            Mock -ModuleName NetboxTools -CommandName Get-NbxContactRole -MockWith {
-                return [pscustomobject]@{ id = 1; Name = 'Test'; display = 'Test' }
-            }
-            Mock -ModuleName NetboxTools -CommandName BuildURIComponents -MockWith {
-                return @{ Segments = @('test'); Parameters = @{} }
-            }
-            Mock -ModuleName NetboxTools -CommandName BuildNewURI -MockWith {
-                return 'https://netbox.example.com/api/test/1/'
-            }
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRequest -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-        }
-
-        It "Should call InvokeNbxRequest with PATCH method" {
-            Set-NbxContactRole -Id 1 -Name 'Updated' -Confirm:$false
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRequest -Times 1
-        }
-
-        It "Should call Get-NbxContactRole to verify the object exists" {
-            Set-NbxContactRole -Id 1 -Name 'Updated' -Confirm:$false
-            Should -Invoke -ModuleName NetboxTools -CommandName Get-NbxContactRole -Times 1
-        }
-
-        It "Should not throw with valid parameters" {
-            { Set-NbxContactRole -Id 1 -Name 'Updated' -Confirm:$false } | Should -Not -Throw
-        }
+    It 'Accepts IDs and contact role objects from the pipeline' {
+        41, [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/tenancy/contact-roles/42/' } | Set-NbxContactRole -Description 'Updated' -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/tenancy/contact-roles/41/' }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/tenancy/contact-roles/42/' }
     }
 
+    It 'Rejects objects of another type' {
+        { [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/dcim/sites/42/' } | Set-NbxContactRole -Description 'Updated' -Confirm:$false -ErrorAction Stop } | Should -Throw '*not of the expected type*'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Returns nothing by default and the updated object with -PassThru' {
+        Set-NbxContactRole -Id 42 -Description 'Updated' -Confirm:$false | Should -BeNullOrEmpty
+        $Result = Set-NbxContactRole -Id 42 -Description 'Updated' -PassThru -Confirm:$false
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.ContactRole'
+    }
+
+    It 'Throws when no properties are specified' {
+        { Set-NbxContactRole -Id 42 -Confirm:$false } | Should -Throw '*at least one property*'
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        Set-NbxContactRole -Id 42 -Description 'Updated' -WhatIf
+        Set-NbxContactRole -Id 42 -Description 'Updated' -WhatIf -Force
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
 }

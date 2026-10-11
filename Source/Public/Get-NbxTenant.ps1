@@ -1,44 +1,103 @@
 function Get-NbxTenant {
-
     <#
     .SYNOPSIS
-        Get a tenant from NetBox
+        Gets tenants from NetBox.
 
     .DESCRIPTION
-        A detailed description of the Get-NbxTenant function.
+        Gets tenants from the NetBox API endpoint 'tenancy/tenants'. Without parameters all tenants are returned,
+        the cmdlet follows the pagination of the API.
+
+        Tenant objects are returned as they are returned by the API, with the type name 'NetboxTools.Tenant',
+        and can be piped to the other cmdlets of the module.
 
     .PARAMETER Id
-        The database ID of the tenant
+        The ID of the tenant to get. Accepts tenant objects from the pipeline.
+
+    .PARAMETER Name
+        Filters tenants by name. Multiple values return tenants matching any of the values.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
+
+    .PARAMETER Limit
+        The maximum number of tenants to return. By default all matching tenants are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxTenant
+        Get-NbxTenant
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all tenants.
 
-[CmdletBinding(DefaultParameterSetName = 'Default')]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'Id')]
-        [uint64[]]
-        $Id,
+    .EXAMPLE
+        Get-NbxTenant -Id 42
 
-        [Parameter(ParameterSetName = 'Default')]
-        [switch]
-        $All
+        Gets the tenant with ID 42.
+
+    .EXAMPLE
+        Get-NbxTenant -Name 'example'
+
+        Gets tenants where the name is 'example'.
+
+    .EXAMPLE
+        Get-NbxTenant -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 tenants matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.Tenant
+        You can pipe tenant IDs or tenant objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.Tenant
+
+    .LINK
+        New-NbxTenant
+
+    .LINK
+        Set-NbxTenant
+
+    .LINK
+        Remove-NbxTenant
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.Tenant')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('tenancy/tenants')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string[]]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Id' {
-            $Id | ForEach-Object {
-                InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/tenants/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "tenancy/tenants/$ObjectId/" -TypeName 'NetboxTools.Tenant'
+            }
+            return
+        }
+
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
             }
         }
-        'Default' {
-        write-Verbose "Getting All tenants at $($script:NbxConfig.URI)/tenancy/tenants"
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/tenants/" -Method GET
+        if ($PSBoundParameters.ContainsKey('Name')) {
+            $Filter['name'] = $Name
         }
-    }
 
+        InvokeNbxRestMethod -Endpoint 'tenancy/tenants/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.Tenant'
+    }
 }

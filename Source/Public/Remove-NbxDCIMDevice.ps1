@@ -1,56 +1,66 @@
 function Remove-NbxDCIMDevice {
-
-<#
+    <#
     .SYNOPSIS
-        Delete a device
+        Removes devices from NetBox.
 
     .DESCRIPTION
-        Deletes a device from NetBox by ID
+        Removes one or more devices using the NetBox API endpoint 'dcim/devices'.
+        You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
     .PARAMETER Id
-        Database ID of the device
+        The ID of the device to remove. Accepts device objects from the pipeline.
 
     .PARAMETER Force
-        Force deletion without any prompts
+        Removes the object without asking for confirmation.
+
+    .PARAMETER WhatIf
+        Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+    .PARAMETER Confirm
+        Prompts you for confirmation before running the cmdlet.
 
     .EXAMPLE
-        PS C:\> Remove-NbxDCIMDevice -Id $value1
+        Remove-NbxDCIMDevice -Id 42
 
-    .NOTES
-        Additional information about the function.
-#>
+        Removes the device with ID 42 after confirmation.
 
-    [CmdletBinding(ConfirmImpact = 'High',
-                   SupportsShouldProcess = $true)]
-    param
-    (
-        [Parameter(Mandatory,
-                   ValueFromPipelineByPropertyName = $true)]
+    .EXAMPLE
+        Get-NbxDCIMDevice -Query @{ q = 'example' } | Remove-NbxDCIMDevice -Force
+
+        Removes all devices matching the search 'example' without confirmation.
+
+    .INPUTS
+        System.UInt64, NetboxTools.DCIMDevice
+        You can pipe device IDs or device objects to this cmdlet.
+
+    .OUTPUTS
+        None
+
+    .LINK
+        Get-NbxDCIMDevice
+
+    .LINK
+        New-NbxDCIMDevice
+
+    .LINK
+        Set-NbxDCIMDevice
+    #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [OutputType([void])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [NbxIdTransformation('dcim/devices')]
         [uint64[]]$Id,
 
+        [Parameter()]
         [switch]$Force
     )
 
-    begin {
-
-    }
-
     process {
-        foreach ($DeviceID in $Id) {
-            $CurrentDevice = Get-NbxDCIMDevice -Id $DeviceID -ErrorAction Stop
-
-            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentDevice.Name) | ID: $($CurrentDevice.Id)", "Remove")) {
-                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'devices', $CurrentDevice.Id))
-
-                $URI = BuildNewURI -Segments $Segments
-
-                InvokeNbxRequest -URI $URI -Method DELETE
+        foreach ($ObjectId in $Id) {
+            if (($Force -and -not $WhatIfPreference) -or $PSCmdlet.ShouldProcess("device $ObjectId", 'Remove')) {
+                InvokeNbxRestMethod -Endpoint "dcim/devices/$ObjectId/" -Method DELETE
             }
         }
     }
-
-    end {
-
-    }
-
 }

@@ -1,117 +1,169 @@
 function Set-NbxContact {
-
-<#
+    <#
     .SYNOPSIS
-        Update a contact in NetBox
+        Updates contacts in NetBox.
 
     .DESCRIPTION
-        Updates a contact object in NetBox which can be linked to other objects
+        Updates one or more contacts using the NetBox API endpoint 'tenancy/contacts'.
+        Only the specified properties are changed, all other properties keep their current values.
+
+        References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
     .PARAMETER Id
-        A description of the Id parameter.
+        The ID of the contact to update. Accepts contact objects from the pipeline.
 
     .PARAMETER Name
-        The contacts full name, e.g "Leroy Jenkins"
-
-    .PARAMETER Email
-        Email address of the contact
+        The name of the contact.
 
     .PARAMETER Group
-        Database ID of assigned group
+        The contact groups. Accepts IDs or objects.
 
     .PARAMETER Title
-        Job title or other title related to the contact
+        The title of the contact. Specify $null to clear the value.
 
     .PARAMETER Phone
-        Telephone number
+        The phone of the contact. Specify $null to clear the value.
+
+    .PARAMETER Email
+        The email of the contact. Specify $null to clear the value.
 
     .PARAMETER Address
-        Physical address, usually mailing address
-
-    .PARAMETER Description
-        Short description of the contact
-
-    .PARAMETER Comments
-        Detailed comments. Markdown supported.
+        The postal address of the contact. Specify $null to clear the value.
 
     .PARAMETER Link
-        URI related to the contact
+        A URL related to the contact. Specify $null to clear the value.
 
-    .PARAMETER Custom_Fields
-        A description of the Custom_Fields parameter.
+    .PARAMETER Description
+        A short description of the contact. Specify $null to clear the value.
+
+    .PARAMETER Comments
+        Comments about the contact. Supports Markdown. Specify $null to clear the value.
+
+    .PARAMETER Tag
+        The tags of the contact. Accepts tag IDs or objects from Get-NbxTag. Replaces the current tags.
+
+    .PARAMETER CustomField
+        Custom field values as a hashtable, e.g. @{ cost_center = '1234' }.
+
+    .PARAMETER OptionalAttribute
+        Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter. Named parameters take precedence over values in the hashtable.
+
+    .PARAMETER PassThru
+        Returns the updated contact. By default, this cmdlet does not generate any output.
 
     .PARAMETER Force
-        A description of the Force parameter.
+        Updates the object without asking for confirmation.
 
-    .PARAMETER Raw
-        A description of the Raw parameter.
+    .PARAMETER WhatIf
+        Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+    .PARAMETER Confirm
+        Prompts you for confirmation before running the cmdlet.
 
     .EXAMPLE
-        PS C:\> Set-NbxContact -Id 10 -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+        Set-NbxContact -Id 42 -Description 'Updated with NetboxTools'
 
-    .NOTES
-        Additional information about the function.
-#>
+        Updates the description of the contact with ID 42.
 
-    [CmdletBinding(ConfirmImpact = 'Low',
-                   SupportsShouldProcess = $true)]
-    [OutputType([pscustomobject])]
-    param
-    (
-        [Parameter(Mandatory,
-                   ValueFromPipelineByPropertyName = $true)]
+    .EXAMPLE
+        Get-NbxContact -Query @{ q = 'example' } | Set-NbxContact -Description 'Updated' -PassThru
+
+        Updates the description of all contacts matching the search 'example' and returns the updated contacts.
+
+    .INPUTS
+        System.UInt64, NetboxTools.Contact
+        You can pipe contact IDs or contact objects to this cmdlet.
+
+    .OUTPUTS
+        None, NetboxTools.Contact
+        With -PassThru the updated contact is returned.
+
+    .LINK
+        Get-NbxContact
+
+    .LINK
+        New-NbxContact
+
+    .LINK
+        Remove-NbxContact
+    #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+    [OutputType('NetboxTools.Contact')]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [NbxIdTransformation('tenancy/contacts')]
         [uint64[]]$Id,
 
-        [ValidateLength(1, 100)]
+        [Parameter()]
         [string]$Name,
 
-        [ValidateLength(0, 254)]
-        [string]$Email,
+        [Parameter()]
+        [Alias('groups')]
+        [NbxIdTransformation('tenancy/contact-groups')]
+        [uint64[]]$Group,
 
-        [uint64]$Group,
-
-        [ValidateLength(0, 100)]
+        [Parameter()]
         [string]$Title,
 
-        [ValidateLength(0, 50)]
+        [Parameter()]
         [string]$Phone,
 
-        [ValidateLength(0, 200)]
+        [Parameter()]
+        [string]$Email,
+
+        [Parameter()]
         [string]$Address,
 
-        [ValidateLength(0, 200)]
-        [string]$Description,
-
-        [string]$Comments,
-
-        [ValidateLength(0, 200)]
+        [Parameter()]
         [string]$Link,
 
-        [hashtable]$Custom_Fields,
+        [Parameter()]
+        [string]$Description,
 
-        [switch]$Force,
+        [Parameter()]
+        [string]$Comments,
 
-        [switch]$Raw
+        [Parameter()]
+        [Alias('tags')]
+        [NbxIdTransformation('extras/tags')]
+        [uint64[]]$Tag,
+
+        [Parameter()]
+        [Alias('custom_fields')]
+        [NbxDictionaryTransformation()]
+        [hashtable]$CustomField,
+
+        [Parameter()]
+        [hashtable]$OptionalAttribute,
+
+        [Parameter()]
+        [switch]$PassThru,
+
+        [Parameter()]
+        [switch]$Force
     )
 
     begin {
-        $Method = 'PATCH'
-    }
+        $Body = ConvertToNbxBody -Command $MyInvocation.MyCommand -BoundParameters $PSBoundParameters
 
-    process {
-        foreach ($ContactId in $Id) {
-            $Segments = [System.Collections.ArrayList]::new(@('tenancy', 'contacts', $ContactId))
-
-            $URIComponents = BuildURIComponents -URISegments $Segments.Clone() -ParametersDictionary $PSBoundParameters -SkipParameterByName 'Id', 'Force'
-
-            $URI = BuildNewURI -Segments $URIComponents.Segments
-
-            $CurrentContact = Get-NbxContact -Id $ContactId -ErrorAction Stop
-
-            if ($Force -or $PSCmdlet.ShouldProcess($CurrentContact.Name, 'Update contact')) {
-                InvokeNbxRequest -URI $URI -Method $Method -Body $URIComponents.Parameters -Raw:$Raw
-            }
+        if ($Body.Count -eq 0) {
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new(
+                    [System.ArgumentException]::new('Specify at least one property to update.'),
+                    'NbxNothingToUpdate',
+                    [System.Management.Automation.ErrorCategory]::InvalidArgument,
+                    $null
+                ))
         }
     }
 
+    process {
+        foreach ($ObjectId in $Id) {
+            if (($Force -and -not $WhatIfPreference) -or $PSCmdlet.ShouldProcess("contact $ObjectId", 'Update')) {
+                $Result = InvokeNbxRestMethod -Endpoint "tenancy/contacts/$ObjectId/" -Method PATCH -Body $Body -TypeName 'NetboxTools.Contact'
+                if ($PassThru) {
+                    $Result
+                }
+            }
+        }
+    }
 }

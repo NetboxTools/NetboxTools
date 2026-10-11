@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Remove-NbxDCIMDevice
 ---
@@ -13,7 +12,7 @@ title: Remove-NbxDCIMDevice
 
 ## SYNOPSIS
 
-Delete a device
+Removes devices from NetBox.
 
 ## SYNTAX
 
@@ -23,15 +22,32 @@ Delete a device
 Remove-NbxDCIMDevice [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Deletes a device from Netbox by ID
+Removes one or more devices using the NetBox API endpoint 'dcim/devices'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Remove-NbxDCIMDevice -Id $value1
+```powershell
+Remove-NbxDCIMDevice -Id 42
+```
+
+Removes the device with ID 42 after confirmation.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMDevice -Query @{ q = 'example' } | Remove-NbxDCIMDevice -Force
+```
+
+Removes all devices matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
@@ -59,7 +75,7 @@ HelpMessage: ''
 
 ### -Force
 
-Force deletion without any prompts
+Removes the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -80,7 +96,8 @@ HelpMessage: ''
 
 ### -Id
 
-Database ID of the device
+The ID of the device to remove.
+Accepts device objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -91,8 +108,8 @@ ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -101,7 +118,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -130,14 +148,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt64[]
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMDevice
+
+You can pipe device IDs or device objects to this cmdlet.
 
 ## OUTPUTS
 
+### None
+
+This cmdlet does not return output.
+
 ## NOTES
 
-Additional information about the function.
 ## RELATED LINKS
 
+- [Get-NbxDCIMDevice](Get-NbxDCIMDevice.md)
+- [New-NbxDCIMDevice](New-NbxDCIMDevice.md)
+- [Set-NbxDCIMDevice](Set-NbxDCIMDevice.md)

@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxDCIMSite
 ---
@@ -13,45 +12,153 @@ title: Get-NbxDCIMSite
 
 ## SYNOPSIS
 
-Retrieves site records from NetBox.
+Gets sites from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxDCIMSite [[-Id] <ulong>] [<CommonParameters>]
+Get-NbxDCIMSite [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxDCIMSite -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Gets sites from the NetBox API endpoint 'dcim/sites'.
+Without parameters all sites are returned,
+the cmdlet follows the pagination of the API.
+
+Site objects are returned as they are returned by the API, with the type name 'NetboxTools.DCIMSite',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxDCIMSite -Name 'Site A'
+```powershell
+Get-NbxDCIMSite
+```
 
-Returns site records with name 'Site A'.
+Gets all sites.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMSite -Id 42
+```
+
+Gets the site with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxDCIMSite -Name 'example'
+```
+
+Gets sites where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxDCIMSite -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 sites matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Site Id.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the site to get.
+Accepts site objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of sites to return.
+By default all matching sites are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters sites by name.
+Multiple values return sites matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -60,7 +167,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +180,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -90,15 +200,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMSite
+
+You can pipe site IDs or site objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMSite
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [New-NbxDCIMSite](New-NbxDCIMSite.md)
+- [Set-NbxDCIMSite](Set-NbxDCIMSite.md)
+- [Remove-NbxDCIMSite](Remove-NbxDCIMSite.md)

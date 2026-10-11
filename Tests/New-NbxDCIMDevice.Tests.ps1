@@ -5,69 +5,71 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "New-NbxDCIMDevice" {
+Describe 'New-NbxDCIMDevice' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "New-NbxDCIMDevice" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+    It 'Creates the device with a POST request' {
+        $Result = New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'POST' -and $Uri -eq 'https://netbox.example.com/api/dcim/devices/'
         }
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.DCIMDevice'
+    }
 
-        It "Parameter names are PascalCase" {
-            (Get-Command "New-NbxDCIMDevice").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "New-NbxDCIMDevice"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'Role'
-            $mandatoryParams | Should -Contain 'DeviceType'
-            $mandatoryParams | Should -Contain 'Site'
+    It 'Sends the parameters with NetBox field names' {
+        New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.role | Should -Be 1
+            $Body.device_type | Should -Be 1
+            $Body.site | Should -Be 1
+            $true
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with POST method" {
-            New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Method -eq 'POST' -and $Uri -like '*/dcim/devices/*'
-            }
-        }
-
-        It "Should include mandatory parameters in the request body" {
-            New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Body -ne $null
-            }
-        }
-
-        It "Should not throw with valid parameters" {
-            { New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1 } | Should -Not -Throw
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Merges OptionalAttribute into the body' {
+        New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1 -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            ($Body | ConvertFrom-Json).custom_fields.owner -eq 'IT'
         }
     }
 
+    It 'Accepts NetBox objects from the pipeline' {
+        $InputObject = [pscustomobject]@{
+            id = 99
+            url = 'https://netbox.example.com/api/dcim/devices/99/'
+            role = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/dcim/device-roles/7/' }
+            device_type = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/dcim/device-types/7/' }
+            site = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/dcim/sites/7/' }
+        }
+        $InputObject | New-NbxDCIMDevice
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.role | Should -Be 7
+            $Body.device_type | Should -Be 7
+            $Body.site | Should -Be 7
+            $Body.PSObject.Properties.Name -notcontains 'id'
+        }
+    }
+
+    It 'Creates one device per pipeline object' {
+        $InputObject = [pscustomobject]@{
+            role = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/dcim/device-roles/7/' }
+            device_type = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/dcim/device-types/7/' }
+            site = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/dcim/sites/7/' }
+        }
+        $InputObject, $InputObject | New-NbxDCIMDevice
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        New-NbxDCIMDevice -Role 1 -DeviceType 1 -Site 1 -WhatIf
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
 }

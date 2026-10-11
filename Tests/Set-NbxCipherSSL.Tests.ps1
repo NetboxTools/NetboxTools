@@ -5,39 +5,15 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxCipherSSL" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxCipherSSL" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxCipherSSL").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Set-NbxCipherSSL"
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $cmd.Parameters.Keys | Should -Contain $p.Key
-                    }
-                }
-            }
-        }
+Describe 'Set-NbxCipherSSL' {
+    It 'Warns that it is deprecated and does not change the configuration' {
+        $Before = InModuleScope NetboxTools { $script:NbxConfig | ConvertTo-Json -Depth 3 }
+        Set-NbxCipherSSL -WarningVariable Warnings -WarningAction SilentlyContinue
+        $Warnings | Should -BeLike '*deprecated*'
+        InModuleScope NetboxTools { $script:NbxConfig | ConvertTo-Json -Depth 3 } | Should -Be $Before
     }
-
-    Context "Function behavior" {
-
-        It "Should be callable" {
-            $cmd = Get-Command Set-NbxCipherSSL
-            $cmd | Should -Not -BeNullOrEmpty
-            $cmd.CommandType | Should -Be 'Function'
-        }
-    }
-
 }

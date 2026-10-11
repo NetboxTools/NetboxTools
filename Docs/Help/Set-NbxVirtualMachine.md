@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxVirtualMachine
 ---
@@ -13,45 +12,67 @@ title: Set-NbxVirtualMachine
 
 ## SYNOPSIS
 
-Updates a virtual machine record in NetBox.
+Updates virtual machines in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxVirtualMachine [-Id] <ulong> [[-Name] <string>] [[-Role] <ulong>] [[-Cluster] <ulong>]
- [[-Status] <Object>] [[-Platform] <ulong>] [[-Primary_IP4] <ulong>] [[-Primary_IP6] <ulong>]
- [[-VCPUs] <byte>] [[-Memory] <ulong>] [[-Disk] <ulong>] [[-Tenant] <ulong>] [[-Comments] <string>]
- [[-Custom_Fields] <hashtable>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-NbxVirtualMachine [-Id] <ulong[]> [[-Name] <string>] [[-Status] <string>] [[-Site] <ulong>]
+ [[-Cluster] <ulong>] [[-Device] <ulong>] [[-Role] <ulong>] [[-VirtualMachineType] <ulong>]
+ [[-Tenant] <ulong>] [[-Platform] <ulong>] [[-PrimaryIP4] <ulong>] [[-PrimaryIP6] <ulong>]
+ [[-VCPUs] <decimal>] [[-Memory] <int>] [[-Disk] <int>] [[-Serial] <string>]
+ [[-ConfigTemplate] <ulong>] [[-Description] <string>] [[-Comments] <string>] [[-Tag] <ulong[]>]
+ [[-CustomField] <hashtable>] [[-OptionalAttribute] <hashtable>] [-PassThru] [-Force] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Updates one or more virtual machines using the NetBox API endpoint 'virtualization/virtual-machines'.
+Only the specified properties are changed, all other properties keep their current values.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxVirtualMachine -ID 10 -Name 'vm1'
+```powershell
+Set-NbxVirtualMachine -Id 42 -Description 'Updated with NetboxTools'
+```
 
-Renames VM ID 10 to 'vm1'.
+Updates the description of the virtual machine with ID 42.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxVirtualMachine -Query @{ q = 'example' } | Set-NbxVirtualMachine -Description 'Updated' -PassThru
+```
+
+Updates the description of all virtual machines matching the search 'example' and returns the updated virtual machines.
 
 ## PARAMETERS
 
 ### -Cluster
 
-Specifies the Cluster parameter.
+The cluster of the virtual machine.
+Accepts an ID or an object from Get-NbxVirtualizationCluster.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: 4
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -63,16 +84,42 @@ HelpMessage: ''
 
 ### -Comments
 
-Specifies the Comments parameter.
+Comments about the virtual machine.
+Supports Markdown.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 12
+  Position: 18
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -ConfigTemplate
+
+The config template of the virtual machine.
+Accepts an ID or a NetBox object.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- config_template
+ParameterSets:
+- Name: (All)
+  Position: 16
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -88,7 +135,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -104,18 +151,65 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Custom_Fields
+### -CustomField
 
-Specifies the Custom_Fields parameter.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
 Type: System.Collections.Hashtable
-DefaultValue: None
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- custom_fields
+ParameterSets:
+- Name: (All)
+  Position: 20
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Description
+
+A short description of the virtual machine.
+Specify $null to clear the value.
+
+```yaml
+Type: System.String
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 13
+  Position: 17
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Device
+
+The device (host) the virtual machine runs on.
+Accepts an ID or an object from Get-NbxDCIMDevice.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -127,16 +221,17 @@ HelpMessage: ''
 
 ### -Disk
 
-Specifies the Disk parameter.
+The disk size in MB.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.Int32]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 10
+  Position: 14
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -148,7 +243,7 @@ HelpMessage: ''
 
 ### -Force
 
-Specifies the Force parameter.
+Updates the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -169,19 +264,20 @@ HelpMessage: ''
 
 ### -Id
 
-Specifies the Id parameter.
+The ID of the virtual machine to update.
+Accepts virtual machine objects from the pipeline.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -190,16 +286,17 @@ HelpMessage: ''
 
 ### -Memory
 
-Specifies the Memory parameter.
+The amount of memory in MB.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.Int32]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 9
+  Position: 13
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -211,11 +308,11 @@ HelpMessage: ''
 
 ### -Name
 
-Specifies the Name parameter.
+The name of the virtual machine.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -230,18 +327,19 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Platform
+### -OptionalAttribute
 
-Specifies the Platform parameter.
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Collections.Hashtable
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 5
+  Position: 21
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -251,13 +349,108 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Primary_IP4
+### -PassThru
 
-Specifies the Primary_IP4 parameter.
+Returns the updated virtual machine.
+By default, this cmdlet does not generate any output.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Platform
+
+The platform of the virtual machine.
+Accepts an ID or an object from Get-NbxDCIMPlatform.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 9
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PrimaryIP4
+
+The primary IPv4 address of the virtual machine.
+Accepts an ID or an object from Get-NbxIPAMAddress.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- primary_ip4
+ParameterSets:
+- Name: (All)
+  Position: 10
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PrimaryIP6
+
+The primary IPv6 address of the virtual machine.
+Accepts an ID or an object from Get-NbxIPAMAddress.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- primary_ip6
+ParameterSets:
+- Name: (All)
+  Position: 11
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Role
+
+The device role.
+Accepts an ID or an object from Get-NbxDCIMDeviceRole.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -272,18 +465,19 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Primary_IP6
+### -Serial
 
-Specifies the Primary_IP6 parameter.
+The serial number of the virtual machine.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.String
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 7
+  Position: 15
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -293,13 +487,38 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Role
+### -Site
 
-Specifies the Role parameter.
+The site of the virtual machine.
+Accepts an ID or an object from Get-NbxDCIMSite.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 3
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Status
+
+The status of the virtual machine.
+Common values are: offline, active, planned, staged, failed, decommissioning.
+Specify $null to clear the value.
+
+```yaml
+Type: System.String
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -314,18 +533,21 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Status
+### -Tag
 
-Specifies the Status parameter.
+The tags of the virtual machine.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
 
 ```yaml
-Type: System.Object
-DefaultValue: None
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- tags
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 19
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -337,16 +559,18 @@ HelpMessage: ''
 
 ### -Tenant
 
-Specifies the Tenant parameter.
+The tenant of the virtual machine.
+Accepts an ID or an object from Get-NbxTenant.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 11
+  Position: 8
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -358,16 +582,41 @@ HelpMessage: ''
 
 ### -VCPUs
 
-Specifies the VCPUs parameter.
+The number of virtual CPUs.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.Byte
-DefaultValue: None
+Type: System.Nullable`1[System.Decimal]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 8
+  Position: 12
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -VirtualMachineType
+
+The virtual machine type of the virtual machine.
+Accepts an ID or a NetBox object.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- virtual_machine_type
+ParameterSets:
+- Name: (All)
+  Position: 7
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -384,7 +633,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -411,21 +660,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.VirtualMachine
+
+You can pipe virtual machine IDs or virtual machine objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.VirtualMachine
+
+With -PassThru the updated virtual machine is returned.
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxVirtualMachine](Get-NbxVirtualMachine.md)
+- [New-NbxVirtualMachine](New-NbxVirtualMachine.md)
+- [Remove-NbxVirtualMachine](Remove-NbxVirtualMachine.md)

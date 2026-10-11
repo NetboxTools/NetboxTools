@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxIPAMAddressRange
 ---
@@ -13,45 +12,65 @@ title: Set-NbxIPAMAddressRange
 
 ## SYNOPSIS
 
-Updates an existing address range record in NetBox.
+Updates IP ranges in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxIPAMAddressRange [-Id] <ulong[]> [[-Start_Address] <string>] [[-End_Address] <string>]
- [[-Status] <Object>] [[-Tenant] <ulong>] [[-VRF] <ulong>] [[-Role] <Object>]
- [[-Custom_Fields] <hashtable>] [[-Description] <string>] [[-Comments] <string>]
- [[-Tags] <Object[]>] [-Mark_Utilized] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-NbxIPAMAddressRange [-Id] <ulong[]> [[-StartAddress] <string>] [[-EndAddress] <string>]
+ [[-Status] <string>] [[-Vrf] <ulong>] [[-Tenant] <ulong>] [[-Role] <ulong>]
+ [[-MarkPopulated] <bool>] [[-MarkUtilized] <bool>] [[-Description] <string>] [[-Comments] <string>]
+ [[-Tag] <ulong[]>] [[-CustomField] <hashtable>] [[-OptionalAttribute] <hashtable>] [-PassThru]
+ [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Updates one or more IP ranges using the NetBox API endpoint 'ipam/ip-ranges'.
+Only the specified properties are changed, all other properties keep their current values.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxIPAMAddressRange -ID 44 -Start '192.0.2.10' -End '192.0.2.20'
+```powershell
+Set-NbxIPAMAddressRange -Id 42 -Description 'Updated with NetboxTools'
+```
 
-Updates the start/end of the address range ID 44.
+Updates the description of the IP range with ID 42.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMAddressRange -Query @{ q = 'example' } | Set-NbxIPAMAddressRange -Description 'Updated' -PassThru
+```
+
+Updates the description of all IP ranges matching the search 'example' and returns the updated IP ranges.
 
 ## PARAMETERS
 
 ### -Comments
 
-Specifies the Comments parameter.
+Comments about the IP range.
+Supports Markdown.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 9
+  Position: 10
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -67,7 +86,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -83,18 +102,20 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Custom_Fields
+### -CustomField
 
-Specifies the Custom_Fields parameter.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
 Type: System.Collections.Hashtable
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- custom_fields
 ParameterSets:
 - Name: (All)
-  Position: 7
+  Position: 12
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -106,16 +127,17 @@ HelpMessage: ''
 
 ### -Description
 
-Specifies the Description parameter.
+A short description of the IP range.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 8
+  Position: 9
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -125,15 +147,17 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -End_Address
+### -EndAddress
 
-Specifies the End_Address parameter.
+The last address of the range with mask, e.g.
+'192.0.2.20/24'.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- end_address
 ParameterSets:
 - Name: (All)
   Position: 2
@@ -146,30 +170,119 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Id
+### -Force
 
-Specifies the Id parameter.
+Updates the object without asking for confirmation.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 0
-  IsRequired: true
+  Position: Named
+  IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Mark_Utilized
+### -Id
 
-Specifies the Mark_Utilized parameter.
+The ID of the IP range to update.
+Accepts IP range objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 0
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -MarkPopulated
+
+Prevent the creation of IP addresses within the range.
+
+```yaml
+Type: System.Boolean
+DefaultValue: False
+SupportsWildcards: false
+Aliases:
+- mark_populated
+ParameterSets:
+- Name: (All)
+  Position: 7
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -MarkUtilized
+
+Treat the range as fully utilized.
+
+```yaml
+Type: System.Boolean
+DefaultValue: False
+SupportsWildcards: false
+Aliases:
+- mark_utilized
+ParameterSets:
+- Name: (All)
+  Position: 8
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -OptionalAttribute
+
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 13
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -PassThru
+
+Returns the updated IP range.
+By default, this cmdlet does not generate any output.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -190,11 +303,13 @@ HelpMessage: ''
 
 ### -Role
 
-Specifies the Role parameter.
+The IPAM role.
+Accepts an ID or an object from Get-NbxIPAMRole.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.Object
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -209,15 +324,17 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Start_Address
+### -StartAddress
 
-Specifies the Start_Address parameter.
+The first address of the range with mask, e.g.
+'192.0.2.10/24'.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- start_address
 ParameterSets:
 - Name: (All)
   Position: 1
@@ -232,11 +349,13 @@ HelpMessage: ''
 
 ### -Status
 
-Specifies the Status parameter.
+The status of the IP range.
+Common values are: active, reserved, deprecated.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.Object
-DefaultValue: None
+Type: System.String
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -251,18 +370,21 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Tags
+### -Tag
 
-Specifies the Tags parameter.
+The tags of the IP range.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
 
 ```yaml
-Type: System.Object[]
-DefaultValue: None
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- tags
 ParameterSets:
 - Name: (All)
-  Position: 10
+  Position: 11
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -274,16 +396,18 @@ HelpMessage: ''
 
 ### -Tenant
 
-Specifies the Tenant parameter.
+The tenant of the IP range.
+Accepts an ID or an object from Get-NbxTenant.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -293,18 +417,20 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -VRF
+### -Vrf
 
-Specifies the VRF parameter.
+The vrf of the IP range.
+Accepts an ID or a NetBox object.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 5
+  Position: 4
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -321,7 +447,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -348,25 +474,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.IPAMAddressRange
 
-### System.UInt64[]
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe IP range IDs or IP range objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.IPAMAddressRange
+
+With -PassThru the updated IP range is returned.
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxIPAMAddressRange](Get-NbxIPAMAddressRange.md)
+- [New-NbxIPAMAddressRange](New-NbxIPAMAddressRange.md)
+- [Remove-NbxIPAMAddressRange](Remove-NbxIPAMAddressRange.md)

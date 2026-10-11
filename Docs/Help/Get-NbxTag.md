@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxTag
 ---
@@ -13,42 +12,174 @@ title: Get-NbxTag
 
 ## SYNOPSIS
 
-Retrieves tag records used for categorizing NetBox objects.
+Gets tags from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxTag [[-Id] <ulong>] [<CommonParameters>]
+Get-NbxTag [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxTag -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets tag objects from NetBox. Use `-Id` to select specific tags or omit to list all tags.
+Gets tags from the NetBox API endpoint 'extras/tags'.
+Without parameters all tags are returned,
+the cmdlet follows the pagination of the API.
+
+Tag objects are returned as they are returned by the API, with the type name 'NetboxTools.Tag',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxTag -Id 7
+```powershell
+Get-NbxTag
+```
 
-Returns the tag with ID 7.
+Gets all tags.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxTag -Id 42
+```
+
+Gets the tag with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxTag -Name 'example'
+```
+
+Gets tags where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxTag -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 tags matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the tag to get.
+Accepts tag objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of tags to return.
+By default all matching tags are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters tags by name.
+Multiple values return tags matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Query
+
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -69,15 +200,17 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.Tag
+
+You can pipe tag IDs or tag objects to this cmdlet.
 
 ## OUTPUTS
 
-System.Management.Automation.PSObject
-
-Objects representing tag records (`id`, `name`, `slug`).
+### NetboxTools.Tag
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
 

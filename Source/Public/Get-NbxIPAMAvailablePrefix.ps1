@@ -1,34 +1,54 @@
 function Get-NbxIPAMAvailablePrefix {
-
     <#
     .SYNOPSIS
-        A convenience method for returning available range within a prefix
+        Gets available prefixes within a prefix.
 
     .DESCRIPTION
-        By default, the number of IPs returned will be equivalent to PAGINATE_COUNT. An arbitrary limit
-        (up to MAX_PAGE_SIZE, if set) may be passed, however results will not be paginated
+        Gets the prefixes within a prefix that are not in use, from the NetBox API endpoint 'ipam/prefixes/{id}/available-prefixes'.
 
-    .PARAMETER Prefix_ID
-        A description of the Prefix_ID parameter.
+    .PARAMETER Prefix
+        The ID of the prefix. Accepts prefix objects from Get-NbxIPAMPrefix, also from the pipeline.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ vrf_id = 2 }.
+
+    .PARAMETER Limit
+        The maximum number of prefixes to return for each prefix.
 
     .EXAMPLE
-        Get-NbxIPAMAvailableIP -Prefix_ID (Get-NbxIPAMPrefix -Prefix 192.0.2.0/24).id
+        Get-NbxIPAMPrefix -Prefix '192.0.2.0/24' | Get-NbxIPAMAvailablePrefix
 
-        Get (Next) Available IP on the Prefix 192.0.2.0/24
+        Gets the unused prefixes within the prefix 192.0.2.0/24.
 
-    .NOTES
-        Additional information about the function.
-#>
+    .INPUTS
+        System.UInt64, NetboxTools.IPAMPrefix
+        You can pipe prefix IDs or prefix objects to this cmdlet.
 
+    .OUTPUTS
+        System.Management.Automation.PSObject
+
+    .LINK
+        Get-NbxIPAMPrefix
+    #>
     [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory,
-            ValueFromPipelineByPropertyName = $true)]
-        [Alias('Id')]
-        [uint64]$Prefix_ID
+    [OutputType([psobject])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [Alias('Id', 'Prefix_ID')]
+        [NbxIdTransformation('ipam/prefixes')]
+        [uint64[]]$Prefix,
+
+        [Parameter()]
+        [hashtable]$Query,
+
+        [Parameter()]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$Prefix_ID/available-prefixes/" -Method GET
-
+    process {
+        foreach ($PrefixId in $Prefix) {
+            InvokeNbxRestMethod -Endpoint "ipam/prefixes/$PrefixId/available-prefixes/" -Query $Query -Limit $Limit
+        }
+    }
 }

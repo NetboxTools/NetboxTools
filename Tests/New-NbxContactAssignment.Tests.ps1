@@ -5,69 +5,80 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "New-NbxContactAssignment" {
+Describe 'New-NbxContactAssignment' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "New-NbxContactAssignment" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+    It 'Creates the contact assignment with a POST request' {
+        $Result = New-NbxContactAssignment -Contact 1 -ObjectType 'dcim.site' -ObjectId 1
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'POST' -and $Uri -eq 'https://netbox.example.com/api/tenancy/contact-assignments/'
         }
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.ContactAssignment'
+    }
 
-        It "Parameter names are PascalCase" {
-            (Get-Command "New-NbxContactAssignment").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "New-NbxContactAssignment"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'ObjectId'
-            $mandatoryParams | Should -Contain 'Contact'
-            $mandatoryParams | Should -Contain 'ObjectType'
+    It 'Sends the parameters with NetBox field names' {
+        New-NbxContactAssignment -Contact 1 -ObjectType 'dcim.site' -ObjectId 1
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.contact | Should -Be 1
+            $true
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with POST method" {
-            New-NbxContactAssignment -ObjectType 'dcim.device' -ObjectId 1 -Contact 1
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Method -eq 'POST' -and $Uri -like '*/tenancy/contact-assignments/*'
-            }
-        }
-
-        It "Should include mandatory parameters in the request body" {
-            New-NbxContactAssignment -ObjectType 'dcim.device' -ObjectId 1 -Contact 1
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Body -ne $null
-            }
-        }
-
-        It "Should not throw with valid parameters" {
-            { New-NbxContactAssignment -ObjectType 'dcim.device' -ObjectId 1 -Contact 1 } | Should -Not -Throw
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Merges OptionalAttribute into the body' {
+        New-NbxContactAssignment -Contact 1 -ObjectType 'dcim.site' -ObjectId 1 -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            ($Body | ConvertFrom-Json).custom_fields.owner -eq 'IT'
         }
     }
 
+    It 'Accepts NetBox objects from the pipeline' {
+        $InputObject = [pscustomobject]@{
+            id = 99
+            url = 'https://netbox.example.com/api/tenancy/contact-assignments/99/'
+            contact = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/tenancy/contacts/7/' }
+            object_type = 'dcim.site'
+            object_id = 5
+        }
+        $InputObject | New-NbxContactAssignment
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.contact | Should -Be 7
+            $Body.PSObject.Properties.Name -notcontains 'id'
+        }
+    }
+
+    It 'Creates one contact assignment per pipeline object' {
+        $InputObject = [pscustomobject]@{
+            contact = [pscustomobject]@{ id = 7; url = 'https://netbox.example.com/api/tenancy/contacts/7/' }
+            object_type = 'dcim.site'
+            object_id = 5
+        }
+        $InputObject, $InputObject | New-NbxContactAssignment
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        New-NbxContactAssignment -Contact 1 -ObjectType 'dcim.site' -ObjectId 1 -WhatIf
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Sets the object type and ID from an object' {
+        New-NbxContactAssignment -Contact 1 -Object ([pscustomobject]@{ id = 5; url = 'https://netbox.example.com/api/dcim/sites/5/' })
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.object_type -eq 'dcim.site' -and $Body.object_id -eq 5
+        }
+    }
+
+    It 'Writes an error when no object is specified' {
+        { New-NbxContactAssignment -Contact 1 -ErrorAction Stop } | Should -Throw '*Specify the object*'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
 }

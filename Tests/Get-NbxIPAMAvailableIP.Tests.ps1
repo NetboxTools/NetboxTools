@@ -5,53 +5,57 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Get-NbxIPAMAvailableIP" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Get-NbxIPAMAvailableIP" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Get-NbxIPAMAvailableIP").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Get-NbxIPAMAvailableIP"
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $cmd.Parameters.Keys | Should -Contain $p.Key
-                    }
-                }
-            }
+Describe 'Get-NbxIPAMAvailableIP' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith {
+            @([pscustomobject]@{ address = '192.0.2.1/24' }, [pscustomobject]@{ address = '192.0.2.2/24' })
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; address = '10.0.0.1/24' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with the prefix ID" {
-            Get-NbxIPAMAvailableIP -Prefix_ID 5
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*/ipam/prefixes/5/available-ips/*' -and $Method -eq 'GET'
-            }
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Gets the available objects of a prefix' {
+        Get-NbxIPAMAvailableIP -Prefix 5 | Should -HaveCount 2
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'GET' -and $Uri -like 'https://netbox.example.com/api/ipam/prefixes/5/available-ips/*'
         }
     }
 
+    It 'Accepts prefix objects from the pipeline' {
+        [pscustomobject]@{ id = 5; url = 'https://netbox.example.com/api/ipam/prefixes/5/' } | Get-NbxIPAMAvailableIP
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri -like '*/ipam/prefixes/5/available-ips/*'
+        }
+    }
+
+    It 'Accepts the Id alias and the previous Prefix_ID parameter name' {
+        Get-NbxIPAMAvailableIP -Id 5
+        Get-NbxIPAMAvailableIP -Prefix_ID 6
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Rejects objects that are not prefixes' {
+        { [pscustomobject]@{ id = 5; url = 'https://netbox.example.com/api/ipam/ip-ranges/5/' } | Get-NbxIPAMAvailableIP -ErrorAction Stop } |
+            Should -Throw '*not of the expected type*'
+    }
+
+    It 'Limits the number of returned objects' {
+        Get-NbxIPAMAvailableIP -Prefix 5 -Limit 1 | Should -HaveCount 1
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -like '*limit=1' }
+    }
+}
+
+Describe 'Get-NbxIPAMAvailableIP with -Query' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { @() }
+    }
+
+    It 'Passes the query to the API' {
+        Get-NbxIPAMAvailableIP -Prefix 5 -Query @{ vrf_id = 2 }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri.AbsoluteUri -like '*/ipam/prefixes/5/available-ips/?vrf_id=2*'
+        }
+    }
 }

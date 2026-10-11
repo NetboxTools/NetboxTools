@@ -1,17 +1,3 @@
-$script:NbxConfig = @{
-	'Connected'     = $true
-	'Choices'       = @{
-	}
-	'APIDefinition' = $null
-	'ContentTypes'  = $null
-	'NbxVersion'    = @{
-		'Netbox-version' = '3.5.4'
-	}
-	'Timeout'       = 30
-	'Credential'    = [System.Management.Automation.PSCredential]::Empty
-	'InvokeParams'  = @{ SkipCertificateCheck = $false }
-}
-
 # import classes
 foreach ($file in (Get-ChildItem "$PSScriptRoot\Classes\*.ps1")) {
 	try {
@@ -44,3 +30,6 @@ foreach ($file in (Get-ChildItem "$PSScriptRoot\Public\*.ps1")) {
 		Write-Error "Failed to import '$($file.FullName)'. $_"
 	}
 }
+
+# module initialization, shared with the compiled module
+. "$PSScriptRoot\..\Tools\_PostModule.ps1"

@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxCircuit
 ---
@@ -13,32 +12,119 @@ title: Get-NbxCircuit
 
 ## SYNOPSIS
 
-Gets one or more circuits
+Gets circuits from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxCircuit [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxCircuit [-CID <string[]>] [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxCircuit -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-A detailed description of the Get-NbxCircuit function.
+Gets circuits from the NetBox API endpoint 'circuits/circuits'.
+Without parameters all circuits are returned,
+the cmdlet follows the pagination of the API.
+
+Circuit objects are returned as they are returned by the API, with the type name 'NetboxTools.Circuit',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
+```powershell
 Get-NbxCircuit
+```
+
+Gets all circuits.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxCircuit -Id 42
+```
+
+Gets the circuit with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxCircuit -CID 'example'
+```
+
+Gets circuits where the circuit ID is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxCircuit -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 circuits matching the search 'example'.
 
 ## PARAMETERS
 
+### -All
+
+Returns all objects, which is the default.
+Kept for backward compatibility.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -CID
+
+Filters circuits by circuit ID.
+Multiple values return circuits matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Id
 
-Database ID of circuit.
-This will query for exactly the IDs provided
+The ID of the circuit to get.
+Accepts circuit objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -46,8 +132,30 @@ DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of circuits to return.
+By default all matching circuits are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -59,7 +167,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -69,7 +180,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -87,9 +198,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.UInt64
+
+### NetboxTools.Circuit
+
+You can pipe circuit IDs or circuit objects to this cmdlet.
+
 ## OUTPUTS
+
+### NetboxTools.Circuit
 
 ## NOTES
 
-Additional information about the function.
 ## RELATED LINKS
+
+- [New-NbxCircuit](New-NbxCircuit.md)
+- [Set-NbxCircuit](Set-NbxCircuit.md)
+- [Remove-NbxCircuit](Remove-NbxCircuit.md)

@@ -1,10 +1,9 @@
-﻿---
+---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-15-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxAPIDefinition
 ---
@@ -13,7 +12,7 @@ title: Get-NbxAPIDefinition
 
 ## SYNOPSIS
 
-Retrieves the API definition from the NetBox instance (OpenAPI/Swagger format).
+Gets the OpenAPI definition of the NetBox API.
 
 ## SYNTAX
 
@@ -23,27 +22,43 @@ Retrieves the API definition from the NetBox instance (OpenAPI/Swagger format).
 Get-NbxAPIDefinition [[-Format] <string>] [[-Language] <string>] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Gets the NetBox API definition (for example, OpenAPI/Swagger JSON or YAML). Use `-Format` to request a specific format if supported by the API.
+Gets the OpenAPI schema of the connected NetBox instance from the API endpoint 'schema'.
+The schema describes all endpoints, filters and fields available in the instance.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxAPIDefinition -Format json
+```powershell
+$Definition = Get-NbxAPIDefinition
+$Definition.paths.PSObject.Properties.Name
+```
 
-Retrieves the NetBox API definition in JSON format.
+Lists all paths of the API.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxAPIDefinition -Format yaml | Set-Content -Path .\netbox-openapi.yaml
+```
+
+Saves the API definition as YAML.
 
 ## PARAMETERS
 
 ### -Format
 
-Specifies output format.
+The format of the definition, json (default) or yaml.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: json
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -60,11 +75,12 @@ HelpMessage: ''
 
 ### -Language
 
-Language
+The language of the descriptions in the definition.
+Defaults to 'en'.
 
 ```yaml
 Type: System.String
-DefaultValue: ''
+DefaultValue: en
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -90,10 +106,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.String
+### System.Management.Automation.PSObject
 
-The API definition as a string (JSON or YAML) depending on the requested format.
+### System.String
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
+

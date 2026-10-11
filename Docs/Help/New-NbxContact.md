@@ -1,10 +1,9 @@
-﻿---
+---
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-15-2026
 PlatyPS schema version: 2024-05-01
 title: New-NbxContact
 ---
@@ -13,31 +12,63 @@ title: New-NbxContact
 
 ## SYNOPSIS
 
-Create a new contact in Netbox
+Creates a new contact in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-New-NbxContact [-Name] <string> [[-OptionalAttribute] <hashtable>] [<CommonParameters>]
+New-NbxContact [-Name] <string> [[-Group] <ulong[]>] [[-Title] <string>] [[-Phone] <string>]
+ [[-Email] <string>] [[-Address] <string>] [[-Link] <string>] [[-Description] <string>]
+ [[-Comments] <string>] [[-Tag] <ulong[]>] [[-CustomField] <hashtable>]
+ [[-OptionalAttribute] <hashtable>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Creates a new contact object in Netbox which can be linked to other objects
+Creates a new contact using the NetBox API endpoint 'tenancy/contacts' and returns the created contact.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
+Objects with properties matching the parameter names or the NetBox field names can be piped to the cmdlet,
+for example rows from Import-Csv or contact objects returned by Get-NbxContact.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-New-NbxContact -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+```powershell
+New-NbxContact -Name 'Jane Doe'
+```
+
+Creates a new contact.
+
+### EXAMPLE 2
+
+```powershell
+New-NbxContact -Name 'Jane Doe' -Description 'Created with NetboxTools' -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+```
+
+Creates a new contact with a description and a custom field value.
+
+### EXAMPLE 3
+
+```powershell
+Import-Csv -Path .\contacts.csv | New-NbxContact
+```
+
+Creates a contact for each row in a CSV file.
+Columns are matched to parameters by name or NetBox field name.
 
 ## PARAMETERS
 
 ### -Address
 
-Physical address, usually mailing address
+The postal address of the contact.
 
 ```yaml
 Type: System.String
@@ -46,10 +77,10 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -58,8 +89,8 @@ HelpMessage: ''
 
 ### -Comments
 
-Detailed comments.
-Markdown supported.
+Comments about the contact.
+Supports Markdown.
 
 ```yaml
 Type: System.String
@@ -68,10 +99,10 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 6
+  Position: 8
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -100,21 +131,23 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Custom_Fields
+### -CustomField
 
-A description of the Custom_Fields parameter.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
 Type: System.Collections.Hashtable
 DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- custom_fields
 ParameterSets:
 - Name: (All)
-  Position: 8
+  Position: 10
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -123,49 +156,7 @@ HelpMessage: ''
 
 ### -Description
 
-Short description of the contact
-
-```yaml
-Type: System.String
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: 5
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Email
-
-Email address of the contact
-
-```yaml
-Type: System.String
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: 1
-  IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Link
-
-URI related to the contact
+A short description of the contact.
 
 ```yaml
 Type: System.String
@@ -177,7 +168,72 @@ ParameterSets:
   Position: 7
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Email
+
+The email of the contact.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 4
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Group
+
+The contact groups.
+Accepts IDs or objects.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- groups
+ParameterSets:
+- Name: (All)
+  Position: 1
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Link
+
+A URL related to the contact.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 6
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -186,7 +242,7 @@ HelpMessage: ''
 
 ### -Name
 
-The contacts full name, e.g "Leroy Jenkins"
+The name of the contact.
 
 ```yaml
 Type: System.String
@@ -198,7 +254,7 @@ ParameterSets:
   Position: 0
   IsRequired: true
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -207,7 +263,8 @@ HelpMessage: ''
 
 ### -OptionalAttribute
 
-Optional Attributes as a hashtable, allowed values; api/schema/swagger-ui/#/tenancy/tenancy_contacts_create
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -216,7 +273,7 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 1
+  Position: 11
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -228,7 +285,7 @@ HelpMessage: ''
 
 ### -Phone
 
-Telephone number
+The phone of the contact.
 
 ```yaml
 Type: System.String
@@ -240,28 +297,31 @@ ParameterSets:
   Position: 3
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Raw
+### -Tag
 
-A description of the Raw parameter.
+The tags of the contact.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- tags
 ParameterSets:
 - Name: (All)
-  Position: Named
+  Position: 9
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -270,7 +330,7 @@ HelpMessage: ''
 
 ### -Title
 
-Job title or other title related to the contact
+The title of the contact.
 
 ```yaml
 Type: System.String
@@ -282,7 +342,7 @@ ParameterSets:
   Position: 2
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -291,7 +351,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -320,17 +381,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.String
+### System.Management.Automation.PSObject
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe objects with properties matching the parameter names or NetBox field names to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.Contact
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [Get-NbxContact](Get-NbxContact.md)
+- [Set-NbxContact](Set-NbxContact.md)
+- [Remove-NbxContact](Remove-NbxContact.md)

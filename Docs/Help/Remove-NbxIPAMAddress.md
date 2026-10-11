@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Remove-NbxIPAMAddress
 ---
@@ -13,31 +12,92 @@ title: Remove-NbxIPAMAddress
 
 ## SYNOPSIS
 
-Remove an IP address from Netbox
+Removes IP addresses from NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Remove-NbxIPAMAddress [-Id] <ulong[]> [<CommonParameters>]
+Remove-NbxIPAMAddress [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Removes/deletes an IP address from Netbox by ID and optional other filters
+Removes one or more IP addresses using the NetBox API endpoint 'ipam/ip-addresses'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Remove-NbxIPAMAddress -Id $value1
+```powershell
+Remove-NbxIPAMAddress -Id 42
+```
+
+Removes the IP address with ID 42 after confirmation.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMAddress -Query @{ q = 'example' } | Remove-NbxIPAMAddress -Force
+```
+
+Removes all IP addresses matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
+### -Confirm
+
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Force
+
+Removes the object without asking for confirmation.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Id
 
-Database ID of the IP address object.
+The ID of the IP address to remove.
+Accepts IP address objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -48,6 +108,29 @@ ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -WhatIf
+
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -65,15 +148,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.UInt64
+
+### NetboxTools.IPAMAddress
+
+You can pipe IP address IDs or IP address objects to this cmdlet.
+
 ## OUTPUTS
+
+### None
+
+This cmdlet does not return output.
 
 ## NOTES
 
-Additional information about the function.
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxIPAMAddress](Get-NbxIPAMAddress.md)
+- [New-NbxIPAMAddress](New-NbxIPAMAddress.md)
+- [Set-NbxIPAMAddress](Set-NbxIPAMAddress.md)

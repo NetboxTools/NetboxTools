@@ -5,68 +5,70 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "New-NbxContactRole" {
+Describe 'New-NbxContactRole' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "New-NbxContactRole" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+    It 'Creates the contact role with a POST request' {
+        $Result = New-NbxContactRole -Name 'Administrative'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'POST' -and $Uri -eq 'https://netbox.example.com/api/tenancy/contact-roles/'
         }
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.ContactRole'
+    }
 
-        It "Parameter names are PascalCase" {
-            (Get-Command "New-NbxContactRole").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "New-NbxContactRole"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'Name'
-            $mandatoryParams | Should -Contain 'Slug'
+    It 'Sends the parameters with NetBox field names' {
+        New-NbxContactRole -Name 'Administrative'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.name | Should -Be 'Administrative'
+            $true
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with POST method" {
-            New-NbxContactRole -Name 'Admin' -Slug 'admin'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Method -eq 'POST' -and $Uri -like '*/tenancy/contact-roles/*'
-            }
-        }
-
-        It "Should include mandatory parameters in the request body" {
-            New-NbxContactRole -Name 'Admin' -Slug 'admin'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Body -ne $null
-            }
-        }
-
-        It "Should not throw with valid parameters" {
-            { New-NbxContactRole -Name 'Admin' -Slug 'admin' } | Should -Not -Throw
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Merges OptionalAttribute into the body' {
+        New-NbxContactRole -Name 'Administrative' -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            ($Body | ConvertFrom-Json).custom_fields.owner -eq 'IT'
         }
     }
 
+    It 'Accepts NetBox objects from the pipeline' {
+        $InputObject = [pscustomobject]@{
+            id = 99
+            url = 'https://netbox.example.com/api/tenancy/contact-roles/99/'
+            name = 'Administrative'
+        }
+        $InputObject | New-NbxContactRole
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.name | Should -Be 'Administrative'
+            $Body.PSObject.Properties.Name -notcontains 'id'
+        }
+    }
+
+    It 'Creates one contact role per pipeline object' {
+        $InputObject = [pscustomobject]@{
+            name = 'Administrative'
+        }
+        $InputObject, $InputObject | New-NbxContactRole
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        New-NbxContactRole -Name 'Administrative' -WhatIf
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Generates the slug from the name' {
+        New-NbxContactRole -Name 'My Example 1'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            ($Body | ConvertFrom-Json).slug -eq 'my-example-1'
+        }
+    }
 }

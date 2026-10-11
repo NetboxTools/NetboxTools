@@ -1,30 +1,66 @@
 function Remove-NbxIPAMPrefix {
-
     <#
     .SYNOPSIS
-        Remove an IPAM prefix from NetBox
+        Removes prefixes from NetBox.
 
     .DESCRIPTION
-        Removes/deletes an IPAM prefix from NetBox by ID
+        Removes one or more prefixes using the NetBox API endpoint 'ipam/prefixes'.
+        You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
     .PARAMETER Id
-        Database ID of the IPAM prefix object.
+        The ID of the prefix to remove. Accepts prefix objects from the pipeline.
+
+    .PARAMETER Force
+        Removes the object without asking for confirmation.
+
+    .PARAMETER WhatIf
+        Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+    .PARAMETER Confirm
+        Prompts you for confirmation before running the cmdlet.
 
     .EXAMPLE
-        PS C:\> Remove-NbxIPAMPrefix -Id $value1
+        Remove-NbxIPAMPrefix -Id 42
 
-    .NOTES
-        Additional information about the function.
-#>
+        Removes the prefix with ID 42 after confirmation.
 
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory)]
-        [uint64[]]$Id
+    .EXAMPLE
+        Get-NbxIPAMPrefix -Query @{ q = 'example' } | Remove-NbxIPAMPrefix -Force
+
+        Removes all prefixes matching the search 'example' without confirmation.
+
+    .INPUTS
+        System.UInt64, NetboxTools.IPAMPrefix
+        You can pipe prefix IDs or prefix objects to this cmdlet.
+
+    .OUTPUTS
+        None
+
+    .LINK
+        Get-NbxIPAMPrefix
+
+    .LINK
+        New-NbxIPAMPrefix
+
+    .LINK
+        Set-NbxIPAMPrefix
+    #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [OutputType([void])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [NbxIdTransformation('ipam/prefixes')]
+        [uint64[]]$Id,
+
+        [Parameter()]
+        [switch]$Force
     )
 
-    $Id | ForEach-Object {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/prefixes/$($_)/" -Method DELETE
+    process {
+        foreach ($ObjectId in $Id) {
+            if (($Force -and -not $WhatIfPreference) -or $PSCmdlet.ShouldProcess("prefix $ObjectId", 'Remove')) {
+                InvokeNbxRestMethod -Endpoint "ipam/prefixes/$ObjectId/" -Method DELETE
+            }
+        }
     }
 }

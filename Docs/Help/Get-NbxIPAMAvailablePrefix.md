@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMAvailablePrefix
 ---
@@ -13,48 +12,98 @@ title: Get-NbxIPAMAvailablePrefix
 
 ## SYNOPSIS
 
-A convenience method for returning available range within a prefix
+Gets available prefixes within a prefix.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Get-NbxIPAMAvailablePrefix [-Prefix_ID] <ulong> [<CommonParameters>]
+Get-NbxIPAMAvailablePrefix [-Prefix] <ulong[]> [[-Query] <hashtable>] [[-Limit] <int>]
+ [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-By default, the number of IPs returned will be equivalent to PAGINATE_COUNT.
-An arbitrary limit
-(up to MAX_PAGE_SIZE, if set) may be passed, however results will not be paginated
+Gets the prefixes within a prefix that are not in use, from the NetBox API endpoint 'ipam/prefixes/{id}/available-prefixes'.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-PS C:\> Get-NbxIPAMAvailablePrefix -Prefix_ID (Get-NbxIPAMPrefix -Prefix 192.0.2.0/24).id
+```powershell
+Get-NbxIPAMPrefix -Prefix '192.0.2.0/24' | Get-NbxIPAMAvailablePrefix
+```
 
-Returns available prefix ranges or candidate sub-prefixes for the specified prefix.
+Gets the unused prefixes within the prefix 192.0.2.0/24.
 
 ## PARAMETERS
 
-### -Prefix_ID
+### -Limit
 
-A description of the Prefix_ID parameter.
+The maximum number of prefixes to return for each prefix.
 
 ```yaml
-Type: System.UInt64
+Type: System.Int32
 DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 2
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Prefix
+
+The ID of the prefix.
+Accepts prefix objects from Get-NbxIPAMPrefix, also from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - Id
+- Prefix_ID
 ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Query
+
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ vrf_id = 2 }.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 1
+  IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -72,16 +121,16 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-Prefix identifier passed to the cmdlet.
+### NetboxTools.IPAMPrefix
+
+You can pipe prefix IDs or prefix objects to this cmdlet.
 
 ## OUTPUTS
 
-System.Object
-
-A collection of candidate available prefix objects or ranges within the specified prefix.
+### System.Management.Automation.PSObject
 
 ## NOTES
 
-Additional information about the function.
 ## RELATED LINKS
 
+- [Get-NbxIPAMPrefix](Get-NbxIPAMPrefix.md)

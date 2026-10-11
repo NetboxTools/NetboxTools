@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxTimeout
 ---
@@ -13,27 +12,34 @@ title: Set-NbxTimeout
 
 ## SYNOPSIS
 
-Configures the default API timeout used by the module.
+Sets the timeout in seconds of the NetBox connection.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxTimeout [[-TimeoutSeconds] <ushort>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-NbxTimeout [-TimeoutSeconds] <int> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Sets the number of seconds to wait for a response from the NetBox API before the request fails.
+The default is 30 seconds.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxTimeout -Seconds 30
+```powershell
+Set-NbxTimeout -TimeoutSeconds 60
+```
 
-Sets the API request timeout to 30 seconds.
+Sets the timeout in seconds to 60.
 
 ## PARAMETERS
 
@@ -43,7 +49,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -59,19 +65,41 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -TimeoutSeconds
+### -PassThru
 
-Specifies the TimeoutSeconds parameter.
+Returns the new timeout in seconds.
+By default, this cmdlet does not generate any output.
 
 ```yaml
-Type: System.UInt16
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -TimeoutSeconds
+
+The timeout in seconds.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
-  IsRequired: false
+  IsRequired: true
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -87,7 +115,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -114,17 +142,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.UInt16
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### int
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxTimeout](Get-NbxTimeout.md)

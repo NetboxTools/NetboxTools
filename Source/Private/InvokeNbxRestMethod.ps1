@@ -1,115 +1,152 @@
 function InvokeNbxRestMethod {
+    <#
+        Sends a request to the NetBox REST API.
+
+        - Builds the request URI from the configured connection and the relative endpoint.
+        - Adds authentication (v1 'Token' or v2 'Bearer' tokens) and the configured timeout and invoke parameters.
+        - Follows pagination for list requests, returning the objects in 'results' as individual objects.
+        - Decorates returned objects with a PSTypeName when TypeName is specified.
+        - Reports API errors as non-terminating errors with the error message returned by NetBox.
+    #>
+    [CmdletBinding()]
     param (
+        # Path relative to the API root, such as 'dcim/devices/' or 'dcim/devices/42/'
         [Parameter(Mandatory)]
-        [URI]$Uri,
+        [string]$Endpoint,
 
         [Parameter()]
-        [Microsoft.PowerShell.Commands.WebRequestMethod]$Method,
+        [ValidateSet('GET', 'POST', 'PATCH', 'PUT', 'DELETE')]
+        [string]$Method = 'GET',
 
         [Parameter()]
-        [string]$Body,
+        [System.Collections.IDictionary]$Query,
 
         [Parameter()]
-        [string]$ContentType = 'application/json; charset=utf-8',
+        [object]$Body,
+
+        # Maximum number of objects to return from a list request. 0 returns all objects.
+        [Parameter()]
+        [ValidateRange(0, [int]::MaxValue)]
+        [int]$Limit = 0,
 
         [Parameter()]
-        [switch]$FullResponse,
+        [string]$TypeName,
 
+        # Credential to authenticate with instead of the configured one, used when connecting
         [Parameter()]
-        [string]$OutFile,
-
-        [Parameter()]
-        [string]$Token,
-
-        [Parameter()]
-        [hashtable]
-        $Query
+        [pscredential]$Credential
     )
 
-    if ($PSBoundParameters.ContainsKey('Query')) {
-        $Query.GetEnumerator() | Select-object -ExpandProperty Key | ForEach-Object -Begin {
-                $QueryString = "?"
-        } -Process {
-            if ($QueryString -eq '?') {
-                $QueryString += "$($_)=$($Query[$_])"
-            } else {
-                $QueryString += "&$($_)=$($Query[$_])"
-            }
-        } -end {
-            $QueryString = $QueryString.tolower()
+    if ([string]::IsNullOrEmpty($script:NbxConfig.URI)) {
+        $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new(
+                [System.InvalidOperationException]::new('Not connected to NetBox. Run Connect-NbxAPI first.'),
+                'NbxNotConnected',
+                [System.Management.Automation.ErrorCategory]::ConnectionError,
+                $null
+            ))
+    }
+
+    $Headers = @{ 'Accept' = 'application/json' }
+
+    if (-not $PSBoundParameters.ContainsKey('Credential')) {
+        $Credential = $script:NbxConfig.Credential
+    }
+    if ($script:NbxConfig.AuthenticationType -eq 'Token' -or $PSBoundParameters.ContainsKey('Credential')) {
+        if ($null -eq $Credential -or $Credential -eq [pscredential]::Empty) {
+            $PSCmdlet.ThrowTerminatingError([System.Management.Automation.ErrorRecord]::new(
+                    [System.InvalidOperationException]::new('No NetBox API token is configured. Run Connect-NbxAPI with a valid token.'),
+                    'NbxNoToken',
+                    [System.Management.Automation.ErrorCategory]::AuthenticationError,
+                    $null
+                ))
+        }
+        $Token = $Credential.GetNetworkCredential().Password
+        # NetBox v2 tokens are prefixed 'nbt_' and use the Bearer keyword, v1 tokens use the Token keyword
+        $Keyword = if ($Token.StartsWith('nbt_')) { 'Bearer' } else { 'Token' }
+        $Headers['Authorization'] = "$Keyword $Token"
+    }
+
+    # Explicit limit or offset in the query disables automatic pagination
+    $Paginate = -not ($Query -and ($Query.Contains('limit') -or $Query.Contains('offset')))
+    $RequestQuery = [ordered]@{}
+    if ($Query) {
+        foreach ($Key in $Query.Keys) {
+            $RequestQuery[[string]$Key] = $Query[$Key]
         }
     }
-    
+    if ($Method -eq 'GET' -and $Paginate -and $Endpoint -notmatch '/\d+/?$') {
+        $RequestQuery['limit'] = if ($Limit -gt 0) { [Math]::Min($Limit, 1000) } else { 1000 }
+    }
+
+    $BaseUri = '{0}/{1}' -f $script:NbxConfig.URI, $Endpoint.TrimStart('/')
+    $QueryString = ConvertToNbxQueryString -Query $RequestQuery
+
     $InvokeSplat = @{
-        'Uri'         = '{0}{1}' -f $Uri, $QueryString
         'Method'      = $Method
-        'ContentType' = $ContentType
+        'Headers'     = $Headers
+        'ContentType' = 'application/json; charset=utf-8'
+        'TimeoutSec'  = $script:NbxConfig.Timeout
+        'ErrorAction' = 'Stop'
     }
-
-    if ($script:NbxConfig.AuthenticationType -eq 'Anonymous') {
-
-        Write-Verbose "Requests will be sent anonymously."
-
-        $InvokeSplat.Add('Headers',@{
-            "Accept"        = 'application/json; indent=4'
-            'ContentType'   = $ContentType
-        })
-        
-    }
-    elseif ($script:NbxConfig.AuthenticationType -eq 'Token') {
-
-        Write-Verbose "Requests will be sent with Token authentication."
-
-        if (-not $PSBoundParameters.ContainsKey('Token')) {
-            if (-not $script:NbxConfig.Token) {
-                throw 'Please login with Connect-NbxAPI first and provide a valid token.'
+    if ($script:NbxConfig.InvokeParams -is [System.Collections.IDictionary]) {
+        foreach ($Key in $script:NbxConfig.InvokeParams.Keys) {
+            if ($Key -eq 'Headers') {
+                # Add custom headers, the Authorization and Accept headers of the module take precedence
+                foreach ($Header in $script:NbxConfig.InvokeParams[$Key].GetEnumerator()) {
+                    if (-not $Headers.ContainsKey($Header.Key)) {
+                        $Headers[$Header.Key] = $Header.Value
+                    }
+                }
+                continue
             }
-            $InvokeSplat.Add('Headers',@{
-                    'Authorization' = "Token $($script:NbxConfig.Token)"
-                    "Accept"        = 'application/json; indent=4'
-                    'ContentType'   = $ContentType
-                })
-        }
-        else {
-            $InvokeSplat.Add('Headers',@{
-                'Authorization' = "Token $Token"
-                "Accept"        = 'application/json; indent=4'
-                'ContentType'   = $ContentType
-            })
-        }
-
-    }
-    else {
-        throw 'Please login with Connect-NbxAPI first'
-    }
-
-    if (-not [string]::IsNullOrEmpty($Body)) {
-        $InvokeSplat.Add('Body', $Body)
-        Write-verbose "$($Body.GetEnumerator())"
-    }
-
-    if ($FullResponse) {
-        $InvokeSplat.Add('ResponseHeadersVariable', 'ResponseHeaders')
-        $InvokeSplat.Add('StatusCodeVariable', 'ResponseStatusCode')
-    }
-
-    Write-Verbose "Invoking endpoint '$($InvokeSplat.Uri)' with method '$($InvokeSplat.Method)'"
-
-    if ($OutFile) {
-        Write-Debug "$Method $Uri"
-        Invoke-RestMethod @InvokeSplat -OutFile $OutFile
-    }
-    else {
-        Write-Debug "$Method $Uri"
-        $Result = Invoke-RestMethod @InvokeSplat
-        if ($FullResponse) {
-            @{ Content = $Result; Headers = $ResponseHeaders; StatusCode = $ResponseStatusCode }
-        }
-        elseif ($Result.psobject.Properties.name -contains 'results') {
-            $Result.Results
-        }
-        else {
-            $Result
+            $InvokeSplat[$Key] = $script:NbxConfig.InvokeParams[$Key]
         }
     }
+    if ($PSBoundParameters.ContainsKey('Body')) {
+        $InvokeSplat['Body'] = if ($Body -is [string]) { $Body } else { ConvertTo-Json -InputObject $Body -Depth 10 -Compress }
+        Write-Debug "Request body: $($InvokeSplat['Body'])"
+    }
+
+    $Returned = 0
+    do {
+        $InvokeSplat['Uri'] = if ($QueryString) { "$BaseUri`?$QueryString" } else { $BaseUri }
+        Write-Verbose "$Method $($InvokeSplat['Uri'])"
+
+        try {
+            $Response = Invoke-RestMethod @InvokeSplat
+        }
+        catch {
+            $PSCmdlet.WriteError((ConvertToNbxErrorRecord -ErrorRecord $_ -Method $Method -Uri $InvokeSplat['Uri']))
+            return
+        }
+
+        $QueryString = $null
+
+        if ($null -eq $Response -or ($Response -is [string] -and [string]::IsNullOrWhiteSpace($Response))) {
+            return
+        }
+
+        $IsList = $Response -isnot [string] -and
+            $Response.PSObject.Properties.Name -contains 'results' -and
+            $Response.PSObject.Properties.Name -contains 'next'
+
+        $Objects = if ($IsList) { $Response.results } else { $Response }
+
+        foreach ($Object in $Objects) {
+            if ($Limit -gt 0 -and $Returned -ge $Limit) {
+                return
+            }
+            if ($TypeName -and $Object -is [psobject]) {
+                $Object.PSObject.TypeNames.Insert(0, $TypeName)
+            }
+            $Object
+            $Returned++
+        }
+
+        if ($IsList -and $Paginate -and $Response.next -and ($Limit -eq 0 -or $Returned -lt $Limit)) {
+            # Reuse the query of the next page on the configured base URI, as the next link
+            # returned by NetBox may use another scheme or host when behind a proxy.
+            $QueryString = ([uri]$Response.next).Query.TrimStart('?')
+        }
+    } while ($QueryString)
 }

@@ -1,50 +1,94 @@
 function Get-NbxIPAMRole {
-
     <#
     .SYNOPSIS
-        Get IPAM Prefix/VLAN roles
+        Gets IPAM roles from NetBox.
 
     .DESCRIPTION
-        A role indicates the function of a prefix or VLAN. For example, you might define Data, Voice, and Security roles. Generally, a prefix will be assigned the same functional role as the VLAN to which it is assigned (if any).
+        Gets IPAM roles from the NetBox API endpoint 'ipam/roles'. Without parameters all IPAM roles are returned,
+        the cmdlet follows the pagination of the API.
+
+        IPAM role objects are returned as they are returned by the API, with the type name 'NetboxTools.IPAMRole',
+        and can be piped to the other cmdlets of the module.
 
     .PARAMETER Id
-        Unique ID
+        The ID of the IPAM role to get. Accepts IPAM role objects from the pipeline.
+
+    .PARAMETER Name
+        Filters IPAM roles by name. Multiple values return IPAM roles matching any of the values.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
+
+    .PARAMETER Limit
+        The maximum number of IPAM roles to return. By default all matching IPAM roles are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxIPAMRole
+        Get-NbxIPAMRole
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all IPAM roles.
 
-[CmdletBinding(DefaultParameterSetName = 'Default')]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'Id')]
-        [uint64[]]
-        $Id,
+    .EXAMPLE
+        Get-NbxIPAMRole -Id 42
 
-        [Parameter(Mandatory, ParameterSetName = 'Query')]
-        [hashtable]
-        $Query,
+        Gets the IPAM role with ID 42.
 
-        [Parameter(ParameterSetName = 'Default')]
-        [switch]
-        $All
+    .EXAMPLE
+        Get-NbxIPAMRole -Name 'example'
+
+        Gets IPAM roles where the name is 'example'.
+
+    .EXAMPLE
+        Get-NbxIPAMRole -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 IPAM roles matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.IPAMRole
+        You can pipe IPAM role IDs or IPAM role objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.IPAMRole
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.IPAMRole')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('ipam/roles')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string[]]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Id' {
-            $Id | ForEach-Object {
-                InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/roles/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "ipam/roles/$ObjectId/" -TypeName 'NetboxTools.IPAMRole'
+            }
+            return
+        }
+
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
             }
         }
-        'Query' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/roles/" -Method GET -Query $Query
+        if ($PSBoundParameters.ContainsKey('Name')) {
+            $Filter['name'] = $Name
         }
-        'Default' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/roles/" -Method GET
-        }
-    }
 
+        InvokeNbxRestMethod -Endpoint 'ipam/roles/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.IPAMRole'
+    }
 }

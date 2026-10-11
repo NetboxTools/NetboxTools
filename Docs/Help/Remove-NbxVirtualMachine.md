@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Remove-NbxVirtualMachine
 ---
@@ -13,7 +12,7 @@ title: Remove-NbxVirtualMachine
 
 ## SYNOPSIS
 
-Delete a virtual machine
+Removes virtual machines from NetBox.
 
 ## SYNTAX
 
@@ -23,15 +22,32 @@ Delete a virtual machine
 Remove-NbxVirtualMachine [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Deletes a virtual machine from Netbox by ID
+Removes one or more virtual machines using the NetBox API endpoint 'virtualization/virtual-machines'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Remove-NbxVirtualMachine -Id $value1
+```powershell
+Remove-NbxVirtualMachine -Id 42
+```
+
+Removes the virtual machine with ID 42 after confirmation.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxVirtualMachine -Query @{ q = 'example' } | Remove-NbxVirtualMachine -Force
+```
+
+Removes all virtual machines matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
@@ -59,7 +75,7 @@ HelpMessage: ''
 
 ### -Force
 
-Force deletion without any prompts
+Removes the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -80,7 +96,8 @@ HelpMessage: ''
 
 ### -Id
 
-Database ID of the virtual machine
+The ID of the virtual machine to remove.
+Accepts virtual machine objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -91,8 +108,8 @@ ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -101,7 +118,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -130,19 +148,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt64[]
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.VirtualMachine
+
+You can pipe virtual machine IDs or virtual machine objects to this cmdlet.
 
 ## OUTPUTS
 
+### None
+
+This cmdlet does not return output.
+
 ## NOTES
-
-Additional information about the function.
-
 
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxVirtualMachine](Get-NbxVirtualMachine.md)
+- [New-NbxVirtualMachine](New-NbxVirtualMachine.md)
+- [Set-NbxVirtualMachine](Set-NbxVirtualMachine.md)

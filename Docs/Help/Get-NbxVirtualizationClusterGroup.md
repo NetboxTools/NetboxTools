@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxVirtualizationClusterGroup
 ---
@@ -13,42 +12,175 @@ title: Get-NbxVirtualizationClusterGroup
 
 ## SYNOPSIS
 
-Retrieves virtualization cluster group records from NetBox.
+Gets cluster groups from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxVirtualizationClusterGroup [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxVirtualizationClusterGroup [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxVirtualizationClusterGroup -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Gets cluster groups from the NetBox API endpoint 'virtualization/cluster-groups'.
+Without parameters all cluster groups are returned,
+the cmdlet follows the pagination of the API.
+
+Cluster group objects are returned as they are returned by the API, with the type name 'NetboxTools.VirtualizationClusterGroup',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxVirtualizationClusterGroup -Name 'Group1'
+```powershell
+Get-NbxVirtualizationClusterGroup
+```
 
-Returns cluster group(s) matching 'Group1'.
+Gets all cluster groups.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxVirtualizationClusterGroup -Id 42
+```
+
+Gets the cluster group with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxVirtualizationClusterGroup -Name 'example'
+```
+
+Gets cluster groups where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxVirtualizationClusterGroup -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 cluster groups matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the cluster group to get.
+Accepts cluster group objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of cluster groups to return.
+By default all matching cluster groups are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters cluster groups by name.
+Multiple values return cluster groups matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Query
+
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -67,13 +199,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.UInt64
+
+### NetboxTools.VirtualizationClusterGroup
+
+You can pipe cluster group IDs or cluster group objects to this cmdlet.
+
 ## OUTPUTS
 
-### System.Object
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.VirtualizationClusterGroup
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
 

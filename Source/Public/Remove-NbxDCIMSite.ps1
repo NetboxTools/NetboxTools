@@ -1,52 +1,66 @@
 function Remove-NbxDCIMSite {
-
     <#
-        .SYNOPSIS
-            Remove a Site
+    .SYNOPSIS
+        Removes sites from NetBox.
 
-        .DESCRIPTION
-            Remove a DCIM Site from NetBox
+    .DESCRIPTION
+        Removes one or more sites using the NetBox API endpoint 'dcim/sites'.
+        You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
-        .EXAMPLE
-            Remove-NbxDCIMSite -Id 1
+    .PARAMETER Id
+        The ID of the site to remove. Accepts site objects from the pipeline.
 
-            Remove DCM Site with id 1
+    .PARAMETER Force
+        Removes the object without asking for confirmation.
 
-        .EXAMPLE
-            Get-NbxDCIMSite -name My Site | Remove-NbxDCIMSite -confirm:$false
+    .PARAMETER WhatIf
+        Shows what would happen if the cmdlet runs. The cmdlet is not run.
 
-            Remove DCM Site with name My Site without confirmation
+    .PARAMETER Confirm
+        Prompts you for confirmation before running the cmdlet.
 
+    .EXAMPLE
+        Remove-NbxDCIMSite -Id 42
+
+        Removes the site with ID 42 after confirmation.
+
+    .EXAMPLE
+        Get-NbxDCIMSite -Query @{ q = 'example' } | Remove-NbxDCIMSite -Force
+
+        Removes all sites matching the search 'example' without confirmation.
+
+    .INPUTS
+        System.UInt64, NetboxTools.DCIMSite
+        You can pipe site IDs or site objects to this cmdlet.
+
+    .OUTPUTS
+        None
+
+    .LINK
+        Get-NbxDCIMSite
+
+    .LINK
+        New-NbxDCIMSite
+
+    .LINK
+        Set-NbxDCIMSite
     #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [OutputType([void])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [NbxIdTransformation('dcim/sites')]
+        [uint64[]]$Id,
 
-    [CmdletBinding(ConfirmImpact = 'High',
-        SupportsShouldProcess = $true)]
-    param
-    (
-        [Parameter(Mandatory,
-            ValueFromPipelineByPropertyName = $true)]
-        [uint]$Id
-
+        [Parameter()]
+        [switch]$Force
     )
 
-    begin {
-
-    }
-
     process {
-        $CurrentSite = Get-NbxDCIMSite -Id $Id -ErrorAction Stop
-
-        if ($pscmdlet.ShouldProcess("$($CurrentSite.Name)/$($CurrentSite.Id)", "Remove Site")) {
-            $Segments = [System.Collections.ArrayList]::new(@('dcim', 'sites', $CurrentSite.Id))
-
-            $URI = BuildNewURI -Segments $Segments
-
-            InvokeNbxRequest -URI $URI -Method DELETE
+        foreach ($ObjectId in $Id) {
+            if (($Force -and -not $WhatIfPreference) -or $PSCmdlet.ShouldProcess("site $ObjectId", 'Remove')) {
+                InvokeNbxRestMethod -Endpoint "dcim/sites/$ObjectId/" -Method DELETE
+            }
         }
     }
-
-    end {
-
-    }
-
 }

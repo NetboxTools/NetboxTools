@@ -5,214 +5,190 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
+
+    function global:New-NbxTestHttpError {
+        param ([int]$StatusCode, [string]$Content)
+        $Response = [System.Net.Http.HttpResponseMessage]::new([System.Net.HttpStatusCode]$StatusCode)
+        $Exception = [Microsoft.PowerShell.Commands.HttpResponseException]::new("Response status code does not indicate success: $StatusCode.", $Response)
+        $Record = [System.Management.Automation.ErrorRecord]::new($Exception, 'WebCmdletWebResponseException', 'InvalidOperation', $null)
+        $Record.ErrorDetails = [System.Management.Automation.ErrorDetails]::new($Content)
+        $Record
+    }
 }
 
-Describe "InvokeNbxRestMethod" {
+Describe 'InvokeNbxRestMethod' {
+    BeforeEach {
+        Initialize-NbxTestConnection
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Authentication handling" {
+    Context 'Requests' {
+        It 'Throws a terminating error when not connected' {
+            Disconnect-NbxAPI
+            { InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' } } | Should -Throw '*Not connected*'
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+        }
 
-        It "Should throw when AuthenticationType is not set" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.Remove('AuthenticationType')
-                try {
-                    { InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET } | Should -Throw '*Please login*'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
+        It 'Sends the token, timeout and JSON content type' {
+            InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/1/' }
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+                $Headers.Authorization -eq 'Token 0123456789abcdef' -and $TimeoutSec -eq 30 -and $ContentType -like 'application/json*'
             }
         }
 
-        It "Should send anonymous request when AuthenticationType is Anonymous" {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1 }
+        It 'Does not send an Authorization header for anonymous connections' {
+            InModuleScope NetboxTools { $script:NbxConfig.AuthenticationType = 'Anonymous' }
+            InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/1/' }
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+                -not $Headers.ContainsKey('Authorization')
             }
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-            Should -Invoke -ModuleName NetboxTools -CommandName Invoke-RestMethod -Times 1
         }
 
-        It "Should use token from NbxConfig when Token parameter is not passed" {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1 }
+        It 'Converts the body to JSON' {
+            InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' -Method POST -Body @{ name = 'Site'; tags = @(1, 2) } }
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+                $Json = $Body | ConvertFrom-Json
+                $Json.name -eq 'Site' -and $Json.tags.Count -eq 2
             }
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Token'
-                $script:NbxConfig.Token = 'abc123'
-                try {
-                    InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-            Should -Invoke -ModuleName NetboxTools -CommandName Invoke-RestMethod -Times 1
         }
 
-        It "Should use token from parameter when Token is passed explicitly" {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1 }
-            }
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Token'
-                try {
-                    InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET -Token 'explicit-token'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-            Should -Invoke -ModuleName NetboxTools -CommandName Invoke-RestMethod -Times 1
+        It 'Merges the invoke parameters into the request' {
+            InModuleScope NetboxTools { $script:NbxConfig.InvokeParams = @{ SkipCertificateCheck = $true } }
+            InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/1/' }
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $SkipCertificateCheck -eq $true }
         }
 
-        It "Should throw when Token auth is set but no token is available" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Token'
-                $script:NbxConfig.Remove('Token')
-                $script:NbxConfig.Token = $null
-                try {
-                    { InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET } | Should -Throw '*provide a valid token*'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
+        It 'Adds the type name to returned objects' {
+            $Result = InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/1/' -TypeName 'NetboxTools.Test' }
+            $Result.PSObject.TypeNames[0] | Should -Be 'NetboxTools.Test'
+        }
+
+        It 'Returns nothing for empty responses' {
+            InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/1/' -Method DELETE } | Should -BeNullOrEmpty
         }
     }
 
-    Context "Query string building" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1 }
-            }
-        }
-
-        It "Should build query string from hashtable" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET -Query @{ name = 'test' }
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-            Should -Invoke -ModuleName NetboxTools -CommandName Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*?name=test*'
-            }
-        }
-
-        It "Should build query string with multiple parameters" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET -Query @{ name = 'test'; status = 'active' }
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-            Should -Invoke -ModuleName NetboxTools -CommandName Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*?*' -and $Uri -like '*name=test*' -and $Uri -like '*status=active*'
-            }
-        }
-    }
-
-    Context "Response handling" {
-
-        It "Should extract results when response has results property" {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                $obj = [pscustomobject]@{ results = @([pscustomobject]@{ id = 1; name = 'Test' }) }
-                return $obj
-            }
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    $result = InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET
-                    $result.id | Should -Be 1
-                    $result.name | Should -Be 'Test'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
+    Context 'Pagination' {
+        BeforeEach {
+            # Three pages of two objects, the next link uses another host like NetBox behind a proxy can
+            Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith {
+                $Offset = if ($Uri.Query -match 'offset=(\d+)') { [int]$Matches[1] } else { 0 }
+                $Next = if ($Offset -lt 4) { "http://internal:8080/api/dcim/sites/?limit=2&offset=$($Offset + 2)" } else { $null }
+                [pscustomobject]@{
+                    count   = 6
+                    next    = $Next
+                    results = @(
+                        [pscustomobject]@{ id = $Offset + 1 }
+                        [pscustomobject]@{ id = $Offset + 2 }
+                    )
                 }
             }
         }
 
-        It "Should return full object when response has no results property" {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; name = 'Direct' }
-            }
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    $result = InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET
-                    $result.name | Should -Be 'Direct'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
+        It 'Returns the objects of all pages' {
+            $Result = InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' }
+            $Result.id | Should -Be 1, 2, 3, 4, 5, 6
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 3 -Exactly
         }
 
-        It "Should return full response when FullResponse switch is used" {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1 }
+        It 'Requests the next pages on the configured host' {
+            InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' }
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+                $Uri.AbsoluteUri -eq 'https://netbox.example.com/api/dcim/sites/?limit=2&offset=2'
             }
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    $result = InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method GET -FullResponse
-                    $result.Keys | Should -Contain 'Content'
-                    $result.Keys | Should -Contain 'Headers'
-                    $result.Keys | Should -Contain 'StatusCode'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly -ParameterFilter { $Uri.Host -eq 'internal' }
+        }
+
+        It 'Stops at the limit' {
+            $Result = InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' -Limit 3 }
+            $Result.id | Should -Be 1, 2, 3
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+        }
+
+        It 'Does not paginate when the query has a limit or offset' {
+            $Result = InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' -Query @{ limit = 2; offset = 2 } }
+            $Result.id | Should -Be 3, 4
+            Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly
         }
     }
 
-    Context "Body handling" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName Invoke-RestMethod -MockWith {
-                return [pscustomobject]@{ id = 1 }
-            }
+    Context 'Errors' {
+        It 'Writes a non-terminating error with the message from NetBox' {
+            Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { throw (New-NbxTestHttpError -StatusCode 400 -Content '{"name":["This field is required."]}') }
+            $Result = InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/' -Method POST -Body @{} -ErrorAction SilentlyContinue -ErrorVariable NbxError; $NbxError }
+            $Last = $Result | Select-Object -Last 1
+            $Last.Exception.Message | Should -BeLike '*POST*dcim/sites/*400*This field is required.*'
+            $Last.CategoryInfo.Category | Should -Be 'InvalidArgument'
+            $Last.FullyQualifiedErrorId | Should -BeLike 'NbxApiError400*'
         }
 
-        It "Should include body in request when Body parameter is provided" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.AuthenticationType = 'Anonymous'
-                try {
-                    InvokeNbxRestMethod -Uri 'https://netbox.example.com/api/test/' -Method POST -Body '{"name":"test"}'
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-            Should -Invoke -ModuleName NetboxTools -CommandName Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Body -eq '{"name":"test"}'
-            }
+        It 'Uses the detail of NetBox errors' {
+            Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { throw (New-NbxTestHttpError -StatusCode 404 -Content '{"detail":"No Site matches the given query."}') }
+            { InModuleScope NetboxTools { InvokeNbxRestMethod -Endpoint 'dcim/sites/99/' -ErrorAction Stop } } |
+                Should -Throw '*404*No Site matches the given query.'
+        }
+
+        It 'Continues with the next object in the pipeline after an error' {
+            Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { throw (New-NbxTestHttpError -StatusCode 404 -Content '{"detail":"Not found."}') } -ParameterFilter { $Uri -like '*/1/' }
+            $Result = 1, 2 | Get-NbxDCIMSite -ErrorAction SilentlyContinue
+            $Result.id | Should -Be 2
+        }
+
+        It 'Reports errors without a response' {
+            Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { throw [System.Net.Http.HttpRequestException]::new('No such host is known.') }
+            { Get-NbxDCIMSite -ErrorAction Stop } | Should -Throw '*No such host is known.*'
+        }
+    }
+}
+
+Describe 'ConvertToNbxQueryString' {
+    It 'Encodes keys and values and repeats arrays' {
+        InModuleScope NetboxTools {
+            ConvertToNbxQueryString -Query ([ordered]@{ q = 'a b&c'; tag = 'x', 'y'; enabled = $true }) |
+                Should -Be 'q=a%20b%26c&tag=x&tag=y&enabled=true'
+        }
+    }
+
+    It 'Keeps the case of values' {
+        InModuleScope NetboxTools { ConvertToNbxQueryString -Query @{ name = 'SW-Core01' } | Should -Be 'name=SW-Core01' }
+    }
+
+    It 'Returns an empty string without query' {
+        InModuleScope NetboxTools { ConvertToNbxQueryString -Query @{} | Should -Be '' }
+    }
+}
+
+Describe 'Filter keys' {
+    BeforeEach {
+        Initialize-NbxTestConnection
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
+
+    It 'Lower cases filter keys, as NetBox ignores filters it does not recognize' {
+        InModuleScope NetboxTools { ConvertToNbxQueryString -Query @{ Site = 'Lab' } | Should -Be 'site=Lab' }
+    }
+
+    It 'Sends the filter of the query and the -Name parameter in lower case' {
+        Get-NbxDCIMDevice -Query @{ Site = 'lab'; Name = 'a' } -Name 'b'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri.AbsoluteUri -cmatch '[?&]site=lab' -and $Uri.AbsoluteUri -cmatch '[?&]name=b' -and $Uri.AbsoluteUri -cnotmatch 'Site=|Name='
+        }
+    }
+
+    It 'Accepts the hidden -All switch of earlier versions' {
+        Get-NbxDCIMDevice -All
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri.AbsoluteUri -eq 'https://netbox.example.com/api/dcim/devices/?limit=1000'
+        }
+    }
+
+    It 'Adds custom headers without replacing the Authorization header' {
+        InModuleScope NetboxTools { $script:NbxConfig.InvokeParams = @{ Headers = @{ 'X-Custom' = 'yes'; Authorization = 'Basic other' } } }
+        Get-NbxTag
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Headers['X-Custom'] -eq 'yes' -and $Headers.Authorization -eq 'Token 0123456789abcdef'
         }
     }
 }

@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxCircuitType
 ---
@@ -13,42 +12,151 @@ title: Get-NbxCircuitType
 
 ## SYNOPSIS
 
-Retrieves circuit type resources from NetBox (for example, types of circuits such as 'Metro' or 'Long-haul').
+Gets circuit types from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxCircuitType [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxCircuitType [-Name <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxCircuitType -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets one or more circuit type objects from a NetBox instance. Use `-Id` to return specific types by NetBox database ID; if `-Id` is omitted the cmdlet returns all circuit types. Update this description with any additional filtering or endpoint details as needed.
+Gets circuit types from the NetBox API endpoint 'circuits/circuit-types'.
+Without parameters all circuit types are returned,
+the cmdlet follows the pagination of the API.
+
+Circuit type objects are returned as they are returned by the API, with the type name 'NetboxTools.CircuitType',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxCircuitType -Id 42
+```powershell
+Get-NbxCircuitType
+```
 
-Returns the circuit type object whose NetBox database ID is 42.
+Gets all circuit types.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxCircuitType -Id 42
+```
+
+Gets the circuit type with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxCircuitType -Name 'example'
+```
+
+Gets circuit types where the name is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxCircuitType -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 circuit types matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies one or more NetBox database IDs of the circuit types to retrieve. When omitted, the cmdlet returns all circuit types.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the circuit type to get.
+Accepts circuit type objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of circuit types to return.
+By default all matching circuit types are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+Filters circuit types by name.
+Multiple values return circuit types matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +168,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +181,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,15 +199,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.CircuitType
+
+You can pipe circuit type IDs or circuit type objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
-
-Objects representing NetBox circuit type records. Typical properties include `id` (System.UInt64), `name` (string), `slug` (string), and `description` (string).
+### NetboxTools.CircuitType
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
 

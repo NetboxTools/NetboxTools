@@ -5,53 +5,57 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Get-NbxIPAMAvailablePrefix" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Get-NbxIPAMAvailablePrefix" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Get-NbxIPAMAvailablePrefix").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Get-NbxIPAMAvailablePrefix"
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $cmd.Parameters.Keys | Should -Contain $p.Key
-                    }
-                }
-            }
+Describe 'Get-NbxIPAMAvailablePrefix' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith {
+            @([pscustomobject]@{ address = '192.0.2.1/24' }, [pscustomobject]@{ address = '192.0.2.2/24' })
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; prefix = '10.0.0.0/24' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with the prefix ID" {
-            Get-NbxIPAMAvailablePrefix -Prefix_ID 5
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Uri -like '*/ipam/prefixes/5/available-prefixes/*' -and $Method -eq 'GET'
-            }
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Gets the available objects of a prefix' {
+        Get-NbxIPAMAvailablePrefix -Prefix 5 | Should -HaveCount 2
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'GET' -and $Uri -like 'https://netbox.example.com/api/ipam/prefixes/5/available-prefixes/*'
         }
     }
 
+    It 'Accepts prefix objects from the pipeline' {
+        [pscustomobject]@{ id = 5; url = 'https://netbox.example.com/api/ipam/prefixes/5/' } | Get-NbxIPAMAvailablePrefix
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri -like '*/ipam/prefixes/5/available-prefixes/*'
+        }
+    }
+
+    It 'Accepts the Id alias and the previous Prefix_ID parameter name' {
+        Get-NbxIPAMAvailablePrefix -Id 5
+        Get-NbxIPAMAvailablePrefix -Prefix_ID 6
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Rejects objects that are not prefixes' {
+        { [pscustomobject]@{ id = 5; url = 'https://netbox.example.com/api/ipam/ip-ranges/5/' } | Get-NbxIPAMAvailablePrefix -ErrorAction Stop } |
+            Should -Throw '*not of the expected type*'
+    }
+
+    It 'Limits the number of returned objects' {
+        Get-NbxIPAMAvailablePrefix -Prefix 5 -Limit 1 | Should -HaveCount 1
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -like '*limit=1' }
+    }
+}
+
+Describe 'Get-NbxIPAMAvailablePrefix with -Query' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { @() }
+    }
+
+    It 'Passes the query to the API' {
+        Get-NbxIPAMAvailablePrefix -Prefix 5 -Query @{ vrf_id = 2 }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Uri.AbsoluteUri -like '*/ipam/prefixes/5/available-prefixes/?vrf_id=2*'
+        }
+    }
 }

@@ -1,77 +1,90 @@
 function Get-NbxContactAssignment {
-
     <#
     .SYNOPSIS
-        Get a contact assignment from NetBox
+        Gets contact assignments from NetBox.
 
     .DESCRIPTION
-        A detailed description of the Get-NbxContactAssignment function.
+        Gets contact assignments from the NetBox API endpoint 'tenancy/contact-assignments'. Without parameters all contact assignments are returned,
+        the cmdlet follows the pagination of the API.
 
-    .PARAMETER Name
-        The specific name of the contact Assignment. Must match exactly as is defined in Netbox
+        Contact assignment objects are returned as they are returned by the API, with the type name 'NetboxTools.ContactAssignment',
+        and can be piped to the other cmdlets of the module.
 
     .PARAMETER Id
-        The database ID of the contact Assignment
+        The ID of the contact assignment to get. Accepts contact assignment objects from the pipeline.
 
-    .PARAMETER Content_Type_Id
-        A description of the Content_Type_Id parameter.
-
-    .PARAMETER Content_Type
-        A description of the Content_Type parameter.
-
-    .PARAMETER Object_Id
-        A description of the Object_Id parameter.
-
-    .PARAMETER Contact_Id
-        A description of the Contact_Id parameter.
-
-    .PARAMETER Role_Id
-        A description of the Role_Id parameter.
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
 
     .PARAMETER Limit
-        Limit the number of results to this number
-
-    .PARAMETER Offset
-        Start the search at this index in results
-
-    .PARAMETER Raw
-        Return the unparsed data from the HTTP request
+        The maximum number of contact assignments to return. By default all matching contact assignments are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxContactAssignment
+        Get-NbxContactAssignment
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all contact assignments.
 
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'Id')]
-        [uint64[]]
-        $Id,
+    .EXAMPLE
+        Get-NbxContactAssignment -Id 42
 
-        [Parameter(Mandatory, ParameterSetName = 'Query')]
-        [hashtable]
-        $Query,
+        Gets the contact assignment with ID 42.
 
-        [Parameter(ParameterSetName = 'Default')]
-        [switch]
-        $All
+    .EXAMPLE
+        Get-NbxContactAssignment -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 contact assignments matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.ContactAssignment
+        You can pipe contact assignment IDs or contact assignment objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.ContactAssignment
+
+    .LINK
+        New-NbxContactAssignment
+
+    .LINK
+        Set-NbxContactAssignment
+
+    .LINK
+        Remove-NbxContactAssignment
+    #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'All', Justification = 'Kept for backward compatibility, all objects are returned by default.')]
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.ContactAssignment')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('tenancy/contact-assignments')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Id' {
-            $Id | ForEach-Object {
-                InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "tenancy/contact-assignments/$ObjectId/" -TypeName 'NetboxTools.ContactAssignment'
+            }
+            return
+        }
+
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
             }
         }
-        'Query' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/" -Method GET -Query $Query
-        }
-        'Default' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-assignments/" -Method GET
-        }
-    }
 
+        InvokeNbxRestMethod -Endpoint 'tenancy/contact-assignments/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.ContactAssignment'
+    }
 }

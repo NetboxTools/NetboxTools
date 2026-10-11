@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxCredential
 ---
@@ -13,7 +12,7 @@ title: Get-NbxCredential
 
 ## SYNOPSIS
 
-Retrieves stored credentials or credential metadata used by NetBox integrations.
+Gets the credential of the NetBox connection.
 
 ## SYNTAX
 
@@ -23,17 +22,24 @@ Retrieves stored credentials or credential metadata used by NetBox integrations.
 Get-NbxCredential [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Returns credential objects or PSCredential entries associated with NetBox. Use this cmdlet to inspect configured credentials for use with other NetBox operations.
+Gets the credential holding the API token used to authenticate to the NetBox API.
+The API token is the password of the credential.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxCredential
+```powershell
+(Get-NbxCredential).GetNetworkCredential().Password
+```
 
-Returns all stored credential objects; output is a `PSCredential` or credential metadata object.
+Gets the API token of the current connection as plain text.
 
 ## PARAMETERS
 
@@ -50,9 +56,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Management.Automation.PSCredential
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
-
 ## NOTES
 
 ## RELATED LINKS
 
+- [Connect-NbxAPI](Connect-NbxAPI.md)

@@ -5,51 +5,56 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxIPAMAddress" {
+Describe 'Set-NbxIPAMAddress' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxIPAMAddress" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxIPAMAddress").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            
-            (Get-Command "Set-NbxIPAMAddress").Parameters.Keys | Should -Contain "Id"
+    It 'Updates only the specified properties with a PATCH request' {
+        Set-NbxIPAMAddress -Id 42 -Description 'Updated' -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Method -eq 'PATCH' -and $Uri -eq 'https://netbox.example.com/api/ipam/ip-addresses/42/' -and
+            $Body.description -eq 'Updated' -and @($Body.PSObject.Properties).Count -eq 1
         }
     }
 
-    Context "Function behavior" {
 
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with PATCH method" {
-            Set-NbxIPAMAddress -Id 1 -Address '10.0.0.1/24'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Method -eq 'PATCH' -and $Uri -like '*/ipam/ip-addresses/*1/*'
-            }
-        }
-
-        It "Should not throw with valid parameters" {
-            { Set-NbxIPAMAddress -Id 1 -Address '10.0.0.1/24' } | Should -Not -Throw
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Clears a reference when $null is specified' {
+        Set-NbxIPAMAddress -Id 42 -Vrf $null -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body -match '"vrf":null'
         }
     }
 
+    It 'Accepts IDs and IP address objects from the pipeline' {
+        41, [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/ipam/ip-addresses/42/' } | Set-NbxIPAMAddress -Description 'Updated' -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/ipam/ip-addresses/41/' }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/ipam/ip-addresses/42/' }
+    }
+
+    It 'Rejects objects of another type' {
+        { [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/dcim/sites/42/' } | Set-NbxIPAMAddress -Description 'Updated' -Confirm:$false -ErrorAction Stop } | Should -Throw '*not of the expected type*'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Returns nothing by default and the updated object with -PassThru' {
+        Set-NbxIPAMAddress -Id 42 -Description 'Updated' -Confirm:$false | Should -BeNullOrEmpty
+        $Result = Set-NbxIPAMAddress -Id 42 -Description 'Updated' -PassThru -Confirm:$false
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.IPAMAddress'
+    }
+
+    It 'Throws when no properties are specified' {
+        { Set-NbxIPAMAddress -Id 42 -Confirm:$false } | Should -Throw '*at least one property*'
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        Set-NbxIPAMAddress -Id 42 -Description 'Updated' -WhatIf
+        Set-NbxIPAMAddress -Id 42 -Description 'Updated' -WhatIf -Force
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
 }

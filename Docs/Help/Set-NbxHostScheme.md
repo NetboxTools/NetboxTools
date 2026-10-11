@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxHostScheme
 ---
@@ -13,27 +12,36 @@ title: Set-NbxHostScheme
 
 ## SYNOPSIS
 
-Sets the URL scheme (http/https) for NetBox host configuration.
+Sets the scheme of the NetBox connection.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxHostScheme [[-Scheme] <string>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-NbxHostScheme [-Scheme] <string> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Sets the scheme of the NetBox API used by the current connection.
+The scheme is usually set by Connect-NbxAPI.
+When the port is the default port of the current scheme (443 for https, 80 for http), the port is changed
+to the default port of the new scheme.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxHostScheme -Scheme 'https'
+```powershell
+Set-NbxHostScheme -Scheme 'https'
+```
 
-Switches the connection scheme to https.
+Sets the scheme to 'https'.
 
 ## PARAMETERS
 
@@ -43,7 +51,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -59,19 +67,41 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -PassThru
+
+Returns the new scheme.
+By default, this cmdlet does not generate any output.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Scheme
 
-Specifies the Scheme parameter.
+The scheme.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
-  IsRequired: false
+  IsRequired: true
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -87,7 +117,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -114,17 +144,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.String
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### string
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxHostScheme](Get-NbxHostScheme.md)

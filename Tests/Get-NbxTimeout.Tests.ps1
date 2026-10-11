@@ -5,52 +5,17 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Get-NbxTimeout" {
-
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Get-NbxTimeout" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Should have parameters (if any)" {
-            (Get-Command "Get-NbxTimeout").Parameters.Keys | Should -Not -BeNullOrEmpty -Because 'most functions have parameters or at least a parameter collection'
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Get-NbxTimeout").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
+Describe 'Get-NbxTimeout' {
+    AfterEach {
+        Initialize-NbxTestConnection
     }
 
-    Context "Function behavior" {
-
-        It "Should return default 30 when Timeout is not set" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.Timeout = $null
-                try {
-                    Get-NbxTimeout -WarningAction SilentlyContinue | Should -Be 30
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
-
-        It "Should return the configured timeout when set" {
-            InModuleScope NetboxTools {
-                $savedConfig = $script:NbxConfig.Clone()
-                $script:NbxConfig.Timeout = 60
-                try {
-                    Get-NbxTimeout | Should -Be 60
-                }
-                finally {
-                    $script:NbxConfig = $savedConfig
-                }
-            }
-        }
+    It 'Returns the configured value' {
+        Set-NbxTimeout -TimeoutSeconds 90
+        Get-NbxTimeout | Should -Be 90
     }
 }

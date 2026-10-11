@@ -1,10 +1,9 @@
-﻿---
+---
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-15-2026
 PlatyPS schema version: 2024-05-01
 title: New-NbxContactAssignment
 ---
@@ -13,26 +12,49 @@ title: New-NbxContactAssignment
 
 ## SYNOPSIS
 
-Create a new contact role assignment in Netbox
+Creates a new contact assignment in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-New-NbxContactAssignment [-ObjectType] <string> [-ObjectId] <ulong> [-Contact] <ulong>
- [[-OptionalAttribute] <hashtable>] [<CommonParameters>]
+New-NbxContactAssignment [[-Object] <Object>] [[-ObjectType] <string>] [[-ObjectId] <int>]
+ [-Contact] <ulong> [[-Role] <ulong>] [[-Priority] <string>] [[-Tag] <ulong[]>]
+ [[-CustomField] <hashtable>] [[-OptionalAttribute] <hashtable>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Creates a new contact role assignment in Netbox
+Creates a new contact assignment using the NetBox API endpoint 'tenancy/contact-assignments' and returns the created contact assignment.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
+Objects with properties matching the parameter names or the NetBox field names can be piped to the cmdlet,
+for example rows from Import-Csv or contact assignment objects returned by Get-NbxContactAssignment.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-New-NbxContactAssignment -Content_Type 'dcim.location' -Object_id 10 -Contact 15 -Role 10 -Priority 'Primary'
+```powershell
+New-NbxContactAssignment -Contact 1
+```
+
+Creates a new contact assignment.
+
+### EXAMPLE 2
+
+```powershell
+Import-Csv -Path .\contact-assignments.csv | New-NbxContactAssignment
+```
+
+Creates a contact assignment for each row in a CSV file.
+Columns are matched to parameters by name or NetBox field name.
 
 ## PARAMETERS
 
@@ -60,37 +82,17 @@ HelpMessage: ''
 
 ### -Contact
 
-ID of the contact to assign.
+The contact of the contact assignment.
+Accepts an ID or an object from Get-NbxContact.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: 2
-  IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Content_Type
-
-The content type for this assignment.
-
-```yaml
-Type: System.String
+Type: System.Nullable`1[System.UInt64]
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 0
+  Position: 3
   IsRequired: true
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: true
@@ -100,19 +102,43 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Object_Id
+### -CustomField
 
-ID of the object to assign.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- custom_fields
+ParameterSets:
+- Name: (All)
+  Position: 7
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Object
+
+The object to assign the contact to, such as a site from Get-NbxDCIMSite.
+Sets ObjectType and ObjectId.
+
+```yaml
+Type: System.Object
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 1
-  IsRequired: true
+  Position: 0
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -123,19 +149,20 @@ HelpMessage: ''
 
 ### -ObjectId
 
-ID of the object to assign.
+The ID of the object the contact is assigned to.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
+Type: System.Nullable`1[System.Int32]
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- object_id
 ParameterSets:
 - Name: (All)
-  Position: 1
-  IsRequired: true
+  Position: 2
+  IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -144,19 +171,23 @@ HelpMessage: ''
 
 ### -ObjectType
 
-Object type
+The type of the object the contact is assigned to, e.g.
+'dcim.site'.
+Common values are: circuits.circuit, circuits.provider, dcim.device, dcim.location, dcim.manufacturer, dcim.rack, dcim.region, dcim.site, dcim.sitegroup, tenancy.tenant, virtualization.cluster, virtualization.virtualmachine.
 
 ```yaml
 Type: System.String
 DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- object_type
+- Content_Type
 ParameterSets:
 - Name: (All)
-  Position: 0
-  IsRequired: true
+  Position: 1
+  IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -165,7 +196,8 @@ HelpMessage: ''
 
 ### -OptionalAttribute
 
-Optional Attributes as a hashtable
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -174,7 +206,7 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: 8
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -186,7 +218,8 @@ HelpMessage: ''
 
 ### -Priority
 
-Piority of the contact assignment.
+The priority of the contact assignment.
+Common values are: primary, secondary, tertiary, inactive.
 
 ```yaml
 Type: System.String
@@ -195,31 +228,10 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -Raw
-
-Return the unparsed data from the HTTP request
-
-```yaml
-Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: Named
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -228,19 +240,44 @@ HelpMessage: ''
 
 ### -Role
 
-ID of the contact role to assign.
+The contact role.
+Accepts an ID or an object from Get-NbxContactRole.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
-  IsRequired: true
+  Position: 4
+  IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Tag
+
+The tags of the contact assignment.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- tags
+ParameterSets:
+- Name: (All)
+  Position: 6
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -249,7 +286,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -278,19 +316,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.String
+### System.Management.Automation.PSObject
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe objects with properties matching the parameter names or NetBox field names to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.ContactAssignment
 
 ## NOTES
 
-Valid content types: https://docs.Nbx.dev/en/stable/features/contacts/#contacts_1
 ## RELATED LINKS
 
-
+- [Get-NbxContactAssignment](Get-NbxContactAssignment.md)
+- [Set-NbxContactAssignment](Set-NbxContactAssignment.md)
+- [Remove-NbxContactAssignment](Remove-NbxContactAssignment.md)

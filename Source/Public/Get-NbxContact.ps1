@@ -1,53 +1,103 @@
 function Get-NbxContact {
-
     <#
     .SYNOPSIS
-        Get a contact from NetBox
+        Gets contacts from NetBox.
 
     .DESCRIPTION
-        Obtain a contact or contacts from NetBox by ID or query
+        Gets contacts from the NetBox API endpoint 'tenancy/contacts'. Without parameters all contacts are returned,
+        the cmdlet follows the pagination of the API.
 
-    .PARAMETER Name
-        The specific name of the Contact. Must match exactly as is defined in Netbox
+        Contact objects are returned as they are returned by the API, with the type name 'NetboxTools.Contact',
+        and can be piped to the other cmdlets of the module.
 
     .PARAMETER Id
-        The database ID of the Contact
+        The ID of the contact to get. Accepts contact objects from the pipeline.
+
+    .PARAMETER Name
+        Filters contacts by name. Multiple values return contacts matching any of the values.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
+
+    .PARAMETER Limit
+        The maximum number of contacts to return. By default all matching contacts are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxContact
+        Get-NbxContact
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all contacts.
 
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'Id')]
-        [uint64[]]
-        $Id,
+    .EXAMPLE
+        Get-NbxContact -Id 42
 
-        [Parameter(Mandatory, ParameterSetName = 'Query')]
-        [hashtable]
-        $Query,
+        Gets the contact with ID 42.
 
-        [Parameter(ParameterSetName = 'Default')]
-        [switch]
-        $All
+    .EXAMPLE
+        Get-NbxContact -Name 'example'
+
+        Gets contacts where the name is 'example'.
+
+    .EXAMPLE
+        Get-NbxContact -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 contacts matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.Contact
+        You can pipe contact IDs or contact objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.Contact
+
+    .LINK
+        New-NbxContact
+
+    .LINK
+        Set-NbxContact
+
+    .LINK
+        Remove-NbxContact
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.Contact')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('tenancy/contacts')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string[]]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Id' {
-            $Id | ForEach-Object {
-                InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "tenancy/contacts/$ObjectId/" -TypeName 'NetboxTools.Contact'
+            }
+            return
+        }
+
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
             }
         }
-        'Query' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts/" -Method GET -Query $Query
+        if ($PSBoundParameters.ContainsKey('Name')) {
+            $Filter['name'] = $Name
         }
-        'Default' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contacts/" -Method GET
-        }
-    }
 
+        InvokeNbxRestMethod -Endpoint 'tenancy/contacts/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.Contact'
+    }
 }

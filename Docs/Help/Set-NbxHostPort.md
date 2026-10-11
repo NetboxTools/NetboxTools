@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxHostPort
 ---
@@ -13,27 +12,34 @@ title: Set-NbxHostPort
 
 ## SYNOPSIS
 
-Updates a host port record in NetBox.
+Sets the port of the NetBox connection.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxHostPort [-Port] <ushort> [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-NbxHostPort [-Port] <int> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Sets the port of the NetBox API used by the current connection.
+The port is usually set by Connect-NbxAPI.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxHostPort -Port 8080
+```powershell
+Set-NbxHostPort -Port 8443
+```
 
-Sets the NetBox host port to 8080.
+Sets the port to 8443.
 
 ## PARAMETERS
 
@@ -43,7 +49,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -59,13 +65,35 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Port
+### -PassThru
 
-Specifies the Port parameter.
+Returns the new port.
+By default, this cmdlet does not generate any output.
 
 ```yaml
-Type: System.UInt16
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Port
+
+The port.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -87,7 +115,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -114,17 +142,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.String
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### int
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxHostPort](Get-NbxHostPort.md)

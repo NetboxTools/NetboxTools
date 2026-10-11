@@ -1,35 +1,66 @@
 function Remove-NbxIPAMAddressRange {
-
     <#
     .SYNOPSIS
-        Remove an IP address range from NetBox
+        Removes IP ranges from NetBox.
 
     .DESCRIPTION
-        Removes/deletes an IP address range from NetBox by ID
+        Removes one or more IP ranges using the NetBox API endpoint 'ipam/ip-ranges'.
+        You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
     .PARAMETER Id
-        Database ID of the IP address range object.
+        The ID of the IP range to remove. Accepts IP range objects from the pipeline.
 
     .PARAMETER Force
-        Do not confirm.
+        Removes the object without asking for confirmation.
+
+    .PARAMETER WhatIf
+        Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+    .PARAMETER Confirm
+        Prompts you for confirmation before running the cmdlet.
 
     .EXAMPLE
-        PS C:\> Remove-NbxIPAMAddressRange -Id 1234
+        Remove-NbxIPAMAddressRange -Id 42
 
-    .NOTES
-        Additional information about the function.
-#>
+        Removes the IP range with ID 42 after confirmation.
 
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory)]
-        [uint64[]]$Id
+    .EXAMPLE
+        Get-NbxIPAMAddressRange -Query @{ q = 'example' } | Remove-NbxIPAMAddressRange -Force
+
+        Removes all IP ranges matching the search 'example' without confirmation.
+
+    .INPUTS
+        System.UInt64, NetboxTools.IPAMAddressRange
+        You can pipe IP range IDs or IP range objects to this cmdlet.
+
+    .OUTPUTS
+        None
+
+    .LINK
+        Get-NbxIPAMAddressRange
+
+    .LINK
+        New-NbxIPAMAddressRange
+
+    .LINK
+        Set-NbxIPAMAddressRange
+    #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [OutputType([void])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [NbxIdTransformation('ipam/ip-ranges')]
+        [uint64[]]$Id,
+
+        [Parameter()]
+        [switch]$Force
     )
 
-
-    $Id | ForEach-Object {
-        InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/ipam/ip-ranges/$($_)/" -Method DELETE
+    process {
+        foreach ($ObjectId in $Id) {
+            if (($Force -and -not $WhatIfPreference) -or $PSCmdlet.ShouldProcess("IP range $ObjectId", 'Remove')) {
+                InvokeNbxRestMethod -Endpoint "ipam/ip-ranges/$ObjectId/" -Method DELETE
+            }
+        }
     }
-    
 }

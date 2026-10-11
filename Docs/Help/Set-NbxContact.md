@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxContact
 ---
@@ -13,34 +12,54 @@ title: Set-NbxContact
 
 ## SYNOPSIS
 
-Update a contact in Netbox
+Updates contacts in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxContact [-Id] <ulong[]> [[-Name] <string>] [[-Email] <string>] [[-Group] <ulong>]
- [[-Title] <string>] [[-Phone] <string>] [[-Address] <string>] [[-Description] <string>]
- [[-Comments] <string>] [[-Link] <string>] [[-Custom_Fields] <hashtable>] [-Force] [-Raw] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Set-NbxContact [-Id] <ulong[]> [[-Name] <string>] [[-Group] <ulong[]>] [[-Title] <string>]
+ [[-Phone] <string>] [[-Email] <string>] [[-Address] <string>] [[-Link] <string>]
+ [[-Description] <string>] [[-Comments] <string>] [[-Tag] <ulong[]>] [[-CustomField] <hashtable>]
+ [[-OptionalAttribute] <hashtable>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Updates a contact object in Netbox which can be linked to other objects
+Updates one or more contacts using the NetBox API endpoint 'tenancy/contacts'.
+Only the specified properties are changed, all other properties keep their current values.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Set-NbxContact -Id 10 -Name 'Leroy Jenkins' -Email 'leroy.jenkins@example.com'
+```powershell
+Set-NbxContact -Id 42 -Description 'Updated with NetboxTools'
+```
+
+Updates the description of the contact with ID 42.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxContact -Query @{ q = 'example' } | Set-NbxContact -Description 'Updated' -PassThru
+```
+
+Updates the description of all contacts matching the search 'example' and returns the updated contacts.
 
 ## PARAMETERS
 
 ### -Address
 
-Physical address, usually mailing address
+The postal address of the contact.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -61,8 +80,9 @@ HelpMessage: ''
 
 ### -Comments
 
-Detailed comments.
-Markdown supported.
+Comments about the contact.
+Supports Markdown.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -71,7 +91,7 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 8
+  Position: 9
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -103,18 +123,20 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Custom_Fields
+### -CustomField
 
-A description of the Custom_Fields parameter.
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
 
 ```yaml
 Type: System.Collections.Hashtable
 DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- custom_fields
 ParameterSets:
 - Name: (All)
-  Position: 10
+  Position: 11
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -126,7 +148,8 @@ HelpMessage: ''
 
 ### -Description
 
-Short description of the contact
+A short description of the contact.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -135,7 +158,7 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 7
+  Position: 8
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -147,7 +170,8 @@ HelpMessage: ''
 
 ### -Email
 
-Email address of the contact
+The email of the contact.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -156,7 +180,7 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 2
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -168,7 +192,7 @@ HelpMessage: ''
 
 ### -Force
 
-A description of the Force parameter.
+Updates the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -189,16 +213,18 @@ HelpMessage: ''
 
 ### -Group
 
-Database ID of assigned group
+The contact groups.
+Accepts IDs or objects.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: 0
+Type: System.UInt64[]
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- groups
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: 2
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -210,7 +236,8 @@ HelpMessage: ''
 
 ### -Id
 
-A description of the Id parameter.
+The ID of the contact to update.
+Accepts contact objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -221,8 +248,8 @@ ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -231,7 +258,8 @@ HelpMessage: ''
 
 ### -Link
 
-URI related to the contact
+A URL related to the contact.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -240,7 +268,7 @@ SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 9
+  Position: 7
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -252,7 +280,7 @@ HelpMessage: ''
 
 ### -Name
 
-The contacts full name, e.g "Leroy Jenkins"
+The name of the contact.
 
 ```yaml
 Type: System.String
@@ -271,18 +299,19 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Phone
+### -OptionalAttribute
 
-Telephone number
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
 
 ```yaml
-Type: System.String
+Type: System.Collections.Hashtable
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 5
+  Position: 12
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -292,9 +321,10 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Raw
+### -PassThru
 
-A description of the Raw parameter.
+Returns the updated contact.
+By default, this cmdlet does not generate any output.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -313,9 +343,10 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Title
+### -Phone
 
-Job title or other title related to the contact
+The phone of the contact.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
@@ -334,9 +365,56 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -Tag
+
+The tags of the contact.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- tags
+ParameterSets:
+- Name: (All)
+  Position: 10
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Title
+
+The title of the contact.
+Specify $null to clear the value.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 3
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -365,23 +443,24 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt64[]
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.Contact
+
+You can pipe contact IDs or contact objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.Contact
+
+With -PassThru the updated contact is returned.
 
 ## NOTES
 
-Additional information about the function.
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxContact](Get-NbxContact.md)
+- [New-NbxContact](New-NbxContact.md)
+- [Remove-NbxContact](Remove-NbxContact.md)

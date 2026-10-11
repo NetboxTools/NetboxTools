@@ -1,10 +1,9 @@
-﻿---
+---
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-15-2026
 PlatyPS schema version: 2024-05-01
 title: New-NbxIPAMAddress
 ---
@@ -13,34 +12,65 @@ title: New-NbxIPAMAddress
 
 ## SYNOPSIS
 
-Create a new IP address to Netbox
+Creates a new IP address in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-New-NbxIPAMAddress [-Address] <string> [[-OptionalAttribute] <hashtable>] [<CommonParameters>]
+New-NbxIPAMAddress [-Address] <string> [[-Status] <string>] [[-Role] <string>] [[-Vrf] <ulong>]
+ [[-Tenant] <ulong>] [[-AssignedObject] <Object>] [[-AssignedObjectType] <string>]
+ [[-AssignedObjectId] <int>] [[-NatInside] <ulong>] [[-DnsName] <string>] [[-Description] <string>]
+ [[-Comments] <string>] [[-Tag] <ulong[]>] [[-CustomField] <hashtable>]
+ [[-OptionalAttribute] <hashtable>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Create a new IP address to Netbox with a status of Active by default.
+Creates a new IP address using the NetBox API endpoint 'ipam/ip-addresses' and returns the created IP address.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
+Objects with properties matching the parameter names or the NetBox field names can be piped to the cmdlet,
+for example rows from Import-Csv or IP address objects returned by Get-NbxIPAMAddress.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-New-NbxIPAMAddress -Address 192.0.2.1/32
+```powershell
+New-NbxIPAMAddress -Address '192.0.2.10/24'
+```
 
-Add new IP Address 192.0.2.1/32 with status active
+Creates a new IP address.
+
+### EXAMPLE 2
+
+```powershell
+New-NbxIPAMAddress -Address '192.0.2.10/24' -Description 'Created with NetboxTools' -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+```
+
+Creates a new IP address with a description and a custom field value.
+
+### EXAMPLE 3
+
+```powershell
+Import-Csv -Path .\ip-addresses.csv | New-NbxIPAMAddress
+```
+
+Creates an IP address for each row in a CSV file.
+Columns are matched to parameters by name or NetBox field name.
 
 ## PARAMETERS
 
 ### -Address
 
-IP address in CIDR notation: 192.168.1.1/24
+The IPv4 or IPv6 address with mask, e.g.
+'192.0.2.10/24'.
 
 ```yaml
 Type: System.String
@@ -52,25 +82,27 @@ ParameterSets:
   Position: 0
   IsRequired: true
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
+  ValueFromPipelineByPropertyName: true
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -OptionalAttribute
+### -AssignedObject
 
-Optional Attributes as a hashtable
+The interface to assign the IP address to.
+Accepts objects from Get-NbxDCIMInterface or Get-NbxVirtualMachineInterface.
+Sets AssignedObjectType and AssignedObjectId.
 
 ```yaml
-Type: System.Collections.Hashtable
+Type: System.Object
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 1
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -79,6 +111,342 @@ DontShow: false
 AcceptedValues: []
 HelpMessage: ''
 ```
+
+### -AssignedObjectId
+
+The ID of the object the IP address is assigned to.
+
+```yaml
+Type: System.Nullable`1[System.Int32]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- assigned_object_id
+ParameterSets:
+- Name: (All)
+  Position: 7
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -AssignedObjectType
+
+The type of object the IP address is assigned to.
+Common values are: dcim.interface, virtualization.vminterface, ipam.fhrpgroup.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- assigned_object_type
+ParameterSets:
+- Name: (All)
+  Position: 6
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Comments
+
+Comments about the IP address.
+Supports Markdown.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 11
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Confirm
+
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- cf
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -CustomField
+
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- custom_fields
+ParameterSets:
+- Name: (All)
+  Position: 13
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Description
+
+A short description of the IP address.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 10
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -DnsName
+
+The hostname or FQDN (not case-sensitive).
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- dns_name
+ParameterSets:
+- Name: (All)
+  Position: 9
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -NatInside
+
+The inside IP address for which this address is the outside NAT IP.
+Accepts an ID or an object from Get-NbxIPAMAddress.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- nat_inside
+ParameterSets:
+- Name: (All)
+  Position: 8
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -OptionalAttribute
+
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 14
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Role
+
+The functional role of the IP address.
+Common values are: loopback, secondary, anycast, vip, vrrp, hsrp, glbp, carp.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 2
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Status
+
+The status of the IP address.
+Common values are: active, reserved, deprecated, dhcp, slaac.
+
+```yaml
+Type: System.String
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 1
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Tag
+
+The tags of the IP address.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- tags
+ParameterSets:
+- Name: (All)
+  Position: 12
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Tenant
+
+The tenant of the IP address.
+Accepts an ID or an object from Get-NbxTenant.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 4
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Vrf
+
+The vrf of the IP address.
+Accepts an ID or a NetBox object.
+
+```yaml
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 3
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: true
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -WhatIf
+
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- wi
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### CommonParameters
 
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable,
@@ -88,19 +456,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.String
+### System.Management.Automation.PSObject
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe objects with properties matching the parameter names or NetBox field names to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.IPAMAddress
 
 ## NOTES
 
 ## RELATED LINKS
 
-{{ Fill in the related links here }}
-
+- [Get-NbxIPAMAddress](Get-NbxIPAMAddress.md)
+- [Set-NbxIPAMAddress](Set-NbxIPAMAddress.md)
+- [Remove-NbxIPAMAddress](Remove-NbxIPAMAddress.md)

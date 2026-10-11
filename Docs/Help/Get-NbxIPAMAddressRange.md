@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMAddressRange
 ---
@@ -13,42 +12,120 @@ title: Get-NbxIPAMAddressRange
 
 ## SYNOPSIS
 
-Retrieves IPAM address range objects from NetBox (contiguous address ranges within prefixes).
+Gets IP ranges from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxIPAMAddressRange [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxIPAMAddressRange [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxIPAMAddressRange -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets one or more IPAM address range records from NetBox. Use `-Id` to return specific ranges by NetBox database ID; omit `-Id` to list all ranges.
+Gets IP ranges from the NetBox API endpoint 'ipam/ip-ranges'.
+Without parameters all IP ranges are returned,
+the cmdlet follows the pagination of the API.
+
+IP range objects are returned as they are returned by the API, with the type name 'NetboxTools.IPAMAddressRange',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxIPAMAddressRange -Id 123
+```powershell
+Get-NbxIPAMAddressRange
+```
 
-Returns the address range with ID 123.
+Gets all IP ranges.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMAddressRange -Id 42
+```
+
+Gets the IP range with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxIPAMAddressRange -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 IP ranges matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the IP range to get.
+Accepts IP range objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of IP ranges to return.
+By default all matching IP ranges are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +137,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +150,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,15 +168,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.IPAMAddressRange
+
+You can pipe IP range IDs or IP range objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
-
-Objects representing address range records (properties include `id`, `start_address`, `end_address`, `prefix`).
+### NetboxTools.IPAMAddressRange
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [New-NbxIPAMAddressRange](New-NbxIPAMAddressRange.md)
+- [Set-NbxIPAMAddressRange](Set-NbxIPAMAddressRange.md)
+- [Remove-NbxIPAMAddressRange](Remove-NbxIPAMAddressRange.md)

@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMPrefix
 ---
@@ -13,42 +12,85 @@ title: Get-NbxIPAMPrefix
 
 ## SYNOPSIS
 
-Retrieves IPAM prefixes from NetBox (network prefixes such as 192.0.2.0/24).
+Gets prefixes from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxIPAMPrefix [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxIPAMPrefix [-Prefix <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxIPAMPrefix -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets one or more IPAM prefix objects from NetBox. Use `-Id` to select by database ID, or use other filters when available to locate prefixes.
+Gets prefixes from the NetBox API endpoint 'ipam/prefixes'.
+Without parameters all prefixes are returned,
+the cmdlet follows the pagination of the API.
+
+Prefix objects are returned as they are returned by the API, with the type name 'NetboxTools.IPAMPrefix',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-PS C:\> Get-NbxIPAMPrefix -Id 321
+```powershell
+Get-NbxIPAMPrefix
+```
 
-Returns the IPAM prefix with ID 321.
+Gets all prefixes.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMPrefix -Id 42
+```
+
+Gets the prefix with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxIPAMPrefix -Prefix 'example'
+```
+
+Gets prefixes where the prefix is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxIPAMPrefix -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 prefixes matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-A description of the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: ''
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: Id
-  Position: 0
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -58,18 +100,87 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Contains
+### -Id
 
-A description of the Contains parameter.
+The ID of the prefix to get.
+Accepts prefix objects from the pipeline.
 
 ```yaml
-Type: System.String
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of prefixes to return.
+By default all matching prefixes are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Prefix
+
+Filters prefixes by prefix.
+Multiple values return prefixes matching any of the values.
+
+```yaml
+Type: System.String[]
 DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: Query
-  Position: 0
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Query
+
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -88,16 +199,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.IPAMPrefix
+
+You can pipe prefix IDs or prefix objects to this cmdlet.
 
 ## OUTPUTS
 
-System.Object
-
-Objects representing IPAM prefixes (properties include `id`, `prefix`, `status`, `role`, `site`).
+### NetboxTools.IPAMPrefix
 
 ## NOTES
 
-Additional information about the function.
 ## RELATED LINKS
 
+- [New-NbxIPAMPrefix](New-NbxIPAMPrefix.md)
+- [Set-NbxIPAMPrefix](Set-NbxIPAMPrefix.md)
+- [Remove-NbxIPAMPrefix](Remove-NbxIPAMPrefix.md)

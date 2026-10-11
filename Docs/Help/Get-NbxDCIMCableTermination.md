@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxDCIMCableTermination
 ---
@@ -13,45 +12,123 @@ title: Get-NbxDCIMCableTermination
 
 ## SYNOPSIS
 
-Retrieves DCIM cable termination objects (a/b endpoints) from NetBox.
+Gets cable terminations from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxDCIMCableTermination [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxDCIMCableTermination [-Query <hashtable>] [-All] [-Limit <int>] [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxDCIMCableTermination -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Gets cable terminations from the NetBox API endpoint 'dcim/cable-terminations'.
+Without parameters all cable terminations are returned,
+the cmdlet follows the pagination of the API.
+
+Cable termination objects are returned as they are returned by the API, with the type name 'NetboxTools.DCIMCableTermination',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxDCIMCableTermination -Id 300
+```powershell
+Get-NbxDCIMCableTermination
+```
 
-Returns the cable termination with ID 300.
+Gets all cable terminations.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMCableTermination -Id 42
+```
+
+Gets the cable termination with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxDCIMCableTermination -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 cable terminations matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the cable termination to get.
+Accepts cable termination objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of cable terminations to return.
+By default all matching cable terminations are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -60,7 +137,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +150,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,14 +168,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.DCIMCableTermination
+
+You can pipe cable termination IDs or cable termination objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
-
-Objects representing cable termination records (typical properties: `id`, `object_type`, `object_id`, `connection_status`).
+### NetboxTools.DCIMCableTermination
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
+

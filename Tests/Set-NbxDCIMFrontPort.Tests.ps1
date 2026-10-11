@@ -5,79 +5,56 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "Set-NbxDCIMFrontPort" {
+Describe 'Set-NbxDCIMFrontPort' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "Set-NbxDCIMFrontPort" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
-        }
-
-        It "Parameter names are PascalCase" {
-            (Get-Command "Set-NbxDCIMFrontPort").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "Set-NbxDCIMFrontPort"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'Id'
+    It 'Updates only the specified properties with a PATCH request' {
+        Set-NbxDCIMFrontPort -Id 42 -Description 'Updated' -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Method -eq 'PATCH' -and $Uri -eq 'https://netbox.example.com/api/dcim/front-ports/42/' -and
+            $Body.description -eq 'Updated' -and @($Body.PSObject.Properties).Count -eq 1
         }
     }
 
-    Context "Function behavior" {
 
-        BeforeAll {
-            InModuleScope NetboxTools {
-                Set-Item -Path function:script:BuildURIComponents -Value {
-                    param($URISegments, $ParametersDictionary, $SkipParameterByName)
-                    return @{ Segments = $URISegments; Parameters = @{} }
-                }
-                Set-Item -Path function:script:BuildNewURI -Value {
-                    param($Segments)
-                    return 'https://netbox.example.com/api/test/1/'
-                }
-                Set-Item -Path function:script:InvokeNbxRequest -Value {
-                    param($URI, $Body, $Method)
-                    return [pscustomobject]@{ id = 1 }
-                }
-            }
-            Mock -ModuleName NetboxTools -CommandName Get-NbxDCIMFrontPort -MockWith {
-                return [pscustomobject]@{ id = 1; Name = 'Test'; display = 'Test' }
-            }
-            Mock -ModuleName NetboxTools -CommandName BuildURIComponents -MockWith {
-                return @{ Segments = @('test'); Parameters = @{} }
-            }
-            Mock -ModuleName NetboxTools -CommandName BuildNewURI -MockWith {
-                return 'https://netbox.example.com/api/test/1/'
-            }
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRequest -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-        }
-
-        It "Should call InvokeNbxRequest with PATCH method when Force is used" {
-            Set-NbxDCIMFrontPort -Id 1 -Name 'Updated' -Force
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRequest -Times 1
-        }
-
-        It "Should call Get-NbxDCIMFrontPort to verify the object exists" {
-            Set-NbxDCIMFrontPort -Id 1 -Name 'Updated' -Force
-            Should -Invoke -ModuleName NetboxTools -CommandName Get-NbxDCIMFrontPort -Times 1
-        }
-
-        It "Should not throw with valid parameters" {
-            { Set-NbxDCIMFrontPort -Id 1 -Name 'Updated' -Force } | Should -Not -Throw
+    It 'Clears a reference when $null is specified' {
+        Set-NbxDCIMFrontPort -Id 42 -Module $null -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body -match '"module":null'
         }
     }
 
+    It 'Accepts IDs and front port objects from the pipeline' {
+        41, [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/dcim/front-ports/42/' } | Set-NbxDCIMFrontPort -Description 'Updated' -Confirm:$false
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/dcim/front-ports/41/' }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter { $Uri -eq 'https://netbox.example.com/api/dcim/front-ports/42/' }
+    }
+
+    It 'Rejects objects of another type' {
+        { [pscustomobject]@{ id = 42; url = 'https://netbox.example.com/api/dcim/sites/42/' } | Set-NbxDCIMFrontPort -Description 'Updated' -Confirm:$false -ErrorAction Stop } | Should -Throw '*not of the expected type*'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
+
+    It 'Returns nothing by default and the updated object with -PassThru' {
+        Set-NbxDCIMFrontPort -Id 42 -Description 'Updated' -Confirm:$false | Should -BeNullOrEmpty
+        $Result = Set-NbxDCIMFrontPort -Id 42 -Description 'Updated' -PassThru -Confirm:$false
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.DCIMFrontPort'
+    }
+
+    It 'Throws when no properties are specified' {
+        { Set-NbxDCIMFrontPort -Id 42 -Confirm:$false } | Should -Throw '*at least one property*'
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        Set-NbxDCIMFrontPort -Id 42 -Description 'Updated' -WhatIf
+        Set-NbxDCIMFrontPort -Id 42 -Description 'Updated' -WhatIf -Force
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
 }

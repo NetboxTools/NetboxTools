@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxVersion
 ---
@@ -13,7 +12,7 @@ title: Get-NbxVersion
 
 ## SYNOPSIS
 
-Displays the module version and NetBox API version information.
+Gets the version and status of the NetBox instance.
 
 ## SYNTAX
 
@@ -23,17 +22,24 @@ Displays the module version and NetBox API version information.
 Get-NbxVersion [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Gets the status of the connected NetBox instance from the API endpoint 'status', including the NetBox,
+Django and Python versions, installed apps and plugins and the number of running workers.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxVersion
+```powershell
+(Get-NbxVersion).'netbox-version'
+```
 
-Returns the NetBox instance version information.
+Gets the version of the connected NetBox instance.
 
 ## PARAMETERS
 
@@ -48,11 +54,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Object
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.Status
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
 

@@ -1,56 +1,66 @@
 function Remove-NbxDCIMInterface {
-
     <#
     .SYNOPSIS
-        Removes an interface
+        Removes interfaces from NetBox.
 
     .DESCRIPTION
-        Removes an interface by ID from a device
+        Removes one or more interfaces using the NetBox API endpoint 'dcim/interfaces'.
+        You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
     .PARAMETER Id
-        A description of the Id parameter.
+        The ID of the interface to remove. Accepts interface objects from the pipeline.
 
     .PARAMETER Force
-        A description of the Force parameter.
+        Removes the object without asking for confirmation.
+
+    .PARAMETER WhatIf
+        Shows what would happen if the cmdlet runs. The cmdlet is not run.
+
+    .PARAMETER Confirm
+        Prompts you for confirmation before running the cmdlet.
 
     .EXAMPLE
-        		PS C:\> Remove-NbxDCIMInterface -Id $value1
+        Remove-NbxDCIMInterface -Id 42
 
-    .NOTES
-        Additional information about the function.
-#>
+        Removes the interface with ID 42 after confirmation.
 
-    [CmdletBinding(ConfirmImpact = 'High',
-        SupportsShouldProcess = $true)]
-    param
-    (
-        [Parameter(Mandatory,
-            ValueFromPipelineByPropertyName = $true)]
+    .EXAMPLE
+        Get-NbxDCIMInterface -Query @{ q = 'example' } | Remove-NbxDCIMInterface -Force
+
+        Removes all interfaces matching the search 'example' without confirmation.
+
+    .INPUTS
+        System.UInt64, NetboxTools.DCIMInterface
+        You can pipe interface IDs or interface objects to this cmdlet.
+
+    .OUTPUTS
+        None
+
+    .LINK
+        Get-NbxDCIMInterface
+
+    .LINK
+        New-NbxDCIMInterface
+
+    .LINK
+        Set-NbxDCIMInterface
+    #>
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [OutputType([void])]
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [NbxIdTransformation('dcim/interfaces')]
         [uint64[]]$Id,
 
+        [Parameter()]
         [switch]$Force
     )
 
-    begin {
-
-    }
-
     process {
-        foreach ($InterfaceId in $Id) {
-            $CurrentInterface = Get-NbxDCIMInterface -Id $InterfaceId -ErrorAction Stop
-
-            if ($Force -or $pscmdlet.ShouldProcess("Name: $($CurrentInterface.Name) | ID: $($CurrentInterface.Id)", "Remove")) {
-                $Segments = [System.Collections.ArrayList]::new(@('dcim', 'interfaces', $CurrentInterface.Id))
-
-                $URI = BuildNewURI -Segments $Segments
-
-                InvokeNbxRequest -URI $URI -Method DELETE
+        foreach ($ObjectId in $Id) {
+            if (($Force -and -not $WhatIfPreference) -or $PSCmdlet.ShouldProcess("interface $ObjectId", 'Remove')) {
+                InvokeNbxRestMethod -Endpoint "dcim/interfaces/$ObjectId/" -Method DELETE
             }
         }
     }
-
-    end {
-
-    }
-
 }

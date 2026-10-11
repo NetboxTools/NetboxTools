@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Disconnect-NbxAPI
 ---
@@ -13,7 +12,7 @@ title: Disconnect-NbxAPI
 
 ## SYNOPSIS
 
-Disconnects from the Netbox API and clears the stored connection configuration
+Disconnects from the NetBox API.
 
 ## SYNTAX
 
@@ -23,18 +22,24 @@ Disconnects from the Netbox API and clears the stored connection configuration
 Disconnect-NbxAPI [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Disconnects from the currently configured Netbox API by clearing the module-level connection configuration (`$script:NbxConfig`).
-After running this cmdlet the module will no longer have an active connection until `Connect-NbxAPI` is invoked again.
+Removes the connection and API token from the session and resets the module configuration,
+including the timeout and invoke parameters, to the defaults.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
+```powershell
 Disconnect-NbxAPI
+```
 
-This example clears the active Netbox API connection and removes any stored token and configuration.
+Disconnects from the NetBox API.
 
 ## PARAMETERS
 
@@ -49,7 +54,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
+### None
+
+This cmdlet does not return output.
+
 ## NOTES
 
-Running this cmdlet does not communicate with the Netbox API; it only clears the locally stored configuration and authentication token.
 ## RELATED LINKS
+
+- [Connect-NbxAPI](Connect-NbxAPI.md)

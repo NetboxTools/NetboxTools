@@ -1,53 +1,103 @@
 function Get-NbxContactRole {
-
-<#
+    <#
     .SYNOPSIS
-        Get a contact role from NetBox
+        Gets contact roles from NetBox.
 
     .DESCRIPTION
-        A detailed description of the Get-NbxContactRole function.
+        Gets contact roles from the NetBox API endpoint 'tenancy/contact-roles'. Without parameters all contact roles are returned,
+        the cmdlet follows the pagination of the API.
 
-    .PARAMETER Name
-        The specific name of the contact role. Must match exactly as is defined in Netbox
+        Contact role objects are returned as they are returned by the API, with the type name 'NetboxTools.ContactRole',
+        and can be piped to the other cmdlets of the module.
 
     .PARAMETER Id
-        The database ID of the contact role
+        The ID of the contact role to get. Accepts contact role objects from the pipeline.
+
+    .PARAMETER Name
+        Filters contact roles by name. Multiple values return contact roles matching any of the values.
+
+    .PARAMETER Query
+        Filters supported by the NetBox API as a hashtable, e.g. @{ q = 'search text' }. Filters with multiple values are specified as arrays. See the API documentation of your NetBox instance for available filters.
+
+    .PARAMETER Limit
+        The maximum number of contact roles to return. By default all matching contact roles are returned.
 
     .EXAMPLE
-        PS C:\> Get-NbxContactRole
+        Get-NbxContactRole
 
-    .NOTES
-        Additional information about the function.
-#>
+        Gets all contact roles.
 
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
-    param
-    (
-        [Parameter(Mandatory, ParameterSetName = 'Id')]
-        [uint64[]]
-        $Id,
+    .EXAMPLE
+        Get-NbxContactRole -Id 42
 
-        [Parameter(Mandatory, ParameterSetName = 'Query')]
-        [hashtable]
-        $Query,
+        Gets the contact role with ID 42.
 
-        [Parameter(ParameterSetName = 'Default')]
-        [switch]
-        $All
+    .EXAMPLE
+        Get-NbxContactRole -Name 'example'
+
+        Gets contact roles where the name is 'example'.
+
+    .EXAMPLE
+        Get-NbxContactRole -Query @{ q = 'example' } -Limit 10
+
+        Gets the first 10 contact roles matching the search 'example'.
+
+    .INPUTS
+        System.UInt64, NetboxTools.ContactRole
+        You can pipe contact role IDs or contact role objects to this cmdlet.
+
+    .OUTPUTS
+        NetboxTools.ContactRole
+
+    .LINK
+        New-NbxContactRole
+
+    .LINK
+        Set-NbxContactRole
+
+    .LINK
+        Remove-NbxContactRole
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'Query')]
+    [OutputType('NetboxTools.ContactRole')]
+    param (
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline)]
+        [NbxIdTransformation('tenancy/contact-roles')]
+        [uint64[]]$Id,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [string[]]$Name,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [hashtable]$Query,
+
+        # Returns all objects, which is the default. Kept for backward compatibility.
+        [Parameter(ParameterSetName = 'Query', DontShow)]
+        [switch]$All,
+
+        [Parameter(ParameterSetName = 'Query')]
+        [ValidateRange(1, [int]::MaxValue)]
+        [int]$Limit
     )
 
-    switch ($PSCmdlet.ParameterSetName) {
-        'Id' {
-            $Id | ForEach-Object {
-                InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/$($_)/" -Method GET
+    process {
+        if ($PSCmdlet.ParameterSetName -eq 'Id') {
+            foreach ($ObjectId in $Id) {
+                InvokeNbxRestMethod -Endpoint "tenancy/contact-roles/$ObjectId/" -TypeName 'NetboxTools.ContactRole'
+            }
+            return
+        }
+
+        $Filter = @{}
+        if ($Query) {
+            foreach ($Key in $Query.Keys) {
+                $Filter[$Key] = $Query[$Key]
             }
         }
-        'Query' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/" -Method GET -Query $Query
+        if ($PSBoundParameters.ContainsKey('Name')) {
+            $Filter['name'] = $Name
         }
-        'Default' {
-            InvokeNbxRestMethod -URI "$($script:NbxConfig.URI)/tenancy/contact-roles/" -Method GET
-        }
-    }
 
+        InvokeNbxRestMethod -Endpoint 'tenancy/contact-roles/' -Query $Filter -Limit $Limit -TypeName 'NetboxTools.ContactRole'
+    }
 }

@@ -1,3 +1,4 @@
+#Requires -Modules @{ ModuleName = 'Pester'; ModuleVersion = '6.0.0' }
 
 param (
     [Parameter(Mandatory)]
@@ -20,7 +21,12 @@ $PesterConfiguration = New-PesterConfiguration
 $PesterConfiguration.Output.Verbosity = $Verbosity
 
 if ($PassThru.IsPresent) {
+    # The caller inspects the result
     $pesterConfiguration.Run.PassThru = $True
+}
+else {
+    # Fail the build and the CI run when tests fail, Invoke-Pester does not by default
+    $PesterConfiguration.Run.Throw = $true
 }
 
 $ModuleLoadData = @{
@@ -37,7 +43,7 @@ if ($CodeCoveragePath) {
     $PesterConfiguration.CodeCoverage.Path = $AllCodeCoverageFiles
     $PesterConfiguration.CodeCoverage.CoveragePercentTarget = 75
     $PesterConfiguration.CodeCoverage.OutputPath = "./coverage.xml"
-    $PesterConfiguration.CodeCoverage.OutputFormat = 'CoverageGutters'
+    $PesterConfiguration.CodeCoverage.OutputFormat = 'Cobertura'
 }
 
 if ($TestResults.IsPresent) {

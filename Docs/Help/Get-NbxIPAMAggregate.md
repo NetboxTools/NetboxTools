@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxIPAMAggregate
 ---
@@ -13,42 +12,151 @@ title: Get-NbxIPAMAggregate
 
 ## SYNOPSIS
 
-Retrieves aggregate prefixes (supernets) from NetBox.
+Gets aggregates from NetBox.
 
 ## SYNTAX
 
-### __AllParameterSets
+### Query (Default)
 
 ```
-Get-NbxIPAMAggregate [[-Id] <ulong[]>] [<CommonParameters>]
+Get-NbxIPAMAggregate [-Prefix <string[]>] [-Query <hashtable>] [-All] [-Limit <int>]
+ [<CommonParameters>]
 ```
+
+### Id
+
+```
+Get-NbxIPAMAggregate -Id <ulong[]> [<CommonParameters>]
+```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Gets aggregate (supernet) entries from IPAM in NetBox. Use `-Id` to select specific aggregates or omit to list all.
+Gets aggregates from the NetBox API endpoint 'ipam/aggregates'.
+Without parameters all aggregates are returned,
+the cmdlet follows the pagination of the API.
+
+Aggregate objects are returned as they are returned by the API, with the type name 'NetboxTools.IPAMAggregate',
+and can be piped to the other cmdlets of the module.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxIPAMAggregate -Id 5
+```powershell
+Get-NbxIPAMAggregate
+```
 
-Returns the aggregate prefix with ID 5.
+Gets all aggregates.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxIPAMAggregate -Id 42
+```
+
+Gets the aggregate with ID 42.
+
+### EXAMPLE 3
+
+```powershell
+Get-NbxIPAMAggregate -Prefix 'example'
+```
+
+Gets aggregates where the prefix is 'example'.
+
+### EXAMPLE 4
+
+```powershell
+Get-NbxIPAMAggregate -Query @{ q = 'example' } -Limit 10
+```
+
+Gets the first 10 aggregates matching the search 'example'.
 
 ## PARAMETERS
 
-### -Id
+### -All
 
-Specifies the Id parameter.
+Returns all objects, which is the default.
+Kept for backward compatibility.
 
 ```yaml
-Type: System.UInt64[]
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
-- Name: (All)
-  Position: 0
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Id
+
+The ID of the aggregate to get.
+Accepts aggregate objects from the pipeline.
+
+```yaml
+Type: System.UInt64[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Id
+  Position: Named
+  IsRequired: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Limit
+
+The maximum number of aggregates to return.
+By default all matching aggregates are returned.
+
+```yaml
+Type: System.Int32
+DefaultValue: 0
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Prefix
+
+Filters aggregates by prefix.
+Multiple values return aggregates matching any of the values.
+
+```yaml
+Type: System.String[]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: Query
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -60,7 +168,10 @@ HelpMessage: ''
 
 ### -Query
 
-Hashtable containing parameters.
+Filters supported by the NetBox API as a hashtable, e.g.
+@{ q = 'search text' }.
+Filters with multiple values are specified as arrays.
+See the API documentation of your NetBox instance for available filters.
 
 ```yaml
 Type: System.Collections.Hashtable
@@ -70,7 +181,7 @@ Aliases: []
 ParameterSets:
 - Name: Query
   Position: Named
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
@@ -88,14 +199,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
+### System.UInt64
+
+### NetboxTools.IPAMAggregate
+
+You can pipe aggregate IDs or aggregate objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Object
-
-Objects representing aggregate prefix records (properties include `id`, `prefix`, `rir_name`, `date_added`).
+### NetboxTools.IPAMAggregate
 
 ## NOTES
 
 ## RELATED LINKS
+
+- [NetboxTools on GitHub](https://github.com/SebastianClaesson/NetboxTools)
+

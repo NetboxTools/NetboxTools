@@ -1,13 +1,28 @@
 function Get-NbxHostPort {
+    <#
+    .SYNOPSIS
+        Gets the port of the NetBox connection.
 
+    .DESCRIPTION
+        Gets the port used to connect to the NetBox API. The port is set by Connect-NbxAPI or Set-NbxHostPort and defaults to 443.
+
+    .EXAMPLE
+        Get-NbxHostPort
+
+        Gets the port.
+
+    .INPUTS
+        None
+
+    .OUTPUTS
+        int
+
+    .LINK
+        Set-NbxHostPort
+    #>
     [CmdletBinding()]
+    [OutputType([int])]
     param ()
 
-    Write-Verbose "Getting Nbx host port"
-    if ($null -eq $script:NbxConfig.HostPort) {
-        throw "Nbx host port is not set! You may set it with Set-NbxHostPort -Port 'https'"
-    }
-
-    $script:NbxConfig.HostPort
-
+    $script:NbxConfig.Port
 }

@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Set-NbxDCIMFrontPort
 ---
@@ -13,40 +12,60 @@ title: Set-NbxDCIMFrontPort
 
 ## SYNOPSIS
 
-Updates a front port on a device in NetBox.
+Updates front ports in NetBox.
 
 ## SYNTAX
 
 ### __AllParameterSets
 
 ```
-Set-NbxDCIMFrontPort [-Id] <ulong[]> [[-Device] <ushort>] [[-Module] <ushort>] [[-Name] <string>]
- [[-Label] <string>] [[-Type] <string>] [[-Color] <string>] [[-Rear_Port] <ulong>]
- [[-Rear_Port_Position] <ushort>] [[-Description] <string>] [[-Mark_Connected] <bool>]
- [[-Tags] <ulong[]>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-NbxDCIMFrontPort [-Id] <ulong[]> [[-Device] <ulong>] [[-Name] <string>] [[-Type] <string>]
+ [[-Module] <ulong>] [[-Label] <string>] [[-Color] <string>] [[-Positions] <int>]
+ [[-RearPort] <ulong>] [[-RearPortPosition] <int>] [[-MarkConnected] <bool>]
+ [[-Description] <string>] [[-Tag] <ulong[]>] [[-CustomField] <hashtable>]
+ [[-OptionalAttribute] <hashtable>] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
+
+## ALIASES
+
+This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Specifies the in the parameter.
+Updates one or more front ports using the NetBox API endpoint 'dcim/front-ports'.
+Only the specified properties are changed, all other properties keep their current values.
+
+References to other objects, such as a site or a tenant, accept IDs or the objects returned by the Get cmdlets.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Set-NbxDCIMFrontPort -ID 7 -Label 'F1'
+```powershell
+Set-NbxDCIMFrontPort -Id 42 -Description 'Updated with NetboxTools'
+```
 
-Updates front port ID 7 label to 'F1'.
+Updates the description of the front port with ID 42.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMFrontPort -Query @{ q = 'example' } | Set-NbxDCIMFrontPort -Description 'Updated' -PassThru
+```
+
+Updates the description of all front ports matching the search 'example' and returns the updated front ports.
 
 ## PARAMETERS
 
 ### -Color
 
-Specifies the Color parameter.
+The color as a hexadecimal RGB value, e.g.
+'ff0000'.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -67,7 +86,7 @@ Prompts you for confirmation before running the cmdlet.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - cf
@@ -83,18 +102,42 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
+### -CustomField
+
+Custom field values as a hashtable, e.g.
+@{ cost_center = '1234' }.
+
+```yaml
+Type: System.Collections.Hashtable
+DefaultValue: ''
+SupportsWildcards: false
+Aliases:
+- custom_fields
+ParameterSets:
+- Name: (All)
+  Position: 13
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
 ### -Description
 
-Specifies the Description parameter.
+A short description of the front port.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 9
+  Position: 11
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -106,11 +149,12 @@ HelpMessage: ''
 
 ### -Device
 
-Specifies the Device parameter.
+The device of the front port.
+Accepts an ID or an object from Get-NbxDCIMDevice.
 
 ```yaml
-Type: System.UInt16
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -127,7 +171,7 @@ HelpMessage: ''
 
 ### -Force
 
-Specifies the Force parameter.
+Updates the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -148,19 +192,20 @@ HelpMessage: ''
 
 ### -Id
 
-Specifies the Id parameter.
+The ID of the front port to update.
+Accepts front port objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -169,16 +214,17 @@ HelpMessage: ''
 
 ### -Label
 
-Specifies the Label parameter.
+A physical label.
+Specify $null to clear the value.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 4
+  Position: 5
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -188,15 +234,16 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Mark_Connected
+### -MarkConnected
 
-Specifies the Mark_Connected parameter.
+Treat the port as if a cable is connected.
 
 ```yaml
 Type: System.Boolean
-DefaultValue: None
+DefaultValue: False
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- mark_connected
 ParameterSets:
 - Name: (All)
   Position: 10
@@ -211,11 +258,34 @@ HelpMessage: ''
 
 ### -Module
 
-Specifies the Module parameter.
+The module of the front port.
+Accepts an ID or a NetBox object.
+Specify $null to clear the value.
 
 ```yaml
-Type: System.UInt16
-DefaultValue: None
+Type: System.Nullable`1[System.UInt64]
+DefaultValue: ''
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: 4
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Name
+
+The name of the front port.
+
+```yaml
+Type: System.String
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -230,18 +300,19 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Name
+### -OptionalAttribute
 
-Specifies the Name parameter.
+Additional NetBox fields as a hashtable with the API field names as keys, for fields that do not have a parameter.
+Named parameters take precedence over values in the hashtable.
 
 ```yaml
-Type: System.String
-DefaultValue: None
+Type: System.Collections.Hashtable
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: 14
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -251,13 +322,36 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Rear_Port
+### -PassThru
 
-Specifies the Rear_Port parameter.
+Returns the updated front port.
+By default, this cmdlet does not generate any output.
 
 ```yaml
-Type: System.UInt64
-DefaultValue: None
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: False
+SupportsWildcards: false
+Aliases: []
+ParameterSets:
+- Name: (All)
+  Position: Named
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Positions
+
+The number of positions of the port.
+Specify $null to clear the value.
+
+```yaml
+Type: System.Nullable`1[System.Int32]
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
@@ -272,15 +366,17 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Rear_Port_Position
+### -RearPort
 
-Specifies the Rear_Port_Position parameter.
+The rear port this front port maps to.
+Accepts an ID or an object from Get-NbxDCIMRearPort.
 
 ```yaml
-Type: System.UInt16
-DefaultValue: None
+Type: System.UInt64
+DefaultValue: 0
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- Rear_Port
 ParameterSets:
 - Name: (All)
   Position: 8
@@ -293,18 +389,44 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -Tags
+### -RearPortPosition
 
-Specifies the Tags parameter.
+The position on the rear port this front port maps to.
+Defaults to 1.
+
+```yaml
+Type: System.Int32
+DefaultValue: 1
+SupportsWildcards: false
+Aliases:
+- Rear_Port_Position
+ParameterSets:
+- Name: (All)
+  Position: 9
+  IsRequired: false
+  ValueFromPipeline: false
+  ValueFromPipelineByPropertyName: false
+  ValueFromRemainingArguments: false
+DontShow: false
+AcceptedValues: []
+HelpMessage: ''
+```
+
+### -Tag
+
+The tags of the front port.
+Accepts tag IDs or objects from Get-NbxTag.
+Replaces the current tags.
 
 ```yaml
 Type: System.UInt64[]
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
-Aliases: []
+Aliases:
+- tags
 ParameterSets:
 - Name: (All)
-  Position: 11
+  Position: 12
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -316,16 +438,18 @@ HelpMessage: ''
 
 ### -Type
 
-Specifies the Type parameter.
+The port type, e.g.
+'8p8c' or 'lc'.
+Common values are: 8p8c, 110-punch, bnc, lc, lc-apc, lc-upc, lsh, mpo, mtrj, sc, sc-apc, sc-upc, st, splice, other.
 
 ```yaml
 Type: System.String
-DefaultValue: None
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 5
+  Position: 3
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
@@ -342,7 +466,7 @@ The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
-DefaultValue: False
+DefaultValue: ''
 SupportsWildcards: false
 Aliases:
 - wi
@@ -369,25 +493,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMFrontPort
 
-### System.UInt64[]
-
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+You can pipe front port IDs or front port objects to this cmdlet.
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
+### None
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMFrontPort
+
+With -PassThru the updated front port is returned.
 
 ## NOTES
 
-
-
-
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxDCIMFrontPort](Get-NbxDCIMFrontPort.md)
+- [New-NbxDCIMFrontPort](New-NbxDCIMFrontPort.md)
+- [Remove-NbxDCIMFrontPort](Remove-NbxDCIMFrontPort.md)

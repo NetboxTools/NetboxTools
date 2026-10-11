@@ -2,9 +2,8 @@
 document type: cmdlet
 external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Remove-NbxDCIMInterface
 ---
@@ -13,7 +12,7 @@ title: Remove-NbxDCIMInterface
 
 ## SYNOPSIS
 
-Removes an interface
+Removes interfaces from NetBox.
 
 ## SYNTAX
 
@@ -23,15 +22,32 @@ Removes an interface
 Remove-NbxDCIMInterface [-Id] <ulong[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Removes an interface by ID from a device
+Removes one or more interfaces using the NetBox API endpoint 'dcim/interfaces'.
+You are asked for confirmation before each object is removed, unless -Force or -Confirm:$false is specified.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 
-Remove-NbxDCIMInterface -Id $value1
+```powershell
+Remove-NbxDCIMInterface -Id 42
+```
+
+Removes the interface with ID 42 after confirmation.
+
+### EXAMPLE 2
+
+```powershell
+Get-NbxDCIMInterface -Query @{ q = 'example' } | Remove-NbxDCIMInterface -Force
+```
+
+Removes all interfaces matching the search 'example' without confirmation.
 
 ## PARAMETERS
 
@@ -59,7 +75,7 @@ HelpMessage: ''
 
 ### -Force
 
-A description of the Force parameter.
+Removes the object without asking for confirmation.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -80,7 +96,8 @@ HelpMessage: ''
 
 ### -Id
 
-A description of the Id parameter.
+The ID of the interface to remove.
+Accepts interface objects from the pipeline.
 
 ```yaml
 Type: System.UInt64[]
@@ -91,8 +108,8 @@ ParameterSets:
 - Name: (All)
   Position: 0
   IsRequired: true
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: true
+  ValueFromPipeline: true
+  ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false
 DontShow: false
 AcceptedValues: []
@@ -101,7 +118,8 @@ HelpMessage: ''
 
 ### -WhatIf
 
-Runs the command in a mode that only reports what would happen without performing the actions.
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -130,19 +148,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.UInt64[]
+### System.UInt64
 
-A detailed description of the cmdlet's behavior. Update with implementation-specific details.
+### NetboxTools.DCIMInterface
+
+You can pipe interface IDs or interface objects to this cmdlet.
 
 ## OUTPUTS
 
+### None
+
+This cmdlet does not return output.
+
 ## NOTES
-
-Additional information about the function.
-
 
 ## RELATED LINKS
 
-
-
-
+- [Get-NbxDCIMInterface](Get-NbxDCIMInterface.md)
+- [New-NbxDCIMInterface](New-NbxDCIMInterface.md)
+- [Set-NbxDCIMInterface](Set-NbxDCIMInterface.md)

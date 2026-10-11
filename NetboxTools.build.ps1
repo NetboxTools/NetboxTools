@@ -1,7 +1,11 @@
-#Requires -Modules 'InvokeBuild', 'Microsoft.Powershell.PlatyPS', 'Pester', 'PsScriptAnalyzer'
+#Requires -Modules 'InvokeBuild', 'Microsoft.Powershell.PlatyPS', @{ ModuleName = 'Pester'; ModuleVersion = '6.0.0' }, 'PsScriptAnalyzer'
 
 param (
-    [string]$Version = '1.0.0'
+    [string]$Version = '1.0.0',
+
+    # Prerelease label such as 'preview1', publishes the module as a prerelease version (e.g. 2.0.0-preview1)
+    [ValidatePattern('^([0-9A-Za-z]+)?$')]
+    [string]$Prerelease = ''
 )
 
 [string]$ModuleName = 'NetboxTools'
@@ -96,9 +100,23 @@ task Compile_Module {
         "#endregion PostCode $($_.BaseName)`n" | Out-File $PSM1Path -Append
     }
     
-    # Manifest
-    Update-ModuleManifest -Path "$ModuleSourcePath\$ModuleName.psd1" -ModuleVersion $Version -FunctionsToExport $ExportedFunctionList
-    Copy-Item -Path "$ModuleSourcePath\$ModuleName.psd1" -Destination $PSD1Path 
+    # Manifest, aliases are defined by the module itself in Tools\_PostModule.ps1
+    $ExportedAliasList = @((Import-Module "$ModuleSourcePath\$ModuleName.psm1" -Force -PassThru).ExportedAliases.Keys | Sort-Object)
+    Remove-Module $ModuleName -Force
+    # Update a copy in the output folder, so the version and prerelease label are never written to the source manifest
+    # Update-ModuleManifest requires the version to match the version folder, so set it in the copy first
+    (Get-Content -Path "$ModuleSourcePath\$ModuleName.psd1" -Raw) -replace "(?m)^ModuleVersion = '[^']*'", "ModuleVersion = '$Version'" |
+        Set-Content -Path $PSD1Path -NoNewline
+    $ManifestParameters = @{
+        Path              = $PSD1Path
+        ModuleVersion     = $Version
+        FunctionsToExport = $ExportedFunctionList
+        AliasesToExport   = $ExportedAliasList
+    }
+    if ($Prerelease) {
+        $ManifestParameters['Prerelease'] = $Prerelease
+    }
+    Update-ModuleManifest @ManifestParameters
 }
 
 Get-Module -Name $ModuleName | Remove-Module -Force

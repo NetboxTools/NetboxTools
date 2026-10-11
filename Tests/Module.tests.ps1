@@ -18,7 +18,7 @@ BeforeDiscovery {
     $ModuleName = (get-module $psm1 -ListAvailable).Name
     
     # actual exported functions
-    $ExportedFunctions = (Get-Module $ModuleName).ExportedCommands.Keys
+    $ExportedFunctions = (Get-Module $ModuleName).ExportedFunctions.Keys
 
     # Get functions supposed to be public
     if (Test-Path -Path "$ScriptDirectory\Public" -PathType Container) {

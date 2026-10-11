@@ -1,10 +1,9 @@
 ---
 document type: cmdlet
-external help file: netboxTools-help.xml
+external help file: NetboxTools-Help.xml
 HelpUri: ''
-Locale: sv-SE
+Locale: en-US
 Module Name: NetboxTools
-ms.date: 01-14-2026
 PlatyPS schema version: 2024-05-01
 title: Get-NbxTimeout
 ---
@@ -13,7 +12,7 @@ title: Get-NbxTimeout
 
 ## SYNOPSIS
 
-Retrieves configured timeout values used by the module or API client.
+Gets the timeout in seconds of the NetBox connection.
 
 ## SYNTAX
 
@@ -23,17 +22,24 @@ Retrieves configured timeout values used by the module or API client.
 Get-NbxTimeout [<CommonParameters>]
 ```
 
+## ALIASES
+
+This cmdlet has no aliases.
+
 ## DESCRIPTION
 
-Returns current timeout settings or default timeout values used by the module for API requests. Use this to inspect or document timeouts.
+Gets the timeout in seconds used to connect to the NetBox API.
+The timeout is set by Set-NbxTimeout and defaults to 30 seconds.
 
 ## EXAMPLES
 
-### Example 1
+### EXAMPLE 1
 
-PS C:\> Get-NbxTimeout
+```powershell
+Get-NbxTimeout
+```
 
-Returns configured timeout values (in seconds).
+Gets the timeout in seconds.
 
 ## PARAMETERS
 
@@ -46,15 +52,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-None. This cmdlet does not accept pipeline input.
-
 ## OUTPUTS
 
-### System.UInt16
-
-Timeout value(s) in seconds (may return a single value or a set of named timeout options).
+### int
 
 ## NOTES
 
 ## RELATED LINKS
 
+- [Set-NbxTimeout](Set-NbxTimeout.md)

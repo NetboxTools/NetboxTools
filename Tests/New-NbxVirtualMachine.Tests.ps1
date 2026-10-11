@@ -5,67 +5,63 @@ param(
 BeforeAll {
     Remove-Module NetboxTools -Force -ErrorAction SilentlyContinue
     Import-Module $PSM1 -Force
+    . "$PSScriptRoot\TestHelpers.ps1"
+    Initialize-NbxTestConnection
 }
 
-Describe "New-NbxVirtualMachine" {
+Describe 'New-NbxVirtualMachine' {
+    BeforeEach {
+        Mock Invoke-RestMethod -ModuleName NetboxTools -MockWith { New-NbxTestResponse -Uri $Uri -Method $Method -Body $Body }
+    }
 
-    Context "Function structure and parameters" {
-
-        It "Should be available as a function" {
-            Get-Command -Name "New-NbxVirtualMachine" -ErrorAction SilentlyContinue | Should -Not -BeNullOrEmpty
+    It 'Creates the virtual machine with a POST request' {
+        $Result = New-NbxVirtualMachine -Name 'vm01'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Method -eq 'POST' -and $Uri -eq 'https://netbox.example.com/api/virtualization/virtual-machines/'
         }
+        $Result.PSObject.TypeNames | Should -Contain 'NetboxTools.VirtualMachine'
+    }
 
-        It "Parameter names are PascalCase" {
-            (Get-Command "New-NbxVirtualMachine").Parameters.Keys | ForEach-Object { $_ | Should -Match '^[A-Z].*' }
-        }
-
-        It "Mandatory parameters are present in parameter list" {
-            $cmd = Get-Command "New-NbxVirtualMachine"
-            $mandatoryParams = @()
-            foreach ($p in $cmd.Parameters.GetEnumerator()) {
-                foreach ($attr in $p.Value.Attributes) {
-                    if ($attr -is [System.Management.Automation.ParameterAttribute] -and $attr.Mandatory) {
-                        $mandatoryParams += $p.Key
-                    }
-                }
-            }
-
-            $mandatoryParams | Should -Contain 'Name'
+    It 'Sends the parameters with NetBox field names' {
+        New-NbxVirtualMachine -Name 'vm01'
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.name | Should -Be 'vm01'
+            $true
         }
     }
 
-    Context "Function behavior" {
-
-        BeforeAll {
-            Mock -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -MockWith {
-                return [pscustomobject]@{ id = 1; display = 'Test' }
-            }
-
-        }
-
-        It "Should call InvokeNbxRestMethod with POST method" {
-            New-NbxVirtualMachine -Name 'TestVM'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Method -eq 'POST' -and $Uri -like '*/virtualization/virtual-machines/*'
-            }
-        }
-
-        It "Should include mandatory parameters in the request body" {
-            New-NbxVirtualMachine -Name 'TestVM'
-            Should -Invoke -ModuleName NetboxTools -CommandName InvokeNbxRestMethod -Times 1 -ParameterFilter {
-                $Body -ne $null
-            }
-        }
-
-        It "Should not throw with valid parameters" {
-            { New-NbxVirtualMachine -Name 'TestVM' } | Should -Not -Throw
-        }
-
-        AfterAll {
-            InModuleScope NetboxTools {
-                $script:NbxConfig.Remove('URI')
-            }
+    It 'Merges OptionalAttribute into the body' {
+        New-NbxVirtualMachine -Name 'vm01' -OptionalAttribute @{ custom_fields = @{ owner = 'IT' } }
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            ($Body | ConvertFrom-Json).custom_fields.owner -eq 'IT'
         }
     }
 
+    It 'Accepts NetBox objects from the pipeline' {
+        $InputObject = [pscustomobject]@{
+            id = 99
+            url = 'https://netbox.example.com/api/virtualization/virtual-machines/99/'
+            name = 'vm01'
+        }
+        $InputObject | New-NbxVirtualMachine
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 1 -Exactly -ParameterFilter {
+            $Body = $Body | ConvertFrom-Json
+            $Body.name | Should -Be 'vm01'
+            $Body.PSObject.Properties.Name -notcontains 'id'
+        }
+    }
+
+    It 'Creates one virtual machine per pipeline object' {
+        $InputObject = [pscustomobject]@{
+            name = 'vm01'
+        }
+        $InputObject, $InputObject | New-NbxVirtualMachine
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 2 -Exactly
+    }
+
+    It 'Does not send the request with -WhatIf' {
+        New-NbxVirtualMachine -Name 'vm01' -WhatIf
+        Should -Invoke Invoke-RestMethod -ModuleName NetboxTools -Times 0 -Exactly
+    }
 }
